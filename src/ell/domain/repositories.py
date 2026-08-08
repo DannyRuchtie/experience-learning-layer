@@ -4,7 +4,14 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from ell.domain.models import AuditEvent, CandidateMemory, MemoryRecord, SourceArtifact
+from ell.domain.models import (
+    AuditEvent,
+    CandidateMemory,
+    Episode,
+    ExperienceEvent,
+    MemoryRecord,
+    SourceArtifact,
+)
 
 
 class ConcurrencyError(RuntimeError):
@@ -30,6 +37,64 @@ class InMemoryArtifactRepository:
     def get(self, artifact_id: UUID) -> SourceArtifact | None:
         """Return an artifact by stable ID."""
         return self._artifacts.get(artifact_id)
+
+
+class InMemoryExperienceLedger:
+    """Reference append-only ledger for normalized events and episodes."""
+
+    def __init__(self) -> None:
+        self._events: dict[UUID, ExperienceEvent] = {}
+        self._episodes: dict[UUID, Episode] = {}
+
+    def append_event(self, event: ExperienceEvent) -> ExperienceEvent:
+        """Replay an identical event safely and reject identity collisions."""
+        existing = self._events.get(event.id)
+        if existing is not None:
+            if existing != event:
+                raise ValueError(f"event identity collision: {event.id}")
+            return existing
+        self._events[event.id] = event
+        return event
+
+    def get_event(self, event_id: UUID) -> ExperienceEvent | None:
+        """Return one event by stable ID."""
+        return self._events.get(event_id)
+
+    def list_session_events(
+        self, workspace_id: UUID, session_id: str
+    ) -> tuple[ExperienceEvent, ...]:
+        """Return deterministic session order without exposing another workspace."""
+        events = (
+            event
+            for event in self._events.values()
+            if event.workspace_id == workspace_id and event.session_id == session_id
+        )
+        return tuple(sorted(events, key=lambda event: (event.occurred_at, str(event.id))))
+
+    def append_episode(self, episode: Episode) -> Episode:
+        """Replay an identical episode safely and reject identity collisions."""
+        existing = self._episodes.get(episode.id)
+        if existing is not None:
+            if existing != episode:
+                raise ValueError(f"episode identity collision: {episode.id}")
+            return existing
+        self._episodes[episode.id] = episode
+        return episode
+
+    def get_episode(self, episode_id: UUID) -> Episode | None:
+        """Return one episode by stable ID."""
+        return self._episodes.get(episode_id)
+
+    def list_episodes(self, workspace_id: UUID) -> tuple[Episode, ...]:
+        """Return deterministic episode order within one workspace."""
+        episodes = (
+            episode
+            for episode in self._episodes.values()
+            if episode.workspace_id == workspace_id
+        )
+        return tuple(
+            sorted(episodes, key=lambda episode: (episode.timestamp_start, str(episode.id)))
+        )
 
 
 class InMemoryMemoryRepository:

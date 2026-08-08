@@ -2,10 +2,10 @@
 
 ## Goal
 
-Maintain the living Experience Learning Layer research paper and its small,
-provider-neutral Phase 0 kernel. The repository is intentionally paper-first:
-the manuscript, schemas, golden corpus, deterministic policy/lifecycle proof,
-and reproducible PDF build are the current product boundary.
+Maintain the living Experience Learning Layer research paper, its provider-neutral
+kernel, and the small Phase 1 live-chat episode-capture preview. The repository
+remains paper-first: new client or adapter behavior must preserve the canonical
+schemas, deterministic lifecycle, golden corpus, and reproducible PDF build.
 
 ## Core principles
 
@@ -30,8 +30,9 @@ and reproducible PDF build are the current product boundary.
 - Run formatting, type checking and tests before finishing.
 - Explain important design choices in short architecture decision records.
 
-Persistence adapters, connectors, model SDKs, and application clients are later
-phases. Do not add them to Phase 0 just because the paper describes future ports.
+Keep Phase 1 adapters narrow. The macOS chat client and append-only JSONL capture
+adapter are in scope. Databases, sync, hosted memory, vector stores, MCP, and further
+provider SDKs remain later work unless explicitly promoted with an ADR and tests.
 
 ## Commands
 
@@ -41,7 +42,9 @@ phases. Do not add them to Phase 0 just because the paper describes future ports
 - `make lint` - lint source, paper builder, and tests
 - `make typecheck` - type-check the domain and evaluation source
 - `make clean` - remove local Python/test caches
+- `make app-test` - build and test the macOS chat capture client
+- `./script/build_and_run.sh --verify` - build, launch, and verify the macOS app
 
-There is intentionally no database, web server, Docker, provider SDK, or migration
-command in this repository yet. Those are later research phases and must not define
-the paper's Phase 0 kernel.
+There is intentionally no database, web server, Docker, or migration command in this
+repository yet. Remote providers remain replaceable adapters and must not define the
+paper's domain kernel.

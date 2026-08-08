@@ -16,7 +16,7 @@ from ell.domain.models import (
     SourceSpan,
 )
 from ell.domain.policy import CommitPolicy, PolicyAction, PolicyDecision
-from ell.domain.services import LearningKernel, RetrievalService
+from ell.domain.services import EpisodeCaptureService, LearningKernel, RetrievalService
 
 __all__ = [
     "Authority",
@@ -25,6 +25,7 @@ __all__ = [
     "CommitPolicy",
     "EvidenceCitation",
     "Episode",
+    "EpisodeCaptureService",
     "ExperienceEvent",
     "LearningKernel",
     "MemoryRecord",

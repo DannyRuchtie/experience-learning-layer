@@ -20,7 +20,23 @@ The provider-neutral in-memory kernel currently demonstrates:
 - budgeted lexical retrieval with explanations and optional exact evidence;
 - a versioned synthetic golden corpus under `evals/golden/v1`.
 
-Database, vector, provider, MCP, and chat UI work deliberately follows this proof.
+Database, vector, and MCP work deliberately follows this proof.
+
+## Phase 1 live capture preview
+
+`ELLChat` is a native macOS chat wrapper that writes each message to local,
+provider-neutral source and event JSONL before provider processing, then closes a
+completed user/assistant turn as a deterministic episode. It includes a local mock
+provider, an OpenAI Responses API streaming adapter, Keychain credential storage,
+and reserved Codex and Anthropic provider seams.
+
+```bash
+make app-test
+./script/build_and_run.sh --verify
+```
+
+The mutable chat history is a UI projection. Canonical capture files live under
+`~/Library/Application Support/ExperienceLearningLayer/Chat/` when the app runs.
 
 ## Quick start
 
@@ -38,6 +54,5 @@ make test
 ## Project structure
 
 See `AGENTS.md` for development rules and commands. Architecture decisions are in
-`docs/adr`. The repository is intentionally scoped to the living paper and its
-provider-neutral Phase 0 proof; persistence, connectors, model SDKs, and clients are
-future phases.
+`docs/adr`. The repository remains paper-first while its Phase 1 surface now includes
+the small live-chat capture client and append-only local episode adapter.

@@ -872,7 +872,7 @@ Four authentication concerns remain separate: L user identity, workspace authori
 
 Forgetting immediately excludes a record, writes a tombstone, removes projections, and triggers evidence-aware invalidation. Sync must not resurrect tombstoned content. Sensitive trait inference is disabled for automatic durable learning. Imported documents are untrusted content, never system instructions. Secrets do not enter prompts, canonical memory, exports, analytics, or logs.
 
-14. Phase 0 Reference Implementation Status
+14. Reference Implementation Status
 
 The repository now contains an executable Phase 0 proof aligned with the expanded architecture. This is implementation evidence, not an empirical result for H1-H4.
 
@@ -890,11 +890,11 @@ A fixture-backed DeterministicMockProvider advertises provider-neutral capabilit
 
 The versioned synthetic corpus covers explicit scoped preferences, single-event inference, unsupported claims, sensitive inference, explicit correction, material contradiction, temporal change, Dutch evidence, and prompt injection embedded in imported content. Each JSONL case has a stable ID, exact evidence excerpt, typed candidate description, and expected policy or lifecycle outcome. Corpus validation rejects malformed or duplicate cases.
 
-At this revision, the paper-first repository contains 28 passing tests. Strict static type checking passes for 14 source files, and repository-wide Ruff lint and formatting pass. The disconnected web, database, provider, and TencentDB scaffolding from the initial repository has been removed so the tracked implementation surface matches the paper's current Phase 0 proof.
+At this revision, the paper-first repository contains 31 passing Python tests and 3 passing Swift tests. Strict static type checking passes for 14 Python source files, repository-wide Ruff lint passes, and the macOS client passes Swift formatting checks. The disconnected web, database, provider, and TencentDB scaffolding from the initial repository remains outside the canonical kernel; the new client is a narrow Phase 1 adapter over the existing source, event, and episode contracts.
 
 14.4 Remaining gates
 
-The in-memory proof does not yet demonstrate persistent SQLite rebuilds, deletion propagation through projections, encrypted sync, extension capability isolation, provider egress enforcement, job checkpoint recovery, or live cross-client operation. Those invariants are explicit deferred release gates for the phases that introduce the relevant adapters. Phase 1 should next make normalized episode ingestion deterministic and persistent, beginning with incremental ChatGPT export import, while leaving association-index and live-provider work behind stable ports.
+The in-memory proof does not yet demonstrate persistent SQLite rebuilds, deletion propagation through projections, encrypted sync, extension capability isolation, provider egress enforcement, job checkpoint recovery, or live cross-client operation. Those invariants are explicit deferred release gates for the phases that introduce the relevant adapters. The first Phase 1 preview adds a macOS chat connector, append-only local source/event/episode JSONL, deterministic completed-turn boundaries, a fixture provider, and an OpenAI-ready provider seam. This is input-pipeline evidence rather than a result for H1-H4. Incremental ChatGPT export import, SQLite, association indexes, and comparative TencentDB or hosted-memory evaluation remain subsequent Phase 1 work behind stable ports.
 
 15. Conclusion
 The Experience Learning Layer begins from a simple distinction: access to old experience is not the same as 

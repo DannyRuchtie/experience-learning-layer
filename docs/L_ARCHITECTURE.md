@@ -1,6 +1,6 @@
 # L - Experience Learning Layer architecture
 
-Status: Foundation architecture and Phase 0 contract  
+Status: Foundation architecture, verified Phase 0 contract, and Phase 1 capture preview
 Architecture style: Local-first, event-driven, ports and adapters, provider-neutral
 
 ## Product definition
@@ -239,9 +239,17 @@ forgotten, and retrieved as a scoped evidence packet entirely in memory.
 ### Phase 1 - episode and local learning foundation
 
 - Import ChatGPT export ZIPs incrementally with deterministic identity.
+- Capture live macOS chat messages before provider calls and close completed turns
+  as deterministic episodes through the same canonical contracts.
 - Add SQLite and content-addressed artifact adapters.
 - Add manual/file capture and a deterministic processing pipeline.
 - Export canonical JSONL and Markdown.
+
+The first Phase 1 preview uses append-only JSONL before SQLite so the capture
+contract can be exercised without choosing the later memory or retrieval substrate.
+TencentDB Agent Memory is a comparison and possible adapter behind these ports, not
+the canonical store. Google Vertex AI Memory Bank is a later hosted option subject
+to workspace egress policy; local-only capture remains supported.
 
 ### Phase 2 - associations, reflection, and useful daily workflows
 

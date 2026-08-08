@@ -6,14 +6,18 @@ import re
 from datetime import datetime, timezone
 from uuid import UUID
 
+from ell.domain.identifiers import stable_episode_id
 from ell.domain.models import (
     AUTHORITY_WEIGHT,
     SENSITIVITY_RANK,
     AuditEvent,
     CandidateMemory,
     CandidateState,
+    Episode,
+    EventType,
     EvidencePacket,
     EvidenceRelation,
+    ExperienceEvent,
     MemoryRecord,
     MemoryStatus,
     RetrievalItem,
@@ -21,11 +25,125 @@ from ell.domain.models import (
     SourceArtifact,
 )
 from ell.domain.policy import CommitPolicy, PolicyAction
-from ell.domain.ports import ArtifactRepository, AuditSink, MemoryRepository
+from ell.domain.ports import ArtifactRepository, AuditSink, ExperienceLedger, MemoryRepository
 
 
 class ValidationError(ValueError):
     """Raised when a candidate violates deterministic domain validation."""
+
+
+class EpisodeCaptureService:
+    """Capture normalized live events and close bounded, replay-safe episodes."""
+
+    def __init__(
+        self,
+        artifacts: ArtifactRepository,
+        experiences: ExperienceLedger,
+        audit: AuditSink,
+    ) -> None:
+        self._artifacts = artifacts
+        self._experiences = experiences
+        self._audit = audit
+
+    def capture_event(self, event: ExperienceEvent, *, actor_id: str) -> ExperienceEvent:
+        """Accept an event only when its immutable source exists in the same workspace."""
+        source = self._artifacts.get(event.source_id)
+        if source is None:
+            raise ValidationError(f"event source does not exist: {event.source_id}")
+        if source.workspace_id != event.workspace_id:
+            raise ValidationError("event source belongs to another workspace")
+
+        existing = self._experiences.get_event(event.id)
+        stored = self._experiences.append_event(event)
+        if existing is None:
+            self._audit.append(
+                AuditEvent(
+                    workspace_id=stored.workspace_id,
+                    event_type="ExperienceEventCaptured",
+                    actor_id=actor_id,
+                    purpose="episode_capture",
+                    affected_ids=(stored.id,),
+                    policy_reason="normalized event source validated",
+                )
+            )
+        return stored
+
+    def close_episode(
+        self,
+        event_ids: tuple[UUID, ...],
+        *,
+        actor_id: str,
+        outcomes: tuple[str, ...] = (),
+    ) -> Episode:
+        """Assemble one ordered session slice without asking a model for boundaries."""
+        if not event_ids:
+            raise ValidationError("an episode requires at least one event")
+
+        events: list[ExperienceEvent] = []
+        for event_id in event_ids:
+            event = self._experiences.get_event(event_id)
+            if event is None:
+                raise ValidationError(f"episode event does not exist: {event_id}")
+            events.append(event)
+
+        if len({event.workspace_id for event in events}) != 1:
+            raise ValidationError("episode events belong to different workspaces")
+        if len({event.session_id for event in events}) != 1:
+            raise ValidationError("episode events belong to different sessions")
+        if events != sorted(events, key=lambda event: (event.occurred_at, str(event.id))):
+            raise ValidationError("episode events must be supplied in occurrence order")
+
+        workspace_id = events[0].workspace_id
+        episode_id = stable_episode_id(workspace_id, event_ids)
+        existing = self._experiences.get_episode(episode_id)
+        if existing is not None:
+            return existing
+
+        episode = Episode(
+            id=episode_id,
+            workspace_id=workspace_id,
+            event_ids=event_ids,
+            timestamp_start=events[0].occurred_at,
+            timestamp_end=events[-1].occurred_at,
+            actor_id=actor_id,
+            input=self._message_text(events, EventType.USER_MESSAGE) or None,
+            response=self._message_text(events, EventType.ASSISTANT_MESSAGE) or None,
+            actions=tuple(
+                str(event.payload.get("name", "tool call"))
+                for event in events
+                if event.event_type is EventType.TOOL_CALL
+            ),
+            observations=tuple(
+                str(event.payload.get("summary", "tool result"))
+                for event in events
+                if event.event_type is EventType.TOOL_RESULT
+            ),
+            outcomes=outcomes,
+            metadata={"session_id": events[0].session_id, "boundary": "completed_turn"},
+        )
+        stored = self._experiences.append_episode(episode)
+        self._audit.append(
+            AuditEvent(
+                workspace_id=stored.workspace_id,
+                event_type="EpisodeClosed",
+                actor_id=actor_id,
+                purpose="episode_capture",
+                affected_ids=(stored.id, *stored.event_ids),
+                policy_reason="deterministic completed-turn boundary",
+            )
+        )
+        return stored
+
+    @staticmethod
+    def _message_text(events: list[ExperienceEvent], event_type: EventType) -> str:
+        parts = [
+            text
+            for event in events
+            if event.event_type is event_type
+            for text in (event.payload.get("text"),)
+            if isinstance(text, str) and text.strip()
+        ]
+        return "\n\n".join(parts)
 
 
 class LearningKernel:
