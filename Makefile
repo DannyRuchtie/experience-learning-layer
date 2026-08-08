@@ -1,25 +1,19 @@
-.PHONY: install db-up db-down migrate test lint typecheck run
+.PHONY: install test lint typecheck paper clean
 
 install:
-	pip install -e ".[dev]"
-
-db-up:
-	docker compose up -d
-
-db-down:
-	docker compose down
-
-migrate:
-	alembic upgrade head
+	python3 -m pip install -e ".[dev]"
 
 test:
-	pytest tests/ -v --tb=short
+	python3 -m pytest tests/ -v --tb=short
 
 lint:
-	ruff check src/ apps/
+	python3 -m ruff check src/ paper tests
 
 typecheck:
-	mypy src/ apps/
+	python3 -m mypy src/
 
-run:
-	uvicorn apps.api.main:app --reload --host 0.0.0.0 --port 8000
+paper:
+	python3 paper/build_paper.py
+
+clean:
+	find . -type d \( -name __pycache__ -o -name .pytest_cache -o -name .mypy_cache -o -name .ruff_cache \) -prune -exec rm -rf {} +
