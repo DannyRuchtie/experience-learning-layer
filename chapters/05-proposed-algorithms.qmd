@@ -1,0 +1,89 @@
+# Proposed Algorithms
+
+## Reflection scheduling
+
+Running reflection after every episode would be expensive and may create redundant interpretations. ELL therefore uses event-based scheduling. An episode or cluster enters the reflection queue when one or more conditions are met:
+
+- the cluster contains at least n distinct episodes;
+
+- a failure or unusually high reward occurs;
+- a new episode contradicts an active concept;
+- association novelty exceeds a threshold;
+- the concept has not been reviewed within a time window;
+- a user or agent explicitly requests reflection.
+
+The scheduler records why a job was triggered. This enables later analysis of whether a scheduling policy created useful concepts or unnecessary model calls.
+
+## Reflection generation and critique
+
+The Reflection Engine receives a bounded evidence packet: selected episodes, existing nearby reflections, relevant active concepts, and an instruction to produce typed hypotheses. The generator must output structured fields rather than a free-form essay.
+
+A separate validation pass performs four checks: 1. Entailment: Does each cited episode actually support the claim attributed to it?
+
+2. Contradiction: Are there nearby episodes that disagree?
+
+3. Scope: Is the claim broader than its evidence?
+
+4. Novelty: Is the reflection meaningfully different from existing reflections or concepts?
+
+The validator can be an independent model, a deterministic rule, a human reviewer, or a combination. Using a separate model call does not guarantee independence, so experiments will include same-model and cross-model validation conditions.
+
+## Concept proposal
+
+Reflections are grouped by semantic compatibility and scope overlap. A proposed concept requires:
+
+- at least m compatible reflections;
+- at least d distinct supporting episodes;
+- minimum evidence diversity;
+- no unresolved high-confidence contradiction;
+- an explicit scope and exception list;
+- a concise proposition and expected implication.
+
+The default policy will require support from at least three episodes across at least two distinct contexts. This is a configurable research parameter rather than a universal rule.
+
+A simplified proposal procedure is: for each reflection cluster R: evidence = union(supporting episodes in R) counter = retrieve plausible counterevidence candidate = generate_concept(R, evidence, counter) checks = validate(candidate, evidence, counter) if checks pass promotion policy: register(candidate, state="proposed")
+
+## Evidence-weighted confidence
+
+LLMs are not assumed to be calibrated judges of their own abstractions. ELL computes an operational confidence score from external features:
+
+confidence(c)=1/(1+exp(-z_c)) , where zc is a weighted score that increases with supporting evidence, evidence diversity, and observed application utility, and decreases with counterevidence, age without revalidation, and validator disagreement.
+
+The formula is deliberately transparent and will be calibrated on held-out development data. A simpler Bayesian or rule-based alternative will be included as a baseline. Confidence is never used to hide counterevidence; the raw counts and links remain visible.
+
+## Revision and temporal validity
+
+When new evidence conflicts with a concept, the system chooses among four responses:
+
+- add exception: the core claim remains valid but has a narrower boundary;
+- narrow scope: the concept was over-generalised;
+- change validity interval: the pattern was true during one period but is no longer current;
+- replace claim: a new concept version better explains the evidence.
+
+Revision produces a new immutable version linked by revises or supersedes. The old version retains its former validity interval and applications. This design supports historical reasoning and avoids treating changed preferences or conditions as contradictions that must erase the past.
+
+## Merge and split
+
+Duplicate concepts increase retrieval noise, while over-broad concepts hide meaningful exceptions. Merge candidates are identified using proposition similarity, overlapping evidence, compatible scope, and similar implications. Split candidates are triggered when counterevidence clusters around a coherent condition or when application outcomes differ significantly by context.
+
+Both operations require a lineage record. A merge creates a new concept that references all parents. A split creates child concepts whose evidence partitions are explicit. Automated operations above a risk threshold can require human approval.
+
+## Retrieval with evidence restoration
+
+Concept retrieval follows two stages. The first stage selects concepts by semantic, structural, temporal, and utility signals. The second restores a small, query-specific set of source episodes. This prevents a compact concept from becoming an ungrounded instruction.
+
+The retrieval budget is fixed in tokens or characters so that systems are compared under equal context cost.
+
+This avoids rewarding a method merely for retrieving far more text. Results report both task utility and memory information density.
+
+## Deletion and invalidation
+
+A user must be able to delete source data. Deletion cannot stop at the episode store because derived concepts may still encode the removed information. ELL maintains derivation links so a deletion request can:
+
+1. remove or tombstone the source episode according to policy;
+2. remove it from support and counterevidence sets;
+3. recompute affected confidence values;
+4. contest, revise, or retire concepts that no longer meet support thresholds;
+5. record the deletion cascade without retaining prohibited content.
+
+This is both a privacy requirement and a scientific requirement: provenance is incomplete if derived claims cannot be invalidated when their evidence disappears.

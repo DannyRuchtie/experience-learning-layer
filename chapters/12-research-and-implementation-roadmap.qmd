@@ -1,0 +1,46 @@
+# Research and Implementation Roadmap
+
+Phase 0 — Specification publication
+
+- publish the canonical paper draft and generated reading editions;
+- publish the shared architecture diagrams and synthetic lifecycle examples;
+- verify that HTML and PDF outputs render from the same chapter sources;
+- keep implementation claims explicitly separate from proposed contracts.
+
+Exit criterion: a contributor can edit a chapter and rebuild the website and PDF locally with one command.
+
+Phase 1 — Controlled benchmark
+
+- implement the latent-pattern stream generator;
+- implement the Memory Dynamics and Intuition Simulation Lab with deterministic replay, policy sweeps, immutable receipts, and chronological train, development, and sealed test partitions;
+- define gold concepts, evidence, counterevidence, exceptions, and change points;
+- freeze metrics, policy comparison budgets, privacy and deletion tests, and the annotation rubric;
+- publish baseline results for raw retrieval, rolling summary, and direct insights.
+
+Exit criterion: a complete replay produces concept, outcome, safety, and cost metrics with fixed seeds and reproducible receipts.
+
+Phase 2 — Reflection and Concept Engines
+
+- add structured model adapters for local open-weight inference;
+- implement validation, promotion, merge, split, and revision;
+- add the evidence ledger and lifecycle reports;
+- run component ablations.
+
+Exit criterion: ELL can be compared with baselines on the sealed synthetic test set.
+
+Phase 3 — External benchmarks
+
+- integrate LongMemEval and LoCoMo;
+- integrate MemoryAgentBench, MemBench, and MemoryArena where licences and compute permit;
+- reproduce selected open memory baselines under equal budgets;
+- compare learned memory-operation, experience-graph, skill-evolution, and neural-memory tracks behind the same provider-neutral ports and canonical governance boundary;
+- complete human evaluation and calibration.
+
+Exit criterion: results can support or reject H1–H6 across at least one conversational and one action benchmark.
+
+Phase 4 — Paper completion
+
+- replace this preregistration status with methods and results generated from tagged releases;
+- add statistical analysis, failure cases, and limitations discovered in practice;
+- release raw experiment artefacts and a reproducibility package;
+- submit to an appropriate agent, NLP, HCI, or continual-learning venue.

@@ -1,0 +1,19 @@
+# Research Artifact Status
+
+The repository is currently a publication artifact, not an executable ELL implementation. This boundary keeps the architecture, hypotheses, and planned contracts inspectable without presenting unvalidated code as evidence for H1-H6.
+
+## Canonical and generated editions
+
+The Quarto Markdown chapters are the sole canonical source. A single `quarto render` derives the multi-page HTML reading edition and the downloadable PDF. Quarto provides navigation, search, section numbering, cross-format links, and publication metadata. Generated output is ignored by Git and rebuilt locally or by the GitHub publishing workflow, keeping ordinary paper edits small and reviewable.
+
+## Synthetic lifecycle examples
+
+The repository includes a small synthetic JSONL collection covering explicit scoped preferences, single-event inference, unsupported claims, sensitive inference, explicit correction, material contradiction, temporal change, Dutch evidence, and prompt injection embedded in imported content. These cases make proposed policy outcomes concrete for readers. They are examples, not a validated benchmark, and no empirical result is inferred from them.
+
+## Deliberately deferred implementation
+
+Typed runtime schemas, a governed commit kernel, storage adapters, model providers, evaluation code, and product clients are not part of this paper repository. Adding them should happen only with a documented evaluation contract and tests that can support any corresponding implementation claim. Until then, the interfaces and algorithms in Sections 5 and 6 are specifications.
+
+## Remaining gates
+
+The next research step is the controlled benchmark: deterministic experience streams, sealed evaluation partitions, policy sweeps, application receipts, and reproducible comparisons with episode retrieval, rolling summaries, and direct insight extraction. A later reference implementation must also demonstrate persistent-store rebuilds, deletion propagation through projections, provider egress enforcement, job recovery, and lifecycle correctness before it can count as evidence for H1-H6.
