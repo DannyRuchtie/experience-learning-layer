@@ -18,7 +18,7 @@ enum ProviderKind: String, Codable, CaseIterable, Identifiable, Sendable {
   }
 
   var isAvailable: Bool {
-    self == .mock || self == .openAI
+    self == .mock || self == .openAI || self == .codex
   }
 }
 

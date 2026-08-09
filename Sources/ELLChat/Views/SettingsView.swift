@@ -3,6 +3,8 @@ import SwiftUI
 struct SettingsView: View {
   @State private var apiKey = ""
   @State private var status = ""
+  @State private var codexStatus = "Checking…"
+  @State private var isConnectingCodex = false
 
   var body: some View {
     Form {
@@ -23,14 +25,35 @@ struct SettingsView: View {
         }
       }
 
+      Section("Codex with ChatGPT") {
+        LabeledContent("Account", value: codexStatus)
+        Text("Codex owns the ChatGPT credential. ELLChat never reads or stores its tokens.")
+          .font(.caption)
+          .foregroundStyle(.secondary)
+        HStack {
+          Button("Connect ChatGPT") { connectCodex() }
+            .disabled(
+              isConnectingCodex || codexStatus == CodexAccountState.unavailable.label
+                || codexStatus == CodexAccountState.signedInWithChatGPT.label)
+          Button("Check Again") { refreshCodexStatus() }
+            .disabled(isConnectingCodex)
+          if isConnectingCodex {
+            ProgressView()
+              .controlSize(.small)
+          }
+        }
+      }
+
       Section("Future providers") {
-        LabeledContent("Codex", value: "Reserved agent adapter")
         LabeledContent("Anthropic", value: "Reserved chat adapter")
       }
     }
     .formStyle(.grouped)
-    .frame(width: 480, height: 280)
-    .task { loadStatus() }
+    .frame(width: 500, height: 430)
+    .task {
+      loadStatus()
+      await updateCodexStatus()
+    }
   }
 
   private func loadStatus() {
@@ -58,6 +81,28 @@ struct SettingsView: View {
       status = "Removed"
     } catch {
       status = error.localizedDescription
+    }
+  }
+
+  private func refreshCodexStatus() {
+    Task { await updateCodexStatus() }
+  }
+
+  private func updateCodexStatus() async {
+    codexStatus = (await CodexAccountService.shared.status()).label
+  }
+
+  private func connectCodex() {
+    isConnectingCodex = true
+    codexStatus = "Waiting for browser sign-in…"
+    Task {
+      do {
+        try await CodexAccountService.shared.connectWithChatGPT()
+        await updateCodexStatus()
+      } catch {
+        codexStatus = error.localizedDescription
+      }
+      isConnectingCodex = false
     }
   }
 }

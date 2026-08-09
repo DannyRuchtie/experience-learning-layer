@@ -28,7 +28,9 @@ Database, vector, and MCP work deliberately follows this proof.
 provider-neutral source and event JSONL before provider processing, then closes a
 completed user/assistant turn as a deterministic episode. It includes a local mock
 provider, an OpenAI Responses API streaming adapter, Keychain credential storage,
-and reserved Codex and Anthropic provider seams.
+an account-backed Codex CLI adapter with native ChatGPT browser sign-in, and a
+reserved Anthropic provider seam. Codex owns its authentication tokens; ELLChat
+does not read or persist them.
 
 ```bash
 make app-test
@@ -50,6 +52,7 @@ make test
 
 - Python 3.9+
 - ReportLab (installed by `make install`)
+- Codex CLI (optional, for ChatGPT-account-backed Codex conversations)
 
 ## Project structure
 

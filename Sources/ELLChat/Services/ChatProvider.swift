@@ -12,6 +12,9 @@ enum ChatProviderError: LocalizedError {
   case invalidResponse
   case httpStatus(Int, String)
   case providerMessage(String)
+  case codexNotInstalled
+  case codexNotAuthenticated
+  case codexProcess(String)
   case unavailable(String)
 
   var errorDescription: String? {
@@ -24,6 +27,12 @@ enum ChatProviderError: LocalizedError {
       "Provider request failed (HTTP \(status)): \(detail)"
     case .providerMessage(let message):
       message
+    case .codexNotInstalled:
+      "Install the Codex CLI before using the Codex provider."
+    case .codexNotAuthenticated:
+      "Connect your ChatGPT account in Settings before using Codex."
+    case .codexProcess(let detail):
+      "Codex could not complete the response: \(detail)"
     case .unavailable(let provider):
       "\(provider) is reserved by the provider port but is not enabled yet."
     }
@@ -37,7 +46,9 @@ enum ChatProviderFactory {
       MockChatProvider()
     case .openAI:
       OpenAIResponsesProvider()
-    case .codex, .anthropic:
+    case .codex:
+      CodexCLIProvider()
+    case .anthropic:
       UnavailableChatProvider(name: kind.title)
     }
   }

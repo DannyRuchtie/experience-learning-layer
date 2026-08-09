@@ -186,8 +186,11 @@ OpenAI and Codex support distinct integration directions:
 4. L exports a scoped Markdown/JSON context package for manual handoff.
 
 An API key is not an L login. A consumer ChatGPT subscription is not assumed to be
-a third-party application credential. MCP read, evidence, proposal, correction, and
-outcome tools receive separate capabilities. Agents normally propose; L commits.
+a third-party application credential. The Phase 1 macOS preview can instead
+supervise an installed Codex runtime: Codex owns ChatGPT browser authentication and
+tokens, while ELLChat invokes isolated read-only, ephemeral turns behind its provider
+port. MCP read, evidence, proposal, correction, and outcome tools receive separate
+capabilities. Agents normally propose; L commits.
 
 ## Local-first persistence and sync
 
@@ -241,6 +244,8 @@ forgotten, and retrieved as a scoped evidence packet entirely in memory.
 - Import ChatGPT export ZIPs incrementally with deterministic identity.
 - Capture live macOS chat messages before provider calls and close completed turns
   as deterministic episodes through the same canonical contracts.
+- Support optional ChatGPT-account-backed replies through an isolated local Codex
+  runtime without importing Codex credentials or configuration.
 - Add SQLite and content-addressed artifact adapters.
 - Add manual/file capture and a deterministic processing pipeline.
 - Export canonical JSONL and Markdown.
@@ -261,7 +266,8 @@ to workspace egress policy; local-only capture remains supported.
 
 - Ship read-only MCP first, then proposal tools and approval UI.
 - Add scoped remote authorization and agent access audit.
-- Keep managed Codex runtime integration behind a feature flag until documented.
+- Extend the narrow Phase 1 Codex provider into persistent agent interoperability
+  only after approvals, tool events, thread metadata, and deletion are documented.
 
 ### Phase 4 - encrypted sync and teams
 
