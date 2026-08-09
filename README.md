@@ -248,8 +248,23 @@ quarto render
 ```
 
 Generated files are written to `_book/` and intentionally ignored by Git. The
-published website will become available through GitHub Pages after changes merge
-to `main` and the publication workflow finishes.
+GitHub workflow publishes that output to GitHub Pages after changes merge to
+`main`.
+
+The production Vercel edition is available at
+[experience-learning-layer.vercel.app](https://experience-learning-layer.vercel.app).
+Publish a locally verified version with:
+
+```bash
+./script/deploy_vercel.sh
+```
+
+The deployment script renders both formats, verifies the HTML entry point, PDF,
+chapter navigation, and Quarto navigation asset, then uploads only `_book/` as
+the Vercel deployment root. It never publishes the Quarto sources, TeX
+intermediates, or local logs. `ELL_QUARTO_BIN`, `ELL_VERCEL_BIN`,
+`ELL_VERCEL_PROJECT`, and `ELL_VERCEL_SCOPE` can override local tool paths or
+the target project when needed.
 
 ## Repository map
 
