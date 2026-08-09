@@ -16,4 +16,6 @@ Typed runtime schemas, a governed commit kernel, storage adapters, model provide
 
 ## Remaining gates
 
-The next research step is the controlled benchmark: deterministic experience streams, sealed evaluation partitions, policy sweeps, application receipts, and reproducible comparisons with episode retrieval, rolling summaries, and direct insight extraction. A later reference implementation must also demonstrate persistent-store rebuilds, deletion propagation through projections, provider egress enforcement, job recovery, and lifecycle correctness before it can count as evidence for H1-H6.
+The next research step is the controlled benchmark: deterministic experience streams, sealed evaluation partitions, policy sweeps, application receipts, and reproducible comparisons with episode retrieval, rolling summaries, and direct insight extraction. The strongest eligible baseline will be selected on development data before ELL-Core is evaluated on the sealed partition. A later reference implementation must also demonstrate persistent-store rebuilds, deletion propagation through projections, provider egress enforcement, job recovery, and lifecycle correctness before it can count as evidence for H1-H6.
+
+The project does not advance merely because an implementation exists. It advances when the primary transfer result and every mandatory guardrail in Section 11 pass. If a simpler approach matches ELL at lower cost, the research plan explicitly adopts that simpler method and records the concept-layer hypothesis as unsupported for the tested conditions.

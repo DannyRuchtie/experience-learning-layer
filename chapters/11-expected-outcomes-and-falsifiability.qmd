@@ -4,6 +4,8 @@
 
 ELL-Core succeeds only if it improves future behaviour and passes every mandatory guardrail. Better-looking concepts, persuasive examples, high retrieval recall, or lower foreground prompt cost are insufficient on their own. The following thresholds are minimum practically important effects for the first confirmatory study, fixed before the sealed test is opened.
 
+These thresholds are project decision rules, not universal standards for agent memory. The preregistration must justify them against benchmark variance, task difficulty, and the cost of each error before data collection begins.
+
 ::: {.content-visible when-format="html"}
 ![**The ELL decision rule.** The same stream and model conditions feed the strongest eligible baseline and ELL-Core. A positive transfer result is reported as supported only when every guardrail also passes.](assets/diagrams/success-gates.svg)
 :::
