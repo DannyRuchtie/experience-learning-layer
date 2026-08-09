@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ell"
 version = "0.1.0"
-description = "Experience Learning Layer paper and provider-neutral Phase 0 research kernel"
+description = "Experience Learning Layer paper, visual editions, and research kernel"
 requires-python = ">=3.9"
 dependencies = [
     "pydantic>=2.0",

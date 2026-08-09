@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 420" role="img" aria-labelledby="title desc">
+<title id="title">From one episode to a revisable concept</title>
+<desc id="desc">Interpretation remains provisional until evidence, scope, policy, and counterevidence support promotion into a versioned concept.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8A98AA"/></marker></defs>
+<rect width="100%" height="100%" rx="24" fill="#FBFCFE"/>
+<line x1="170" y1="125" x2="205" y2="125" stroke="#8A98AA" stroke-width="2.2" marker-end="url(#arrow)"/>
+<line x1="360" y1="125" x2="395" y2="125" stroke="#8A98AA" stroke-width="2.2" marker-end="url(#arrow)"/>
+<line x1="550" y1="125" x2="585" y2="125" stroke="#8A98AA" stroke-width="2.2" marker-end="url(#arrow)"/>
+<text x="567.5" y="117" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" fill="#5B6575">validate</text>
+<line x1="755" y1="125" x2="790" y2="125" stroke="#8A98AA" stroke-width="2.2" marker-end="url(#arrow)"/>
+<line x1="925" y1="125" x2="960" y2="125" stroke="#8A98AA" stroke-width="2.2" marker-end="url(#arrow)"/>
+<line x1="1010" y1="170" x2="740" y2="270" stroke="#8A98AA" stroke-width="2.2" marker-end="url(#arrow)" stroke-dasharray="8 7"/>
+<text x="875" y="212" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" fill="#5B6575">feedback</text>
+<line x1="580" y1="315" x2="650" y2="315" stroke="#8A98AA" stroke-width="2.2" marker-end="url(#arrow)"/>
+<line x1="740" y1="270" x2="670" y2="170" stroke="#8A98AA" stroke-width="2.2" marker-end="url(#arrow)" stroke-dasharray="8 7"/>
+<text x="705" y="212" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" fill="#5B6575">supersedes</text>
+<rect x="25" y="80" width="145" height="90" rx="16" fill="#EEF2F6" stroke="#B8C3D1" stroke-width="1.5"/>
+<text x="97.5" y="113" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#162033">Episode</text>
+<text x="97.5" y="137" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#162033">what happened</text>
+<rect x="205" y="80" width="155" height="90" rx="16" fill="#E8F2FF" stroke="#B8C3D1" stroke-width="1.5"/>
+<text x="282.5" y="113" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#162033">Reflection</text>
+<text x="282.5" y="137" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#162033">provisional meaning</text>
+<rect x="395" y="80" width="155" height="90" rx="16" fill="#FFF4D8" stroke="#B8C3D1" stroke-width="1.5"/>
+<text x="472.5" y="113" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#162033">Candidate</text>
+<text x="472.5" y="137" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#162033">typed hypothesis</text>
+<rect x="585" y="80" width="170" height="90" rx="16" fill="#EEEAFE" stroke="#B8C3D1" stroke-width="1.5"/>
+<text x="670" y="113" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#162033">Versioned concept</text>
+<text x="670" y="137" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#162033">scope + evidence</text>
+<rect x="790" y="80" width="135" height="90" rx="16" fill="#E6F6EE" stroke="#B8C3D1" stroke-width="1.5"/>
+<text x="857.5" y="113" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#162033">Application</text>
+<text x="857.5" y="137" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#162033">used in context</text>
+<rect x="960" y="80" width="100" height="90" rx="16" fill="#E6F6EE" stroke="#B8C3D1" stroke-width="1.5"/>
+<text x="1010" y="113" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#162033">Outcome</text>
+<text x="1010" y="137" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#162033">did it help?</text>
+<rect x="400" y="270" width="180" height="90" rx="16" fill="#FDECEF" stroke="#B8C3D1" stroke-width="1.5"/>
+<text x="490" y="303" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#162033">Counterevidence</text>
+<text x="490" y="327" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#162033">correction or change</text>
+<rect x="650" y="270" width="180" height="90" rx="16" fill="#EEEAFE" stroke="#B8C3D1" stroke-width="1.5"/>
+<text x="740" y="303" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="17" font-weight="700" fill="#162033">New version</text>
+<text x="740" y="327" dominant-baseline="middle" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="500" fill="#162033">narrow, contest, retire</text>
+</svg>

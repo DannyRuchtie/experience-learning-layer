@@ -1,6 +1,6 @@
 # L - Experience Learning Layer architecture
 
-Status: Foundation architecture, verified Phase 0 contract, and Phase 1 capture preview
+Status: Living paper architecture and verified research-kernel contract
 Architecture style: Local-first, event-driven, ports and adapters, provider-neutral
 
 ## Product definition
@@ -84,10 +84,10 @@ Stable source, event, and episode IDs make ingestion rerunnable. The same connec
 external reference, version, and event identity produce the same IDs. This enables
 at-least-once capture and incremental reimport without duplicate experiences.
 
-Historical ChatGPT ingestion should use a documented data export, preserve raw
-conversation structure and timestamps, and normalize into these contracts. Live
-Codex ingestion may later map thread, turn, message, tool, and result events to the
-same boundary. Neither connector may define the domain model.
+Historical conversation ingestion should use documented exports, preserve raw
+structure and timestamps, and normalize into these contracts. Live connectors may
+later map messages, tool calls, results, decisions, and outcomes to the same
+boundary. No connector may define the domain model.
 
 ## Learning pipeline
 
@@ -169,7 +169,7 @@ Adapters may use SQLite, PostgreSQL, content-addressed files, FTS5, HNSW, TurboV
 OpenAI, Anthropic, local runtimes, OS keychains, or encrypted relays. Vendor response
 objects and provider IDs do not become canonical domain identity.
 
-## Provider and agent integration
+## Replaceable adapters and agent integration
 
 Four concerns remain separate:
 
@@ -178,19 +178,16 @@ Four concerns remain separate:
 - model-provider credentials;
 - connector grants.
 
-OpenAI and Codex support distinct integration directions:
+External systems support distinct integration directions:
 
-1. L calls an API through the provider-neutral model port.
-2. ChatGPT, Codex, or another client calls L through a narrow MCP server.
-3. L optionally supervises a documented local Codex runtime.
-4. L exports a scoped Markdown/JSON context package for manual handoff.
+1. L calls a model through the provider-neutral model port.
+2. A client or agent calls L through a narrow, authorized protocol.
+3. A connector submits consented source records through the normalization boundary.
+4. L exports a scoped Markdown/JSON evidence package for manual handoff.
 
-An API key is not an L login. A consumer ChatGPT subscription is not assumed to be
-a third-party application credential. The Phase 1 macOS preview can instead
-supervise an installed Codex runtime: Codex owns ChatGPT browser authentication and
-tokens, while ELLChat invokes isolated read-only, ephemeral turns behind its provider
-port. MCP read, evidence, proposal, correction, and outcome tools receive separate
-capabilities. Agents normally propose; L commits.
+A provider credential is not an L login and never defines canonical identity or
+policy. Read, evidence, proposal, correction, and outcome operations receive
+separate capabilities. Agents normally propose; L commits.
 
 ## Local-first persistence and sync
 
@@ -239,22 +236,17 @@ ranking, policy, and schema changes run against this corpus.
 Exit: candidates can be validated, governed, committed, corrected, contradicted,
 forgotten, and retrieved as a scoped evidence packet entirely in memory.
 
-### Phase 1 - episode and local learning foundation
+### Phase 1 - controlled benchmark and episode foundation
 
-- Import ChatGPT export ZIPs incrementally with deterministic identity.
-- Capture live macOS chat messages before provider calls and close completed turns
-  as deterministic episodes through the same canonical contracts.
-- Support optional ChatGPT-account-backed replies through an isolated local Codex
-  runtime without importing Codex credentials or configuration.
-- Add SQLite and content-addressed artifact adapters.
-- Add manual/file capture and a deterministic processing pipeline.
-- Export canonical JSONL and Markdown.
+- Generate deterministic experience streams with evidence and change points.
+- Freeze chronological train, development, and sealed test partitions.
+- Implement reflection, concept, application, and outcome receipts.
+- Compare episode retrieval, rolling summaries, and direct insight extraction.
+- Export canonical JSONL, Markdown, and reproducible evaluation reports.
 
-The first Phase 1 preview uses append-only JSONL before SQLite so the capture
-contract can be exercised without choosing the later memory or retrieval substrate.
-TencentDB Agent Memory is a comparison and possible adapter behind these ports, not
-the canonical store. Google Vertex AI Memory Bank is a later hosted option subject
-to workspace egress policy; local-only capture remains supported.
+The benchmark remains in-memory and fixture-backed until its lifecycle and metrics
+are stable. Persistent stores, hosted memory, and vector indexes are later comparison
+adapters behind the same ports, never the canonical learning model.
 
 ### Phase 2 - associations, reflection, and useful daily workflows
 
@@ -262,12 +254,12 @@ to workspace egress policy; local-only capture remains supported.
 - Add reflection scheduling, contradiction discovery, consolidation, and review.
 - Add working/prospective memory and outcome feedback.
 
-### Phase 3 - agent interoperability
+### Phase 3 - external benchmarks and agent interoperability
 
 - Ship read-only MCP first, then proposal tools and approval UI.
 - Add scoped remote authorization and agent access audit.
-- Extend the narrow Phase 1 Codex provider into persistent agent interoperability
-  only after approvals, tool events, thread metadata, and deletion are documented.
+- Add persistent agent interoperability only after approvals, tool events, source
+  metadata, and deletion are documented.
 
 ### Phase 4 - encrypted sync and teams
 
@@ -304,8 +296,7 @@ to workspace egress policy; local-only capture remains supported.
 5. Indexes are rebuildable projections; retrieval is hybrid, never vector-only.
 6. Local-only operation and open export are core product modes.
 7. Research reproducibility and inspectability precede product optimization.
-8. ChatGPT export is the first historical source; Codex is a candidate live source
-   only after event and episode contracts stabilize.
+8. Connectors remain future adapters until event and episode contracts stabilize.
 9. TurboVec and HNSW are replaceable association-index candidates to benchmark, not
    architectural commitments.
 10. Evaluation gates model, prompt, policy, ranking, and schema changes.

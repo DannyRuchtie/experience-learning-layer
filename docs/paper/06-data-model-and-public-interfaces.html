@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Experience Learning Layer paper: evidence-grounded learning from episodes to revisable concepts.">
+  <title>6. Data Model and Public Interfaces · Experience Learning Layer</title>
+  <link rel="stylesheet" href="../assets/paper.css">
+</head>
+<body>
+  <a class="skip-link" href="#paper">Skip to paper</a>
+  <header class="site-header">
+    <a class="brand" href="../index.html">Experience Learning Layer</a>
+    <nav aria-label="Repository links">
+      <a href="../../README.md">Overview</a>
+      <a href="../../output/pdf/Experience-Learning-Layer-Paper-current.pdf">PDF</a>
+      <a href="../../paper/ELL_Paper.md">Source</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="contents" aria-label="Paper contents">
+      <p class="eyebrow">Paper contents</p>
+      <ol><li><a href="../index.html">Abstract</a></li>
+<li><a href="../paper/01-introduction.html">1. Introduction</a></li>
+<li><a href="../paper/02-problem-definition.html">2. Problem Definition</a></li>
+<li><a href="../paper/03-related-work-and-positioning.html">3. Related Work and Positioning</a></li>
+<li><a href="../paper/04-experience-learning-layer-architecture.html">4. Experience Learning Layer Architecture</a></li>
+<li><a href="../paper/05-proposed-algorithms.html">5. Proposed Algorithms</a></li>
+<li><a href="../paper/06-data-model-and-public-interfaces.html" aria-current="page">6. Data Model and Public Interfaces</a></li>
+<li><a href="../paper/07-experimental-design.html">7. Experimental Design</a></li>
+<li><a href="../paper/08-open-source-reference-implementation.html">8. Open-Source Reference Implementation</a></li>
+<li><a href="../paper/09-ethics-privacy-and-security.html">9. Ethics, Privacy, and Security</a></li>
+<li><a href="../paper/10-limitations-and-threats-to-validity.html">10. Limitations and Threats to Validity</a></li>
+<li><a href="../paper/11-expected-outcomes-and-falsifiability.html">11. Expected Outcomes and Falsifiability</a></li>
+<li><a href="../paper/12-research-and-implementation-roadmap.html">12. Research and Implementation Roadmap</a></li>
+<li><a href="../paper/13-experience-learning-layer-expansion.html">13. Experience Learning Layer Expansion</a></li>
+<li><a href="../paper/14-reference-implementation-status.html">14. Reference Implementation Status</a></li>
+<li><a href="../paper/15-conclusion.html">15. Conclusion</a></li>
+<li><a href="../paper/acknowledgements.html">Acknowledgements</a></li>
+<li><a href="../paper/references.html">References</a></li></ol>
+    </aside>
+    <main id="paper" class="paper">
+      <p class="eyebrow">Living paper</p><h1>6. Data Model and Public Interfaces</h1><figure class="paper-diagram">
+<img src="../assets/diagrams/governed-commit.svg" alt="Models interpret; deterministic code governs">
+<figcaption><strong>Models interpret; deterministic code governs.</strong> Generated interpretations enter quarantine. Schema validation and deterministic policy decide whether they are rejected, reviewed, or committed.</figcaption>
+</figure>
+<h2>6.1 Core entities</h2>
+<p>Entity Purpose Required fields Episode Immutable record of a bounded experience ID, event time, observed time, context, observation, action, outcome, source, access metadata Association Typed relation between episodes or knowledge objects source ID, target ID, relation type, score, method, provenance Reflection Provisional interpretation or question statement, type, scope, support, counterevidence, uncertainty, status Concept Reusable versioned knowledge object proposition, scope, conditions, implication, support, counterevidence, confidence, validity, version, lifecycle state SkillVersion Proposed immutable reusable capability skill ID and version, preconditions, scope, implementation or instruction, tests, lineage, approvals, rollback metadata ApplicationReceipt Immutable record of concept or skill use task, exact concept and skill versions, retrieved episodes, decision, validator, cost, timestamp Outcome Evidence about application result reward or judgement, independent source, reliability, delay, linked application receipt AuditEvent Immutable record of system change actor, operation, object, prior version, new version, method, timestamp</p>
+<h2>6.2 Concept states</h2>
+<ul>
+<li>proposed: generated and valid enough to test, but not yet strongly supported;</li>
+<li>corroborated: meets evidence and validation thresholds;</li>
+<li>contested: important unresolved counterevidence exists;</li>
+<li>revised: a new immutable version has been created in response to changed evidence and is awaiting or recording validation;</li>
+<li>superseded: replaced by a newer or more precise concept;</li>
+<li>retired: no longer eligible for ordinary retrieval;</li>
+<li>deleted: content removed under deletion policy, with only non-sensitive structural audit metadata retained where legally permitted. A revision never overwrites its parent. A revised version can later become corroborated, contested, superseded, retired, or deleted while its lineage remains traceable.</li>
+</ul>
+<h2>6.3 API contract</h2>
+<p>The reference implementation exposes the following model-independent operations: record_episode(episode) -&gt; EpisodeID associate(episode_id, policy) -&gt; list[Association] run_reflection(scope, trigger) -&gt; list[Reflection] reconcile_concepts(reflection_ids) -&gt; list[ConceptVersion] retrieve_learning(query, context, budget) -&gt; LearningPacket record_application(packet, decision) -&gt; ApplicationID record_outcome(application_id, outcome) -&gt; list[ConceptUpdate] propose_skill(experience_ids, policy) -&gt; list[SkillVersion] record_skill_application(skill_version_id, receipt) -&gt; ApplicationID explain_concept(concept_id, version=None) -&gt; EvidenceReport delete_subject_data(subject_id, policy) -&gt; DeletionReport</p>
+<p>LearningPacket is the central read object. It contains concepts, relevant evidence, conflicts, and budget accounting. It never contains only a naked concept statement.</p>
+<h2>6.4 Storage independence</h2>
+<p>The core schema is storage-neutral. The starter implementation uses an in-memory store; a SQLite adapter is planned as the first persistent baseline. Production adapters may add PostgreSQL, a vector index, or a graph database. Storage choices are evaluated by correctness, write cost, query latency, deletion support, and operational simplicity rather than by architectural fashion.</p>
+<p>The same principle applies to model providers. The engine depends on a structured-generation interface, not a vendor SDK. Reproducibility experiments use open-weight models, while optional adapters may support hosted models for comparison.</p>
+<p>Association, extraction, consolidation, retrieval, and forgetting policies may become configurable or learned, but their outputs remain proposals behind stable typed ports. Deterministic code continues to enforce provenance, workspace isolation, permissions, deletion, schema validity, and canonical commit rules. Competing lexical, vector, graph, temporal, probabilistic, and model-driven policies remain interchangeable experimental conditions until evaluation establishes which combination is useful. A Zettelkasten-style linked-note representation may be included as a simple baseline, but static note linking is too limited to govern temporal change, uncertainty, counterevidence, outcome feedback, and user control.</p>
+      <nav class="pager" aria-label="Section navigation"><a class="previous" href="05-proposed-algorithms.html">← Previous</a><a class="next" href="07-experimental-design.html">Next →</a></nav>
+    </main>
+  </div>
+</body>
+</html>

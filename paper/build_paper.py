@@ -27,6 +27,8 @@ from reportlab.platypus import (
 )
 from reportlab.platypus.tableofcontents import TableOfContents
 
+from paper.diagrams import DIAGRAMS, pdf_diagram_flowables
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = ROOT / "paper" / "ELL_Paper.md"
 DEFAULT_OUTPUT = ROOT / "output" / "pdf" / "Experience-Learning-Layer-Paper-current.pdf"
@@ -35,6 +37,7 @@ PAGE_MARKER = re.compile(r"^--- Page \d+ ---$")
 PAGE_NUMBER = re.compile(r"^\d+$")
 NUMBERED_HEADING = re.compile(r"^(\d+)(?:\.(\d+))?\.?(?:\s+)(.+)$")
 HEADER_PREFIX = "EXPERIENCE LEARNING LAYER"
+DIAGRAM_MARKER = re.compile(r"^\[\[diagram:([a-z0-9-]+)\]\]$")
 
 
 def register_fonts() -> tuple[str, str, str]:
@@ -211,6 +214,15 @@ def make_styles() -> dict[str, ParagraphStyle]:
             textColor=colors.HexColor("#556274"),
             spaceAfter=6,
         ),
+        "caption": ParagraphStyle(
+            "PaperCaption",
+            parent=base["BodyText"],
+            fontName=body_font,
+            fontSize=7.4,
+            leading=10.5,
+            textColor=colors.HexColor("#556274"),
+            spaceAfter=7,
+        ),
     }
 
 
@@ -246,6 +258,7 @@ def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[obj
     """Convert the living plain-Markdown manuscript into Platypus flowables."""
     lines = clean_lines(source)
     revision = next((line for line in lines if line.startswith("Revision note.")), "")
+    version = next((line for line in lines if line.startswith("Living working draft")), "")
     try:
         abstract_index = lines.index("Abstract")
     except ValueError as exc:
@@ -260,7 +273,7 @@ def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[obj
         ),
         Spacer(1, 8 * mm),
         Paragraph("Danny Ruchtie", styles["meta"]),
-        Paragraph("Living working draft v0.2 - 8 August 2026", styles["meta"]),
+        Paragraph(escape(version), styles["meta"]),
         Paragraph("OPEN RESEARCH SPECIFICATION / EXPERIMENTAL PROTOCOL", styles["meta"]),
         Paragraph(escape(revision.removeprefix("Revision note. ")), styles["revision"]),
         PageBreak(),
@@ -318,6 +331,15 @@ def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[obj
             bullets.clear()
 
     for line in lines[abstract_index:]:
+        marker = DIAGRAM_MARKER.fullmatch(line)
+        if marker:
+            flush_paragraph()
+            flush_bullets()
+            key = marker.group(1)
+            if key not in DIAGRAMS:
+                raise ValueError(f"unknown diagram marker: {key}")
+            story.extend(pdf_diagram_flowables(key, styles["caption"]))
+            continue
         if not line:
             flush_paragraph()
             flush_bullets()

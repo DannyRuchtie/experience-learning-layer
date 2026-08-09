@@ -1,4 +1,4 @@
-.PHONY: install test lint typecheck paper clean app-build app-test
+.PHONY: install test lint typecheck paper pdf html verify-publication check clean
 
 install:
 	python3 -m pip install -e ".[dev]"
@@ -12,14 +12,18 @@ lint:
 typecheck:
 	python3 -m mypy src/
 
-paper:
-	python3 paper/build_paper.py
+paper: pdf html
 
-app-build:
-	DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer CLANG_MODULE_CACHE_PATH=/private/tmp/ell-chat-clang-module-cache SWIFTPM_MODULECACHE_OVERRIDE=/private/tmp/ell-chat-swiftpm-module-cache xcrun swift build --disable-sandbox --product ELLChat
+pdf:
+	python3 -m paper.build_paper
 
-app-test:
-	DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer CLANG_MODULE_CACHE_PATH=/private/tmp/ell-chat-clang-module-cache SWIFTPM_MODULECACHE_OVERRIDE=/private/tmp/ell-chat-swiftpm-module-cache xcrun swift test --disable-sandbox
+html:
+	python3 -m paper.build_html
+
+verify-publication:
+	python3 -m paper.verify_publication
+
+check: lint typecheck test paper verify-publication
 
 clean:
 	find . -type d \( -name __pycache__ -o -name .pytest_cache -o -name .mypy_cache -o -name .ruff_cache \) -prune -exec rm -rf {} +

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Experience Learning Layer paper: evidence-grounded learning from episodes to revisable concepts.">
+  <title>8. Open-Source Reference Implementation · Experience Learning Layer</title>
+  <link rel="stylesheet" href="../assets/paper.css">
+</head>
+<body>
+  <a class="skip-link" href="#paper">Skip to paper</a>
+  <header class="site-header">
+    <a class="brand" href="../index.html">Experience Learning Layer</a>
+    <nav aria-label="Repository links">
+      <a href="../../README.md">Overview</a>
+      <a href="../../output/pdf/Experience-Learning-Layer-Paper-current.pdf">PDF</a>
+      <a href="../../paper/ELL_Paper.md">Source</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="contents" aria-label="Paper contents">
+      <p class="eyebrow">Paper contents</p>
+      <ol><li><a href="../index.html">Abstract</a></li>
+<li><a href="../paper/01-introduction.html">1. Introduction</a></li>
+<li><a href="../paper/02-problem-definition.html">2. Problem Definition</a></li>
+<li><a href="../paper/03-related-work-and-positioning.html">3. Related Work and Positioning</a></li>
+<li><a href="../paper/04-experience-learning-layer-architecture.html">4. Experience Learning Layer Architecture</a></li>
+<li><a href="../paper/05-proposed-algorithms.html">5. Proposed Algorithms</a></li>
+<li><a href="../paper/06-data-model-and-public-interfaces.html">6. Data Model and Public Interfaces</a></li>
+<li><a href="../paper/07-experimental-design.html">7. Experimental Design</a></li>
+<li><a href="../paper/08-open-source-reference-implementation.html" aria-current="page">8. Open-Source Reference Implementation</a></li>
+<li><a href="../paper/09-ethics-privacy-and-security.html">9. Ethics, Privacy, and Security</a></li>
+<li><a href="../paper/10-limitations-and-threats-to-validity.html">10. Limitations and Threats to Validity</a></li>
+<li><a href="../paper/11-expected-outcomes-and-falsifiability.html">11. Expected Outcomes and Falsifiability</a></li>
+<li><a href="../paper/12-research-and-implementation-roadmap.html">12. Research and Implementation Roadmap</a></li>
+<li><a href="../paper/13-experience-learning-layer-expansion.html">13. Experience Learning Layer Expansion</a></li>
+<li><a href="../paper/14-reference-implementation-status.html">14. Reference Implementation Status</a></li>
+<li><a href="../paper/15-conclusion.html">15. Conclusion</a></li>
+<li><a href="../paper/acknowledgements.html">Acknowledgements</a></li>
+<li><a href="../paper/references.html">References</a></li></ol>
+    </aside>
+    <main id="paper" class="paper">
+      <p class="eyebrow">Living paper</p><h1>8. Open-Source Reference Implementation</h1><h2>8.1 Licensing</h2>
+<p>The repository is released under the permissive MIT License. It covers the paper source, diagrams, documentation, build tools, schemas, synthetic benchmark content, and reference code unless a file states otherwise. Third-party datasets retain their original licences and are downloaded separately. A future archival research release should additionally include machine-readable citation metadata and generated dependency attribution.</p>
+<h2>8.2 Repository structure</h2>
+<p>experience-learning-layer/ ├── README.md ├── LICENSE ├── Makefile ├── pyproject.toml ├── paper/ │   ├── ELL_Paper.md │   ├── build_paper.py │   ├── build_html.py │   └── diagrams.py ├── docs/ │   ├── index.html │   ├── paper/ │   └── assets/diagrams/ ├── src/ell/domain/ ├── schemas/ ├── evals/golden/ ├── tests/ └── output/pdf/ The reference repository contains the living manuscript, generated HTML and PDF editions, shared visual diagrams, typed domain models, an in-memory governed kernel, deterministic evaluation utilities, golden cases, and tests. The code is an executable research example rather than an application or completed learning system.</p>
+<h2>8.3 Reproducibility requirements</h2>
+<p>Every reported experiment must include:</p>
+<ul>
+<li>immutable configuration files;</li>
+<li>exact Git commit;</li>
+<li>model identifiers and hashes where available;</li>
+<li>prompts and structured-output schemas;</li>
+<li>random seeds;</li>
+<li>hardware and serving configuration;</li>
+<li>raw outputs and failure logs;</li>
+<li>evaluation code and judge prompts;</li>
+<li>token, latency, and storage accounting. A one-command small-scale reproduction should run on consumer hardware with a compact open model. Full benchmark results may require larger hardware, but the same code path and data format must be used.</li>
+</ul>
+<h2>8.4 Contribution model</h2>
+<p>The project begins with a lightweight maintainer model and public design records. Significant architecture decisions use short decision documents in docs/decisions/. Contributions require tests, provenance for benchmark changes, and a declaration when generated data or code was produced with model assistance.</p>
+<p>Research claims are reviewed separately from software changes. A faster implementation is not accepted as scientifically equivalent unless its behaviour and evaluation remain comparable.</p>
+<h2>8.5 Private data boundary</h2>
+<p>Private conversation exports can be used locally to test ingestion and qualitative usefulness, but they are not part of the public benchmark and must not be committed. Public experiments use synthetic or properly licensed data. The starter repository includes data-governance guidance; redaction hooks, local namespaces, and tested deletion cascades are required before any longitudinal pilot.</p>
+      <nav class="pager" aria-label="Section navigation"><a class="previous" href="07-experimental-design.html">← Previous</a><a class="next" href="09-ethics-privacy-and-security.html">Next →</a></nav>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Experience Learning Layer paper: evidence-grounded learning from episodes to revisable concepts.">
+  <title>5. Proposed Algorithms · Experience Learning Layer</title>
+  <link rel="stylesheet" href="../assets/paper.css">
+</head>
+<body>
+  <a class="skip-link" href="#paper">Skip to paper</a>
+  <header class="site-header">
+    <a class="brand" href="../index.html">Experience Learning Layer</a>
+    <nav aria-label="Repository links">
+      <a href="../../README.md">Overview</a>
+      <a href="../../output/pdf/Experience-Learning-Layer-Paper-current.pdf">PDF</a>
+      <a href="../../paper/ELL_Paper.md">Source</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="contents" aria-label="Paper contents">
+      <p class="eyebrow">Paper contents</p>
+      <ol><li><a href="../index.html">Abstract</a></li>
+<li><a href="../paper/01-introduction.html">1. Introduction</a></li>
+<li><a href="../paper/02-problem-definition.html">2. Problem Definition</a></li>
+<li><a href="../paper/03-related-work-and-positioning.html">3. Related Work and Positioning</a></li>
+<li><a href="../paper/04-experience-learning-layer-architecture.html">4. Experience Learning Layer Architecture</a></li>
+<li><a href="../paper/05-proposed-algorithms.html" aria-current="page">5. Proposed Algorithms</a></li>
+<li><a href="../paper/06-data-model-and-public-interfaces.html">6. Data Model and Public Interfaces</a></li>
+<li><a href="../paper/07-experimental-design.html">7. Experimental Design</a></li>
+<li><a href="../paper/08-open-source-reference-implementation.html">8. Open-Source Reference Implementation</a></li>
+<li><a href="../paper/09-ethics-privacy-and-security.html">9. Ethics, Privacy, and Security</a></li>
+<li><a href="../paper/10-limitations-and-threats-to-validity.html">10. Limitations and Threats to Validity</a></li>
+<li><a href="../paper/11-expected-outcomes-and-falsifiability.html">11. Expected Outcomes and Falsifiability</a></li>
+<li><a href="../paper/12-research-and-implementation-roadmap.html">12. Research and Implementation Roadmap</a></li>
+<li><a href="../paper/13-experience-learning-layer-expansion.html">13. Experience Learning Layer Expansion</a></li>
+<li><a href="../paper/14-reference-implementation-status.html">14. Reference Implementation Status</a></li>
+<li><a href="../paper/15-conclusion.html">15. Conclusion</a></li>
+<li><a href="../paper/acknowledgements.html">Acknowledgements</a></li>
+<li><a href="../paper/references.html">References</a></li></ol>
+    </aside>
+    <main id="paper" class="paper">
+      <p class="eyebrow">Living paper</p><h1>5. Proposed Algorithms</h1><h2>5.1 Reflection scheduling</h2>
+<p>Running reflection after every episode would be expensive and may create redundant interpretations. ELL therefore uses event-based scheduling. An episode or cluster enters the reflection queue when one or more conditions are met:</p>
+<ul>
+<li>the cluster contains at least n distinct episodes;</li>
+</ul>
+<ul>
+<li>a failure or unusually high reward occurs;</li>
+<li>a new episode contradicts an active concept;</li>
+<li>association novelty exceeds a threshold;</li>
+<li>the concept has not been reviewed within a time window;</li>
+<li>a user or agent explicitly requests reflection. The scheduler records why a job was triggered. This enables later analysis of whether a scheduling policy created useful concepts or unnecessary model calls.</li>
+</ul>
+<h2>5.2 Reflection generation and critique</h2>
+<p>The Reflection Engine receives a bounded evidence packet: selected episodes, existing nearby reflections, relevant active concepts, and an instruction to produce typed hypotheses. The generator must output structured fields rather than a free-form essay.</p>
+<p>A separate validation pass performs four checks: 1. Entailment: Does each cited episode actually support the claim attributed to it?</p>
+<p>2. Contradiction: Are there nearby episodes that disagree?</p>
+<p>3. Scope: Is the claim broader than its evidence?</p>
+<p>4. Novelty: Is the reflection meaningfully different from existing reflections or concepts?</p>
+<p>The validator can be an independent model, a deterministic rule, a human reviewer, or a combination. Using a separate model call does not guarantee independence, so experiments will include same-model and cross- model validation conditions.</p>
+<h2>5.3 Concept proposal</h2>
+<p>Reflections are grouped by semantic compatibility and scope overlap. A proposed concept requires:</p>
+<ul>
+<li>at least m compatible reflections;</li>
+<li>at least d distinct supporting episodes;</li>
+<li>minimum evidence diversity;</li>
+<li>no unresolved high-confidence contradiction;</li>
+<li>an explicit scope and exception list;</li>
+<li>a concise proposition and expected implication. The default policy will require support from at least three episodes across at least two distinct contexts. This is a configurable research parameter rather than a universal rule. A simplified proposal procedure is: for each reflection cluster R: evidence = union(supporting episodes in R) counter = retrieve plausible counterevidence candidate = generate_concept(R, evidence, counter) checks = validate(candidate, evidence, counter) if checks pass promotion policy: register(candidate, state=&quot;proposed&quot;)</li>
+</ul>
+<h2>5.4 Evidence-weighted confidence</h2>
+<p>LLMs are not assumed to be calibrated judges of their own abstractions. ELL computes an operational confidence score from external features:</p>
+<p>confidence(c)=1/(1+exp(-z_c)) , where zc is a weighted score that increases with supporting evidence, evidence diversity, and observed application utility, and decreases with counterevidence, age without revalidation, and validator disagreement.</p>
+<p>The formula is deliberately transparent and will be calibrated on held-out development data. A simpler Bayesian or rule-based alternative will be included as a baseline. Confidence is never used to hide counterevidence; the raw counts and links remain visible.</p>
+<h2>5.5 Revision and temporal validity</h2>
+<p>When new evidence conflicts with a concept, the system chooses among four responses:</p>
+<ul>
+<li>add exception: the core claim remains valid but has a narrower boundary;</li>
+<li>narrow scope: the concept was over-generalised;</li>
+<li>change validity interval: the pattern was true during one period but is no longer current;</li>
+<li>replace claim: a new concept version better explains the evidence. Revision produces a new immutable version linked by revises or supersedes. The old version retains its former validity interval and applications. This design supports historical reasoning and avoids treating changed preferences or conditions as contradictions that must erase the past.</li>
+</ul>
+<h2>5.6 Merge and split</h2>
+<p>Duplicate concepts increase retrieval noise, while over-broad concepts hide meaningful exceptions. Merge candidates are identified using proposition similarity, overlapping evidence, compatible scope, and similar implications. Split candidates are triggered when counterevidence clusters around a coherent condition or when application outcomes differ significantly by context.</p>
+<p>Both operations require a lineage record. A merge creates a new concept that references all parents. A split creates child concepts whose evidence partitions are explicit. Automated operations above a risk threshold can require human approval.</p>
+<h2>5.7 Retrieval with evidence restoration</h2>
+<p>Concept retrieval follows two stages. The first stage selects concepts by semantic, structural, temporal, and utility signals. The second restores a small, query-specific set of source episodes. This prevents a compact concept from becoming an ungrounded instruction.</p>
+<p>The retrieval budget is fixed in tokens or characters so that systems are compared under equal context cost.</p>
+<p>This avoids rewarding a method merely for retrieving far more text. Results report both task utility and memory information density.</p>
+<h2>5.8 Deletion and invalidation</h2>
+<p>A user must be able to delete source data. Deletion cannot stop at the episode store because derived concepts may still encode the removed information. ELL maintains derivation links so a deletion request can:</p>
+<ol>
+<li>remove or tombstone the source episode according to policy;</li>
+<li>remove it from support and counterevidence sets;</li>
+<li>recompute affected confidence values;</li>
+<li>contest, revise, or retire concepts that no longer meet support thresholds;</li>
+<li>record the deletion cascade without retaining prohibited content.</li>
+</ol>
+<p>This is both a privacy requirement and a scientific requirement: provenance is incomplete if derived claims cannot be invalidated when their evidence disappears.</p>
+      <nav class="pager" aria-label="Section navigation"><a class="previous" href="04-experience-learning-layer-architecture.html">← Previous</a><a class="next" href="06-data-model-and-public-interfaces.html">Next →</a></nav>
+    </main>
+  </div>
+</body>
+</html>

@@ -2,10 +2,9 @@
 
 ## Goal
 
-Maintain the living Experience Learning Layer research paper, its provider-neutral
-kernel, and the small Phase 1 live-chat episode-capture preview. The repository
-remains paper-first: new client or adapter behavior must preserve the canonical
-schemas, deterministic lifecycle, golden corpus, and reproducible PDF build.
+Maintain the living Experience Learning Layer research paper, its visual HTML and
+PDF editions, and the small provider-neutral kernel that makes the paper's core
+contracts executable. The repository is paper-first; it is not an application.
 
 ## Core principles
 
@@ -17,8 +16,16 @@ schemas, deterministic lifecycle, golden corpus, and reproducible PDF build.
 6. Preserve timestamps and conversation provenance.
 7. Avoid inferring sensitive personal attributes.
 8. Prefer simple research implementations until evidence shows more complexity is needed.
-9. Every feature requires unit tests and a paper/status update when it changes a claim.
-10. Every pipeline must be rerunnable and idempotent.
+9. Every feature requires tests and a paper/status update when it changes a claim.
+10. Every pipeline and publication build must be rerunnable and idempotent.
+
+## Repository boundary
+
+Keep only artifacts that help a reader understand, inspect, reproduce, or evaluate
+the paper: manuscript sources, diagrams, HTML/PDF builders, schemas, examples,
+golden cases, the governed kernel, and its tests. Product applications, client
+shells, provider SDKs, hosted services, sync, and database deployments are outside
+this repository.
 
 ## Development rules
 
@@ -27,24 +34,22 @@ schemas, deterministic lifecycle, golden corpus, and reproducible PDF build.
 - Use pytest.
 - Do not silently catch exceptions.
 - Do not make unrelated edits.
-- Run formatting, type checking and tests before finishing.
+- Run formatting, type checking, tests, and publication checks before finishing.
+- Keep diagrams consistent across README, HTML, and PDF from shared definitions.
 - Explain important design choices in short architecture decision records.
-
-Keep Phase 1 adapters narrow. The macOS chat client and append-only JSONL capture
-adapter are in scope. Databases, sync, hosted memory, vector stores, MCP, and further
-provider SDKs remain later work unless explicitly promoted with an ADR and tests.
 
 ## Commands
 
-- `make install` - install the small paper and Phase 0 development environment
-- `make paper` - render the living manuscript to `output/pdf/`
-- `make test` - run the Phase 0 contract and kernel tests
-- `make lint` - lint source, paper builder, and tests
+- `make install` - install the paper and research-kernel environment
+- `make paper` - render PDF, HTML pages, CSS, and SVG diagrams
+- `make pdf` - render the living manuscript to `output/pdf/`
+- `make html` - render the reading edition to `docs/`
+- `make test` - run contract, kernel, and publication tests
+- `make lint` - lint source, paper builders, and tests
 - `make typecheck` - type-check the domain and evaluation source
+- `make check` - run lint, type checking, tests, and publication verification
 - `make clean` - remove local Python/test caches
-- `make app-test` - build and test the macOS chat capture client
-- `./script/build_and_run.sh --verify` - build, launch, and verify the macOS app
 
-There is intentionally no database, web server, Docker, or migration command in this
-repository yet. Remote providers remain replaceable adapters and must not define the
-paper's domain kernel.
+There is intentionally no app, web server, database, Docker, migration, provider,
+or deployment command in this repository. The generated `docs/` tree is static and
+can be hosted by GitHub Pages without a runtime.
