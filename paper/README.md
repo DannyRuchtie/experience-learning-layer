@@ -18,4 +18,5 @@ The builders are deterministic. A clean rebuild must not change the generated fi
 the verification command fails if the committed HTML, CSS, SVG, or PDF has drifted
 from the Markdown manuscript and shared diagram definitions.
 
-The archived v0.1 PDF remains under `paper/archive/` for historical comparison.
+The repository keeps only the current generated editions. Git history provides the
+record of older drafts without making obsolete PDFs part of the active publication.

@@ -312,6 +312,10 @@ def diagram_svg(diagram: Diagram) -> str:
 def write_svg_assets(output_dir: Path) -> None:
     """Write every tracked SVG asset from its shared diagram definition."""
     output_dir.mkdir(parents=True, exist_ok=True)
+    expected_assets = {f"{key}.svg" for key in DIAGRAMS}
+    for existing_asset in output_dir.glob("*.svg"):
+        if existing_asset.name not in expected_assets:
+            existing_asset.unlink()
     for key, diagram in DIAGRAMS.items():
         (output_dir / f"{key}.svg").write_text(diagram_svg(diagram), encoding="utf-8")
 

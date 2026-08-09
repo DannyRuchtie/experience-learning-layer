@@ -6,7 +6,7 @@ The Experience Learning Layer for Evidence-Grounded Learning
 in Language Agents
 Danny Ruchtie
 Living working draft v0.5 - 9 August 2026
-Revision note. Version 0.5 presents ELL as a paper-first open research project, adds a visual HTML reading edition and shared architecture diagrams, and narrows the repository to the manuscript, reproducible publication tools, schemas, evaluation cases, and executable research examples. The archived v0.1 PDF remains available for comparison.
+Revision note. Version 0.5 presents ELL as a paper-first open research project, adds a visual HTML reading edition and shared architecture diagrams, and narrows the repository to the manuscript, reproducible publication tools, and synthetic examples. Earlier drafts remain available through Git history.
 OPEN RESEARCH SPECIFICATION  ·  EXPERIMENTAL PROTOCOL
 Research status. This document is a working architecture paper and preregistered evaluation plan. It defines the 
 proposed system, hypotheses, data model, implementation contract, and experiments. It does not report empirical 
@@ -58,7 +58,7 @@ textual feedback about prior attempts as a non-parametric learning signal (Shinn
 natural-language insights from collections of task experiences and reused both insights and successful 
 
 --- Page 2 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 2
 trajectories at inference time (Zhao et al. 2024). MemGPT approached the problem as virtual context 
 management, allowing an agent to move information between limited working context and external storage 
@@ -109,7 +109,7 @@ support conversation histories, task trajectories, product-work records, and oth
 shared schema.
 
 --- Page 3 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 3
 The initial research scope is deliberately narrower than a complete personal-intelligence system. It focuses on:
 • association between episodes;
@@ -152,7 +152,7 @@ A concept is useful only if it satisfies several properties:
 • Revisable: contradictory evidence can change its status or content.
 
 --- Page 4 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 4
 • Actionable: it can affect a later response, plan, or decision.
 • Measurable: its correctness and utility can be evaluated independently.
@@ -199,7 +199,7 @@ concept-level gains fail to translate into behaviour, or if the added architectu
 replaces without delivering measurable benefits.
 
 --- Page 5 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 5
 3. Related Work and Positioning
 3.1 Production memory and context infrastructure
@@ -223,7 +223,7 @@ subject to evidence, workspace, permission, version, deletion, and commit policy
 These projects are comparatively mature as deployable software, but their public evaluations use different
 models, prompts, budgets, datasets, and product configurations. Vendor- or project-reported latency, token, and
 accuracy results therefore motivate reproduction; they are not evidence that one substrate should be adopted as
-ELL's governing architecture. The current ELL implementation has not integrated or validated any of these
+ELL's governing architecture. The present ELL proposal has not integrated or validated any of these
 systems end to end.
 
 3.2 Reflection, reasoning memory, and non-parametric learning
@@ -261,7 +261,7 @@ with:
 • direct concept-level evaluation.
 
 --- Page 6 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 6
 The implementation can use a graph, relational database, vector index, or a combination. The contribution is 
 the contract and lifecycle, not a requirement for one storage technology.
@@ -357,7 +357,7 @@ External memory services and indexes can propose candidates, but they do not def
 policy, or learning state.
 
 --- Page 7 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 7
 4.1 Canonical episode store
 The input is a canonical episode rather than an application-specific chat message. An episode is represented as
@@ -399,7 +399,7 @@ Reflection types include:
 • candidate correction to an existing concept.
 
 --- Page 8 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 8
 The Reflection Engine is triggered by configurable events: a cluster reaching a minimum size, a repeated 
 failure, a surprising outcome, new contradiction, elapsed time, or an explicit request. It produces structured 
@@ -412,7 +412,7 @@ Here qk is the proposition, sk is scope, ak is a set of applicability conditions
 recommended behaviour, pk and nk are supporting and counterevidence sets, gk is confidence, tk is temporal 
 validity, v is version, and zk is lifecycle state.
 Concept types include descriptive patterns, user preferences, causal hypotheses, strategies, constraints, and 
-procedural rules. The first implementation focuses on textual concepts, but the schema permits executable 
+procedural rules. An initial implementation should focus on textual concepts, but the schema permits executable
 procedures or references to code artefacts.
 The Concept Engine performs five operations:
 1. Propose: create a candidate concept from compatible reflections.
@@ -442,7 +442,7 @@ A concept relevance score can initially be expressed as
 R(c,q)=w1 S1+w2 S2+w3 S3+w4 S4+w5 confidence(c)-w6 S6,
 
 --- Page 9 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 9
 where S1 through S4 represent semantic relevance, scope match, temporal validity, and observed utility; confidence(c) is
 concept confidence; and S6 is active contradiction. This formula is a design heuristic, not a validated scientific 
@@ -480,7 +480,7 @@ conditions are met:
 • the cluster contains at least n distinct episodes;
 
 --- Page 10 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 10
 • a failure or unusually high reward occurs;
 • a new episode contradicts an active concept;
@@ -524,7 +524,7 @@ LLMs are not assumed to be calibrated judges of their own abstractions. ELL comp
 confidence score from external features:
 
 --- Page 11 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 11
 confidence(c)=1/(1+exp(-z_c))
 ,
@@ -567,7 +567,7 @@ may still encode the removed information. ELL maintains derivation links so a de
 5. record the deletion cascade without retaining prohibited content.
 
 --- Page 12 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 12
 This is both a privacy requirement and a scientific requirement: provenance is incomplete if derived claims 
 cannot be invalidated when their evidence disappears.
@@ -612,7 +612,7 @@ retained where legally permitted.
 A revision never overwrites its parent. A revised version can later become corroborated, contested, superseded, 
 retired, or deleted while its lineage remains traceable.
 6.3 API contract
-The reference implementation exposes the following model-independent operations:
+A reference implementation should expose the following model-independent operations:
 record_episode(episode) -> EpisodeID
 associate(episode_id, policy) -> list[Association]
 run_reflection(scope, trigger) -> list[Reflection]
@@ -626,13 +626,13 @@ explain_concept(concept_id, version=None) -> EvidenceReport
 delete_subject_data(subject_id, policy) -> DeletionReport
 
 --- Page 13 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 13
 LearningPacket is the central read object. It contains concepts, relevant evidence, conflicts, and budget 
 accounting. It never contains only a naked concept statement.
 6.4 Storage independence
-The core schema is storage-neutral. The starter implementation uses an in-memory store; a SQLite adapter is 
-planned as the first persistent baseline. Production adapters may add PostgreSQL, a vector index, or a graph 
+The core schema is storage-neutral. A starter implementation should use an in-memory store before adding SQLite
+as the first persistent baseline. Production adapters may add PostgreSQL, a vector index, or a graph
 database. Storage choices are evaluated by correctness, write cost, query latency, deletion support, and 
 operational simplicity rather than by architectural fashion.
 The same principle applies to model providers. The engine depends on a structured-generation interface, not a 
@@ -676,7 +676,7 @@ LongMemEval and LoCoMo will test whether ELL remains competitive on factual extr
 reasoning, temporal reasoning, updates, abstention, and long-range dialogue understanding (Wu et al. 2025; 
 
 --- Page 14 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 14
 Maharana et al. 2024). MemBench will add reflective-memory and efficiency measures where licensing and 
 harness compatibility permit (H. Tan et al. 2025). MemoryAgentBench will test retrieval, test-time learning,
@@ -766,7 +766,7 @@ Concept correctness. Does the induced proposition match the gold latent pattern 
 Evidence precision. What proportion of cited support actually supports the concept?
 
 --- Page 15 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 15
 Evidence recall. What proportion of relevant support was linked?
 Counterevidence recall. Did the system find important exceptions and contradictions?
@@ -831,15 +831,15 @@ generation and stochastic inference. The primary comparisons and practical signi
 in the experiment configuration before the sealed tests.
 
 --- Page 16 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 16
 Results are reported by task category and stream length, not only as a single average. Failure analysis separates 
 write, association, reflection, consolidation, retrieval, reasoning, and application errors.
-8. Open-Source Reference Implementation
+8. Open-Source Research Publication
 8.1 Licensing
 The repository is released under the permissive MIT License. It covers the paper source, diagrams,
-documentation, build tools, schemas, synthetic benchmark content, and reference code unless a file states
-otherwise. Third-party datasets retain their original licences and are downloaded separately. A future archival
+documentation, publication tools, and synthetic examples unless a file states otherwise. Third-party datasets
+retain their original licences and are downloaded separately. A future archival
 research release should additionally include machine-readable citation metadata and generated dependency
 attribution.
 8.2 Repository structure
@@ -857,19 +857,17 @@ experience-learning-layer/
 │   ├── index.html
 │   ├── paper/
 │   └── assets/diagrams/
-├── src/ell/domain/
-├── schemas/
-├── evals/golden/
-├── tests/
+├── examples/
 └── output/pdf/
-The reference repository contains the living manuscript, generated HTML and PDF editions, shared visual
-diagrams, typed domain models, an in-memory governed kernel, deterministic evaluation utilities, golden cases,
-and tests. The code is an executable research example rather than an application or completed learning system.
+The repository contains the living manuscript, generated HTML and PDF editions, shared visual diagrams,
+synthetic lifecycle examples, and only the tooling required to reproduce and verify the publication. It
+deliberately excludes product code and an executable learning kernel so that proposed architecture is not
+mistaken for validated implementation evidence.
 8.3 Reproducibility requirements
 Every reported experiment must include:
 
 --- Page 17 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 17
 • immutable configuration files;
 • exact Git commit;
@@ -883,15 +881,15 @@ EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
 A one-command small-scale reproduction should run on consumer hardware with a compact open model. Full 
 benchmark results may require larger hardware, but the same code path and data format must be used.
 8.4 Contribution model
-The project begins with a lightweight maintainer model and public design records. Significant architecture 
-decisions use short decision documents in docs/decisions/. Contributions require tests, provenance for 
-benchmark changes, and a declaration when generated data or code was produced with model assistance.
+The project begins with a lightweight maintainer model and records its evolution through the manuscript and Git
+history. Contributions require reproducible publication checks, provenance for example or benchmark changes,
+and a declaration when generated data or code was produced with model assistance.
 Research claims are reviewed separately from software changes. A faster implementation is not accepted as 
 scientifically equivalent unless its behaviour and evaluation remain comparable.
 8.5 Private data boundary
 Private conversation exports can be used locally to test ingestion and qualitative usefulness, but they are not part 
 of the public benchmark and must not be committed. Public experiments use synthetic or properly licensed 
-data. The starter repository includes data-governance guidance; redaction hooks, local namespaces, and tested 
+data. This paper includes data-governance guidance; redaction hooks, local namespaces, and tested
 deletion cascades are required before any longitudinal pilot.
 9. Ethics, Privacy, and Security
 A memory system can improve continuity while also increasing risk. Persistent concepts may encode sensitive 
@@ -913,7 +911,7 @@ Poisoning resistance. New memories do not automatically become trusted rules. Pr
 independent evidence and validators, and sensitive actions can require human approval.
 
 --- Page 18 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 18
 Purpose limitation. Concepts formed for one domain are not automatically reused in another. Cross-domain 
 transfer is an explicit, auditable operation.
@@ -972,20 +970,20 @@ primary claim would be weakened or rejected under any of the following outcomes:
 • performance gains disappear under equal retrieval budgets.
 
 --- Page 19 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 19
 Negative results remain useful. They can show that explicit concept objects are unnecessary for some task 
 classes, that reflection should be triggered only by failures, or that evidence-grounded retrieval is more 
-valuable than consolidation. The repository and benchmark are structured so that these alternatives can be 
-tested without preserving the original hypothesis.
+valuable than consolidation. The proposed benchmark is structured so that these alternatives can be tested
+without preserving the original hypothesis.
 12. Research and Implementation Roadmap
-Phase 0 — Specification and scaffold
-• publish the paper draft, schemas, repository structure, and governance files;
-• implement typed models and in-memory stores;
-• provide deterministic baseline engines and unit tests;
-• open public issues for unresolved design choices.
-Exit criterion: a contributor can record episodes, create a reflection, promote a concept, retrieve it with 
-evidence, and run the test suite locally.
+Phase 0 — Specification publication
+• publish the canonical paper draft and generated reading editions;
+• publish the shared architecture diagrams and synthetic lifecycle examples;
+• verify that HTML, SVG, and PDF outputs rebuild deterministically;
+• keep implementation claims explicitly separate from proposed contracts.
+Exit criterion: a contributor can edit the Markdown manuscript, rebuild every publication artifact, and verify
+the tracked editions locally.
 Phase 1 — Controlled benchmark
 • implement the latent-pattern stream generator;
 • implement the Memory Dynamics and Intuition Simulation Lab with deterministic replay, policy sweeps,
@@ -1032,7 +1030,11 @@ The expanded architecture has three independently evolvable layers:
 • memory and retrieval infrastructure provides replaceable persistence, search, association, graph, vector, or hosted-memory projections;
 • the canonical learning layer evaluates evidence, maintains temporal and probabilistic hypotheses, governs durable concepts, records applications and outcomes, and controls revision, contradiction, and forgetting.
 
-The first layer and the provider-neutral kernel have verified foundations. The second is not yet operational end to end in the current reference implementation: SQLite, hosted memory services, vector indexes, and graphs remain candidate adapters or projections to integrate and compare. The third has deterministic Phase 0 lifecycle contracts, but not yet the complete closed learning loop. This distinction prevents an external memory system from silently becoming L’s truth or policy authority.
+None of these layers is implemented in the current paper repository. SQLite, hosted memory services, vector
+indexes, and graphs remain candidate adapters or projections to integrate and compare. The canonical learning
+layer is specified through proposed lifecycle contracts, but those contracts are not yet an operational closed
+learning loop. This distinction prevents an external memory system from silently becoming L’s truth or policy
+authority when implementation begins.
 
 The proposed direction is immutable evidence plus dynamic, temporal, probabilistic concepts and hypotheses. Extraction, association, consolidation, retrieval, and forgetting policies should be pluggable and may become model-driven or learned. Their proposals remain subject to deterministic provenance, permissions, workspace isolation, deletion, schema, and canonical commit governance. No fixed graph, vector method, note-linking scheme, or model family is selected as the final architecture before the success criteria and ablations in Section 7 are run.
 
@@ -1077,7 +1079,7 @@ Retrieval is a typed service rather than direct database or vector-index access.
 
 Candidate generation may combine lexical search, vectors, relation neighbourhoods, time, pinning, procedures, and later learned rerankers. Exact-vector, HNSW, graph, and hosted memory adapters remain replaceable projections to benchmark; no index or provider is canonical memory. The response is an EvidencePacket, presented at the application boundary as an intuition packet, containing selected current claims, scoped preferences, episodes, procedures, commitments, citations, selection explanations, uncertainty, and known material contradictions. A compact concept never becomes a naked instruction detached from its source.
 
-Concrete comparison adapters may wrap Graphiti/Zep temporal graphs, Mem0 extraction and retrieval, Letta-style context management, or TencentDB Agent Memory's layered local store. Learned-policy adapters may implement AgeMem-style tool actions, AtomMem-style atomic operations, or MemSkill-style evolving routines. Experience and skill adapters may provide EXG-style graphs, ReasoningBank-style strategies, or lifecycle-managed skill candidates. Neural accelerators may provide Titans-, HOPE-, or TMEM-style state. In every case, the adapter returns candidates or acceleration state; current canonical SourceArtifact, CandidateMemory, and MemoryRecord contracts, together with proposed SkillVersion, ApplicationReceipt, and deletion records, remain governed by ELL.
+Concrete comparison adapters may wrap Graphiti/Zep temporal graphs, Mem0 extraction and retrieval, Letta-style context management, or TencentDB Agent Memory's layered local store. Learned-policy adapters may implement AgeMem-style tool actions, AtomMem-style atomic operations, or MemSkill-style evolving routines. Experience and skill adapters may provide EXG-style graphs, ReasoningBank-style strategies, or lifecycle-managed skill candidates. Neural accelerators may provide Titans-, HOPE-, or TMEM-style state. In every case, the adapter returns candidates or acceleration state; proposed canonical SourceArtifact, CandidateMemory, and MemoryRecord contracts, together with proposed SkillVersion, ApplicationReceipt, and deletion records, remain governed by ELL.
 
 13.6 Local-first and provider-neutral topology
 
@@ -1089,29 +1091,25 @@ Four authentication concerns remain separate: L user identity, workspace authori
 
 Forgetting immediately excludes a record, writes a tombstone, removes projections, and triggers evidence-aware invalidation. Sync must not resurrect tombstoned content. Sensitive trait inference is disabled for automatic durable learning. Imported documents are untrusted content, never system instructions. Secrets do not enter prompts, canonical memory, exports, analytics, or logs.
 
-14. Reference Implementation Status
+14. Research Artifact Status
 
-The repository now contains an executable Phase 0 proof aligned with the expanded architecture. This is implementation evidence, not an empirical result for H1-H6.
+The repository is currently a publication artifact, not an executable ELL implementation. This boundary keeps the architecture, hypotheses, and planned contracts inspectable without presenting unvalidated code as evidence for H1-H6.
 
-14.1 Versioned contracts and deterministic identity
+14.1 Canonical and generated editions
 
-Immutable Pydantic boundary models define SourceArtifact, SourceSpan, ExperienceEvent, Episode, CandidateMemory, MemoryRecord, AuditEvent, RetrievalRequest, and EvidencePacket. A registry exposes draft 2020-12 JSON Schemas with stable v1 identifiers and rejects unknown schema versions. Deterministic UUID derivation covers sources, events, and episodes so normalization can be rerun without changing identity.
+The Markdown manuscript is the sole canonical source. Deterministic builders derive the multi-page HTML reading edition, shared SVG diagrams, and current PDF. Each generated HTML page identifies its source, and the publication verifier rebuilds every output in a temporary directory and compares it byte for byte with the tracked edition. Broken local links, missing diagrams, malformed page landmarks, and stale generated files fail loudly.
 
-14.2 Pure governed kernel
+14.2 Synthetic lifecycle examples
 
-The LearningKernel runs without a database, network, or model. In-memory reference adapters implement artifact storage, candidate quarantine, immutable memory revisions, optimistic concurrency, idempotent mutation results, and append-only audit events. The deterministic policy and commit path enforce evidence, workspace, sensitivity, authority, correction, contradiction, forgetting, and retrieval lifecycle rules.
+The repository includes a small synthetic JSONL collection covering explicit scoped preferences, single-event inference, unsupported claims, sensitive inference, explicit correction, material contradiction, temporal change, Dutch evidence, and prompt injection embedded in imported content. These cases make proposed policy outcomes concrete for readers. They are examples, not a validated benchmark, and no empirical result is inferred from them.
 
-A fixture-backed DeterministicMockProvider advertises provider-neutral capabilities and validates every configured response against the requested Pydantic model. Missing or malformed fixtures fail loudly. It performs no network I/O and cannot invent a fallback response.
+14.3 Deliberately deferred implementation
 
-14.3 Golden evaluation corpus
-
-The versioned synthetic corpus covers explicit scoped preferences, single-event inference, unsupported claims, sensitive inference, explicit correction, material contradiction, temporal change, Dutch evidence, and prompt injection embedded in imported content. Each JSONL case has a stable ID, exact evidence excerpt, typed candidate description, and expected policy or lifecycle outcome. Corpus validation rejects malformed or duplicate cases.
-
-At this revision, the paper-first repository contains 31 passing kernel and contract tests plus 3 publication tests for the generated HTML edition, shared diagrams, and deterministic PDF output. Strict static type checking passes for the Python domain source, and repository-wide Ruff lint passes. Product clients, databases, hosted services, provider SDKs, and vendor-specific memory scaffolding remain outside the repository and outside the canonical kernel.
+Typed runtime schemas, a governed commit kernel, storage adapters, model providers, evaluation code, and product clients are not part of this paper repository. Adding them should happen only with a documented evaluation contract and tests that can support any corresponding implementation claim. Until then, the interfaces and algorithms in Sections 5 and 6 are specifications.
 
 14.4 Remaining gates
 
-The in-memory proof does not yet demonstrate persistent-store rebuilds, deletion propagation through projections, encrypted sync, extension capability isolation, provider egress enforcement, job checkpoint recovery, or live multi-client operation. Those invariants are explicit deferred gates for future adapters. The next implementation step is the controlled benchmark: deterministic experience streams, sealed evaluation partitions, policy sweeps, application receipts, and reproducible comparisons with episode retrieval, rolling summaries, and direct insight extraction. The current implementation evidence is not a result for H1-H6.
+The next research step is the controlled benchmark: deterministic experience streams, sealed evaluation partitions, policy sweeps, application receipts, and reproducible comparisons with episode retrieval, rolling summaries, and direct insight extraction. A later reference implementation must also demonstrate persistent-store rebuilds, deletion propagation through projections, provider egress enforcement, job recovery, and lifecycle correctness before it can count as evidence for H1-H6.
 
 15. Conclusion
 The Experience Learning Layer begins from a simple distinction: access to old experience is not the same as 
@@ -1127,16 +1125,16 @@ The practical expression of that hypothesis is an evolving intuition: economical
 understand shorthand and adapt to change without hiding where its guidance came from. Whether compact
 intuition packets deliver this experience more accurately and efficiently than no memory, raw history, ordinary
 RAG, rolling summaries, or dynamic-memory baselines remains an open empirical question.
-The project is open by default. The paper, schemas, benchmark generator, implementation, prompts, and 
-evaluation harness are intended to make the research easy to inspect, reproduce, criticise, and extend. The 
-immediate next step is not to claim a finished learning system, but to build the controlled benchmark and 
-reference implementation needed to test whether the proposed lifecycle actually works.
+The project is open by default. The paper, diagrams, synthetic examples, and reproducible reading editions make
+the proposal easy to inspect, criticise, and extend. The immediate next step is not to claim a finished learning
+system, but to build the controlled benchmark and reference implementation needed to test whether the proposed
+lifecycle actually works.
 Acknowledgements
 This working draft was developed as part of the open Experience Learning Layer project. Future versions will 
 list contributors according to documented authorship and contribution criteria.
 
 --- Page 21 ---
-EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
+EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.5
 21
 References
 Bartlett, Frederic C. 1932. Remembering: A Study in Experimental and Social Psychology. Cambridge University Press.

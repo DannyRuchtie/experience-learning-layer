@@ -54,13 +54,13 @@ authority, lifecycle, correction, forgetting, and commit operations.
 | [5. Proposed Algorithms](docs/paper/05-proposed-algorithms.html) | Scheduling, critique, consolidation, revision |
 | [6. Data Model and Interfaces](docs/paper/06-data-model-and-public-interfaces.html) | Entities, states, contracts, storage independence |
 | [7. Experimental Design](docs/paper/07-experimental-design.html) | Baselines, metrics, ablations, falsifiability |
-| [8. Open-Source Reference](docs/paper/08-open-source-reference-implementation.html) | Repository and reproducibility contract |
+| [8. Open-Source Publication](docs/paper/08-open-source-research-publication.html) | Repository and reproducibility contract |
 | [9. Ethics, Privacy, and Security](docs/paper/09-ethics-privacy-and-security.html) | Consent, provenance, deletion, sensitive inference |
 | [10. Limitations](docs/paper/10-limitations-and-threats-to-validity.html) | Boundaries and threats to validity |
 | [11. Expected Outcomes](docs/paper/11-expected-outcomes-and-falsifiability.html) | What would support or reject the proposal |
 | [12. Roadmap](docs/paper/12-research-and-implementation-roadmap.html) | Research-first delivery sequence |
 | [13. Expanded Architecture](docs/paper/13-experience-learning-layer-expansion.html) | Provider-neutral topology and plural memory |
-| [14. Implementation Status](docs/paper/14-reference-implementation-status.html) | What is implemented and what remains |
+| [14. Research Artifact Status](docs/paper/14-research-artifact-status.html) | What is published and what remains unimplemented |
 | [15. Conclusion](docs/paper/15-conclusion.html) | The claim and immediate next step |
 | [References](docs/paper/references.html) | Primary literature |
 
@@ -69,16 +69,13 @@ authority, lifecycle, correction, forgetting, and commit operations.
 | Path | Purpose |
 |---|---|
 | `paper/` | Canonical manuscript and PDF/HTML builders |
-| `docs/` | Generated HTML reading edition, diagrams, and architecture notes |
-| `schemas/` | Versioned public boundary schemas |
-| `evals/golden/` | Synthetic, versioned evaluation cases |
-| `src/ell/domain/` | Small executable examples of policy and lifecycle invariants |
-| `tests/` | Contract and kernel tests supporting implementation claims |
+| `docs/` | Generated HTML reading edition and diagrams |
+| `examples/` | Synthetic cases illustrating the proposed lifecycle |
 | `output/pdf/` | Current reproducible PDF |
 
-The code is deliberately a research reference, not a product or hosted service.
-Databases, model providers, vector indexes, and clients remain replaceable adapters
-outside the canonical learning model.
+The repository intentionally contains no product client, database, provider SDK,
+hosted service, or reference kernel. Those belong in future implementation work and
+must not be confused with evidence for the paper's still-untested hypotheses.
 
 ![Provider-neutral architecture](docs/assets/diagrams/provider-neutral.svg)
 
@@ -87,12 +84,12 @@ outside the canonical learning model.
 ```bash
 make install
 make paper      # PDF + HTML + SVG diagrams
-make check      # lint + typecheck + tests + generated-site checks
+make check      # lint + deterministic rebuild and publication checks
 ```
 
-The current reference kernel runs offline with deterministic fixtures. The paper
-does not claim empirical results for its research hypotheses; those results will be
-added only when the benchmark and evaluation harness can reproduce them.
+The paper does not claim empirical results for its research hypotheses. Results and
+implementation code should be added only when an evaluation harness can reproduce
+them.
 
 ## License
 

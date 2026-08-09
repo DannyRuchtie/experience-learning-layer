@@ -257,6 +257,10 @@ def write_site(source_path: Path, output_dir: Path) -> None:
     assets_dir = output_dir / "assets"
     paper_dir.mkdir(parents=True, exist_ok=True)
     assets_dir.mkdir(parents=True, exist_ok=True)
+    expected_pages = {f"{section.slug}.html" for section in sections[1:]}
+    for existing_page in paper_dir.glob("*.html"):
+        if existing_page.name not in expected_pages:
+            existing_page.unlink()
     write_svg_assets(assets_dir / "diagrams")
     (assets_dir / "paper.css").write_text(STYLESHEET, encoding="utf-8")
     (output_dir / ".nojekyll").write_text("", encoding="utf-8")

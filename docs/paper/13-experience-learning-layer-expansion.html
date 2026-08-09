@@ -29,13 +29,13 @@
 <li><a href="../paper/05-proposed-algorithms.html">5. Proposed Algorithms</a></li>
 <li><a href="../paper/06-data-model-and-public-interfaces.html">6. Data Model and Public Interfaces</a></li>
 <li><a href="../paper/07-experimental-design.html">7. Experimental Design</a></li>
-<li><a href="../paper/08-open-source-reference-implementation.html">8. Open-Source Reference Implementation</a></li>
+<li><a href="../paper/08-open-source-research-publication.html">8. Open-Source Research Publication</a></li>
 <li><a href="../paper/09-ethics-privacy-and-security.html">9. Ethics, Privacy, and Security</a></li>
 <li><a href="../paper/10-limitations-and-threats-to-validity.html">10. Limitations and Threats to Validity</a></li>
 <li><a href="../paper/11-expected-outcomes-and-falsifiability.html">11. Expected Outcomes and Falsifiability</a></li>
 <li><a href="../paper/12-research-and-implementation-roadmap.html">12. Research and Implementation Roadmap</a></li>
 <li><a href="../paper/13-experience-learning-layer-expansion.html" aria-current="page">13. Experience Learning Layer Expansion</a></li>
-<li><a href="../paper/14-reference-implementation-status.html">14. Reference Implementation Status</a></li>
+<li><a href="../paper/14-research-artifact-status.html">14. Research Artifact Status</a></li>
 <li><a href="../paper/15-conclusion.html">15. Conclusion</a></li>
 <li><a href="../paper/acknowledgements.html">Acknowledgements</a></li>
 <li><a href="../paper/references.html">References</a></li></ol>
@@ -51,7 +51,7 @@
 <li>memory and retrieval infrastructure provides replaceable persistence, search, association, graph, vector, or hosted-memory projections;</li>
 <li>the canonical learning layer evaluates evidence, maintains temporal and probabilistic hypotheses, governs durable concepts, records applications and outcomes, and controls revision, contradiction, and forgetting.</li>
 </ul>
-<p>The first layer and the provider-neutral kernel have verified foundations. The second is not yet operational end to end in the current reference implementation: SQLite, hosted memory services, vector indexes, and graphs remain candidate adapters or projections to integrate and compare. The third has deterministic Phase 0 lifecycle contracts, but not yet the complete closed learning loop. This distinction prevents an external memory system from silently becoming L’s truth or policy authority.</p>
+<p>None of these layers is implemented in the current paper repository. SQLite, hosted memory services, vector indexes, and graphs remain candidate adapters or projections to integrate and compare. The canonical learning layer is specified through proposed lifecycle contracts, but those contracts are not yet an operational closed learning loop. This distinction prevents an external memory system from silently becoming L’s truth or policy authority when implementation begins.</p>
 <p>The proposed direction is immutable evidence plus dynamic, temporal, probabilistic concepts and hypotheses. Extraction, association, consolidation, retrieval, and forgetting policies should be pluggable and may become model-driven or learned. Their proposals remain subject to deterministic provenance, permissions, workspace isolation, deletion, schema, and canonical commit governance. No fixed graph, vector method, note-linking scheme, or model family is selected as the final architecture before the success criteria and ablations in Section 7 are run.</p>
 <h2>13.2 Plural memory semantics</h2>
 <p>The v0.1 paper distinguishes episodes, reflections, concepts, applications, and outcomes. The broader ELL architecture retains these objects while distinguishing additional memory semantics that have different authority, lifetime, and retrieval rules:</p>
@@ -86,7 +86,7 @@
 <h2>13.5 Policy-bound evidence retrieval</h2>
 <p>Retrieval is a typed service rather than direct database or vector-index access. A request includes actor, purpose, workspace, scope, allowed memory types, maximum sensitivity, evidence preference, and a fixed context budget. Authorization and lifecycle filtering happen before relevance ranking. Superseded, forgotten, expired, cross-workspace, and sensitivity-incompatible records do not enter ordinary results.</p>
 <p>Candidate generation may combine lexical search, vectors, relation neighbourhoods, time, pinning, procedures, and later learned rerankers. Exact-vector, HNSW, graph, and hosted memory adapters remain replaceable projections to benchmark; no index or provider is canonical memory. The response is an EvidencePacket, presented at the application boundary as an intuition packet, containing selected current claims, scoped preferences, episodes, procedures, commitments, citations, selection explanations, uncertainty, and known material contradictions. A compact concept never becomes a naked instruction detached from its source.</p>
-<p>Concrete comparison adapters may wrap Graphiti/Zep temporal graphs, Mem0 extraction and retrieval, Letta-style context management, or TencentDB Agent Memory&#x27;s layered local store. Learned-policy adapters may implement AgeMem-style tool actions, AtomMem-style atomic operations, or MemSkill-style evolving routines. Experience and skill adapters may provide EXG-style graphs, ReasoningBank-style strategies, or lifecycle-managed skill candidates. Neural accelerators may provide Titans-, HOPE-, or TMEM-style state. In every case, the adapter returns candidates or acceleration state; current canonical SourceArtifact, CandidateMemory, and MemoryRecord contracts, together with proposed SkillVersion, ApplicationReceipt, and deletion records, remain governed by ELL.</p>
+<p>Concrete comparison adapters may wrap Graphiti/Zep temporal graphs, Mem0 extraction and retrieval, Letta-style context management, or TencentDB Agent Memory&#x27;s layered local store. Learned-policy adapters may implement AgeMem-style tool actions, AtomMem-style atomic operations, or MemSkill-style evolving routines. Experience and skill adapters may provide EXG-style graphs, ReasoningBank-style strategies, or lifecycle-managed skill candidates. Neural accelerators may provide Titans-, HOPE-, or TMEM-style state. In every case, the adapter returns candidates or acceleration state; proposed canonical SourceArtifact, CandidateMemory, and MemoryRecord contracts, together with proposed SkillVersion, ApplicationReceipt, and deletion records, remain governed by ELL.</p>
 <h2>13.6 Local-first and provider-neutral topology</h2>
 <figure class="paper-diagram">
 <img src="../assets/diagrams/provider-neutral.svg" alt="Canonical learning stays provider-neutral">
@@ -95,7 +95,7 @@
 <p>A complete usable state can live on one device. Network absence must not prevent capture, browsing, correction, or lexical retrieval. Remote processing visibly degrades to local processors or queued work. A practical reference adapter may use SQLite, content-addressed encrypted files, FTS5, and a replaceable vector index, but these technologies do not define the domain.</p>
 <p>Four authentication concerns remain separate: L user identity, workspace authorization, model-provider credentials, and connector grants. A model adapter may call a provider API; a client or agent may call L through a narrow protocol; or L may export a scoped context bundle. Provider credentials never define L identity, canonical records, or access policy.</p>
 <p>Forgetting immediately excludes a record, writes a tombstone, removes projections, and triggers evidence-aware invalidation. Sync must not resurrect tombstoned content. Sensitive trait inference is disabled for automatic durable learning. Imported documents are untrusted content, never system instructions. Secrets do not enter prompts, canonical memory, exports, analytics, or logs.</p>
-      <nav class="pager" aria-label="Section navigation"><a class="previous" href="12-research-and-implementation-roadmap.html">← Previous</a><a class="next" href="14-reference-implementation-status.html">Next →</a></nav>
+      <nav class="pager" aria-label="Section navigation"><a class="previous" href="12-research-and-implementation-roadmap.html">← Previous</a><a class="next" href="14-research-artifact-status.html">Next →</a></nav>
     </main>
   </div>
 </body>

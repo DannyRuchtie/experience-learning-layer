@@ -29,13 +29,13 @@
 <li><a href="../paper/05-proposed-algorithms.html">5. Proposed Algorithms</a></li>
 <li><a href="../paper/06-data-model-and-public-interfaces.html" aria-current="page">6. Data Model and Public Interfaces</a></li>
 <li><a href="../paper/07-experimental-design.html">7. Experimental Design</a></li>
-<li><a href="../paper/08-open-source-reference-implementation.html">8. Open-Source Reference Implementation</a></li>
+<li><a href="../paper/08-open-source-research-publication.html">8. Open-Source Research Publication</a></li>
 <li><a href="../paper/09-ethics-privacy-and-security.html">9. Ethics, Privacy, and Security</a></li>
 <li><a href="../paper/10-limitations-and-threats-to-validity.html">10. Limitations and Threats to Validity</a></li>
 <li><a href="../paper/11-expected-outcomes-and-falsifiability.html">11. Expected Outcomes and Falsifiability</a></li>
 <li><a href="../paper/12-research-and-implementation-roadmap.html">12. Research and Implementation Roadmap</a></li>
 <li><a href="../paper/13-experience-learning-layer-expansion.html">13. Experience Learning Layer Expansion</a></li>
-<li><a href="../paper/14-reference-implementation-status.html">14. Reference Implementation Status</a></li>
+<li><a href="../paper/14-research-artifact-status.html">14. Research Artifact Status</a></li>
 <li><a href="../paper/15-conclusion.html">15. Conclusion</a></li>
 <li><a href="../paper/acknowledgements.html">Acknowledgements</a></li>
 <li><a href="../paper/references.html">References</a></li></ol>
@@ -59,10 +59,10 @@
 </ul>
 <p>A revision never overwrites its parent. A revised version can later become corroborated, contested, superseded, retired, or deleted while its lineage remains traceable.</p>
 <h2>6.3 API contract</h2>
-<p>The reference implementation exposes the following model-independent operations: record_episode(episode) -&gt; EpisodeID associate(episode_id, policy) -&gt; list[Association] run_reflection(scope, trigger) -&gt; list[Reflection] reconcile_concepts(reflection_ids) -&gt; list[ConceptVersion] retrieve_learning(query, context, budget) -&gt; LearningPacket record_application(packet, decision) -&gt; ApplicationID record_outcome(application_id, outcome) -&gt; list[ConceptUpdate] propose_skill(experience_ids, policy) -&gt; list[SkillVersion] record_skill_application(skill_version_id, receipt) -&gt; ApplicationID explain_concept(concept_id, version=None) -&gt; EvidenceReport delete_subject_data(subject_id, policy) -&gt; DeletionReport</p>
+<p>A reference implementation should expose the following model-independent operations: record_episode(episode) -&gt; EpisodeID associate(episode_id, policy) -&gt; list[Association] run_reflection(scope, trigger) -&gt; list[Reflection] reconcile_concepts(reflection_ids) -&gt; list[ConceptVersion] retrieve_learning(query, context, budget) -&gt; LearningPacket record_application(packet, decision) -&gt; ApplicationID record_outcome(application_id, outcome) -&gt; list[ConceptUpdate] propose_skill(experience_ids, policy) -&gt; list[SkillVersion] record_skill_application(skill_version_id, receipt) -&gt; ApplicationID explain_concept(concept_id, version=None) -&gt; EvidenceReport delete_subject_data(subject_id, policy) -&gt; DeletionReport</p>
 <p>LearningPacket is the central read object. It contains concepts, relevant evidence, conflicts, and budget accounting. It never contains only a naked concept statement.</p>
 <h2>6.4 Storage independence</h2>
-<p>The core schema is storage-neutral. The starter implementation uses an in-memory store; a SQLite adapter is planned as the first persistent baseline. Production adapters may add PostgreSQL, a vector index, or a graph database. Storage choices are evaluated by correctness, write cost, query latency, deletion support, and operational simplicity rather than by architectural fashion.</p>
+<p>The core schema is storage-neutral. A starter implementation should use an in-memory store before adding SQLite as the first persistent baseline. Production adapters may add PostgreSQL, a vector index, or a graph database. Storage choices are evaluated by correctness, write cost, query latency, deletion support, and operational simplicity rather than by architectural fashion.</p>
 <p>The same principle applies to model providers. The engine depends on a structured-generation interface, not a vendor SDK. Reproducibility experiments use open-weight models, while optional adapters may support hosted models for comparison.</p>
 <p>Association, extraction, consolidation, retrieval, and forgetting policies may become configurable or learned, but their outputs remain proposals behind stable typed ports. Deterministic code continues to enforce provenance, workspace isolation, permissions, deletion, schema validity, and canonical commit rules. Competing lexical, vector, graph, temporal, probabilistic, and model-driven policies remain interchangeable experimental conditions until evaluation establishes which combination is useful. A Zettelkasten-style linked-note representation may be included as a simple baseline, but static note linking is too limited to govern temporal change, uncertainty, counterevidence, outcome feedback, and user control.</p>
       <nav class="pager" aria-label="Section navigation"><a class="previous" href="05-proposed-algorithms.html">← Previous</a><a class="next" href="07-experimental-design.html">Next →</a></nav>
