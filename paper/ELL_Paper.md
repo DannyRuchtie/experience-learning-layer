@@ -5,8 +5,8 @@ From Episodes to Revisable Concepts
 The Experience Learning Layer for Evidence-Grounded Learning 
 in Language Agents
 Danny Ruchtie
-Living working draft v0.2 - 8 August 2026
-Revision note. Version 0.2 retains the preregistered research proposal from v0.1 and adds the product architecture, governed memory model, provider boundaries, and verified Phase 0 implementation status established on 8 August 2026. The archived v0.1 PDF remains available for comparison.
+Living working draft v0.3 - 9 August 2026
+Revision note. Version 0.3 retains the preregistered research proposal from v0.1, the governed architecture and verified Phase 0 status from v0.2, and makes the product north star, system-layer boundaries, and pre-implementation success criteria explicit. The archived v0.1 PDF remains available for comparison.
 OPEN RESEARCH SPECIFICATION  ·  EXPERIMENTAL PROTOCOL
 Research status. This document is a working architecture paper and preregistered evaluation plan. It defines the 
 proposed system, hypotheses, data model, implementation contract, and experiments. It does not report empirical 
@@ -25,6 +25,12 @@ store, creates typed associations between them, represents reflections as provis
 compatible reflections into versioned concepts. Each concept records its scope, supporting evidence, 
 counterevidence, confidence, temporal validity, lineage, and observed utility. Concepts can be corroborated, 
 contested, revised, superseded, or retired without erasing their evidential history.
+The product north star is to give any AI a natural, evolving intuition about the user or organisation: grounded in
+experience, economical to use, sensitive to change, explainable when inspected, and always under user control.
+Here intuition is neither anthropomorphism nor a new memory category. It names an emergent system capability
+produced by evidence-grounded compression, prediction, association, relevance selection, temporal adaptation,
+and outcome feedback. At use time, ELL should supply a compact intuition packet rather than dump raw history
+into a model, while retaining links that permit inspection, correction, deletion, and uncertainty-aware expansion.
 The paper contributes a typed architecture, a concept-lifecycle protocol, an evidence ledger, an experimental 
 benchmark for controlled concept induction, and a reproducibility plan based on openly licensed code and open-
 weight models. The central hypothesis is that separating reflection from concept consolidation, while preserving 
@@ -40,6 +46,12 @@ may surface five examples of the same failure, yet the agent may still repeat th
 have never been converted into a reusable and appropriately scoped principle. This distinction matters as 
 agents move from single-turn assistance toward persistent collaboration, long-running tasks, and multi-session 
 interaction.
+The intended user experience is stronger than factual continuity. An AI should understand conversational
+shorthand, surface relevant context just in time, generalise usefully across related situations, notice when a
+previous pattern has changed, correct itself rapidly, and express calibrated uncertainty. Explanations should be
+available when requested without forcing provenance detail into every interaction. These behaviours constitute
+the proposed operational meaning of an evolving intuition; they do not imply consciousness, personhood, or a
+simulation of human cognition.
 The first generation of agent-memory systems established that external memory could improve continuity 
 beyond a model’s context window. Generative Agents stored observations, ranked them for retrieval, and 
 periodically synthesised higher-level reflections that influenced later plans (Park et al. 2023). Reflexion used 
@@ -156,7 +168,7 @@ Provenance loss. A generated statement can no longer be connected to the experie
 Behavioural ambiguity. A system claims to have learned because it stored a summary, without showing 
 improved transfer or decision quality.
 2.3 Research questions
-The first empirical study will answer four questions.
+The first empirical study will answer five questions.
 RQ1 — Separation. Does representing reflections as provisional objects before concept consolidation reduce 
 unsupported generalisation compared with direct episode-to-rule summarisation?
 RQ2 — Revision. Do explicit counterevidence, temporal validity, and versioned lifecycle states improve 
@@ -165,6 +177,9 @@ RQ3 — Transfer. Do consolidated concepts improve performance on new situations
 but differ in wording and surface details?
 RQ4 — Efficiency. Can compact concepts plus selected source episodes match or improve downstream 
 performance while using less retrieval context than episode-only methods?
+RQ5 — Intuition quality. Can a compact, uncertainty-aware intuition packet improve shorthand understanding,
+just-in-time relevance, change detection, and rapid correction compared with no-memory, raw-history, and
+ordinary retrieval-augmented generation baselines?
 2.4 Hypotheses
 H1. ELL will produce higher concept-scope accuracy and lower overgeneralisation than a direct insight-
 extraction baseline.
@@ -174,6 +189,12 @@ H3. ELL will yield a positive transfer gain on held-out tasks whose latent rule 
 experiences, even when lexical similarity to those experiences is low.
 H4. Retrieving concepts together with a small number of supporting episodes will reduce median input tokens 
 per decision without reducing task success.
+H5. Compact intuition packets will improve shorthand resolution, just-in-time context precision, change
+detection, and calibrated correction over no-memory, raw-history, and ordinary RAG baselines at an equal
+retrieval budget.
+H6. ELL will reduce end-to-end decision tokens, latency, and measured hardware-time or energy proxies while
+preserving or improving task utility; this hypothesis includes the cost of background association, reflection, and
+consolidation rather than treating those operations as free.
 These hypotheses are falsified if the confidence intervals include no practically meaningful improvement, if 
 concept-level gains fail to translate into behaviour, or if the added architecture costs more than the retrieval it 
 replaces without delivering measurable benefits.
@@ -252,13 +273,20 @@ and concepts remain revisable.
 ELL is organised as a write–associate–reflect–consolidate–apply–evaluate loop. Each component exposes a 
 narrow interface so that models, stores, and retrieval methods can be replaced independently.
 
+The architecture separates three concerns. The input and capture layer normalises consented chats, recordings,
+documents, tool traces, and connectors into immutable sources, events, and episodes. Replaceable memory and
+retrieval infrastructure stores or indexes projections for association and candidate generation. The canonical
+learning layer governs hypotheses, concepts, applications, outcomes, versioning, permissions, and deletion.
+External memory services and indexes can propose candidates, but they do not define canonical truth, identity,
+policy, or learning state.
+
 --- Page 7 ---
 EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
 7
 4.1 Canonical episode store
 The input is a canonical episode rather than an application-specific chat message. An episode is represented as
-ei=( ιi,ti,^ti,xi,oi,ai,yi,si,pi) ,
-where ιi is the episode identifier, ti and ^ti are event and observation time, xi is context, oi is an observation, ai 
+e_i=(id_i,t_event_i,t_observed_i,x_i,o_i,a_i,y_i,s_i,p_i),
+where id_i is the episode identifier, t_event_i and t_observed_i are event and observation time, x_i is context, o_i is an observation, a_i
 is an action, yi is an outcome, si is source metadata, and pi contains privacy and access-control metadata. The 
 two timestamps allow delayed reports and later corrections to be represented.
 The raw episode store is append-only. Corrections create new records linked by relations such as corrects, 
@@ -282,7 +310,7 @@ nearest embeddings because lexically distant episodes may share a goal, failure 
 candidate generation combines semantic, structural, temporal, and outcome-based signals.
 4.3 Reflection Engine
 A reflection is a provisional interpretation:
-rj=( hj,tj,sj,pj,nj,uj,zj) .
+r_j=(h_j,t_j,s_j,p_j,n_j,u_j,z_j).
 Here hj is a claim or question, tj is reflection type, sj is scope, pj and nj are supporting and counterevidence 
 episode sets, uj is uncertainty metadata, and zj is review status.
 Reflection types include:
@@ -303,8 +331,7 @@ output and is followed by an evidence-validation pass. Reflections may remain un
 supported, or be rejected before they reach the Concept Engine.
 4.4 Concept Engine
 A concept is a reusable, versioned proposition or strategy:
-ck
-( v)=( qk,sk,ak,ik,pk,nk,gk,tk,v,zk) .
+c_k^(v)=(q_k,s_k,a_k,i_k,p_k,n_k,g_k,t_k,v,z_k).
 Here qk is the proposition, sk is scope, ak is a set of applicability conditions, ik is the expected implication or 
 recommended behaviour, pk and nk are supporting and counterevidence sets, gk is confidence, tk is temporal 
 validity, v is version, and zk is lifecycle state.
@@ -336,17 +363,26 @@ At decision time, the retrieval service selects a mixture of concepts and source
 compact general guidance; episodes provide specificity, exception handling, and verification. The retrieval 
 policy must be able to return either type independently.
 A concept relevance score can initially be expressed as
-R( c,q)=w1 S1+w2 S2+w3 S3+w4 S4+w5 γc−w6 S6 ,
+R(c,q)=w1 S1+w2 S2+w3 S3+w4 S4+w5 confidence(c)-w6 S6,
 
 --- Page 9 ---
 EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
 9
-where S1 through S4 represent semantic relevance, scope match, temporal validity, and observed utility; γc is 
+where S1 through S4 represent semantic relevance, scope match, temporal validity, and observed utility; confidence(c) is
 concept confidence; and S6 is active contradiction. This formula is a design heuristic, not a validated scientific 
 result. Weights will be tuned only on development data and frozen before test evaluation.
 The retrieved package includes the concept statement, scope, confidence, current state, relevant support, 
-relevant counterevidence, and source links. Applications can require a minimum confidence or allow contested 
-concepts to be shown as uncertainty rather than instructions.
+relevant counterevidence, and source links. At the product boundary this compact, budgeted package is called an
+intuition packet. It may combine current concepts, selected episodes, procedures, open commitments, uncertainty,
+and known contradictions. It is a read object, not a new kind of memory. Applications can require a minimum
+confidence or allow contested concepts to be shown as uncertainty rather than instructions.
+
+Formally, an intuition packet for query q, time t, policy context p, and budget b is
+I(q,t,p,b)=(C*,E*,A*,U*,X*,L*),
+where C* is the selected set of current concepts or hypotheses, E* is the minimum restored source evidence, A*
+contains applicable procedures or prospective commitments, U* is calibrated uncertainty, X* is material
+counterevidence or conflict, and L* is provenance and selection lineage. The packet is valid only if every item
+satisfies p, its estimated context cost does not exceed b, and its lineage resolves to permitted canonical records.
 4.7 Outcome loop
 Every use of a concept creates an application record:
 am=( xm,Cm,Em,dm,ym,um) .
@@ -414,8 +450,7 @@ confidence score from external features:
 --- Page 11 ---
 EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
 11
-γ( c)= 1
-1+e−zc
+confidence(c)=1/(1+exp(-z_c))
 ,
 where zc is a weighted score that increases with supporting evidence, evidence diversity, and observed 
 application utility, and decreases with counterevidence, age without revalidation, and validator disagreement.
@@ -522,6 +557,14 @@ operational simplicity rather than by architectural fashion.
 The same principle applies to model providers. The engine depends on a structured-generation interface, not a 
 vendor SDK. Reproducibility experiments use open-weight models, while optional adapters may support 
 hosted models for comparison.
+
+Association, extraction, consolidation, retrieval, and forgetting policies may become configurable or learned,
+but their outputs remain proposals behind stable typed ports. Deterministic code continues to enforce provenance,
+workspace isolation, permissions, deletion, schema validity, and canonical commit rules. Competing lexical,
+vector, graph, temporal, probabilistic, and model-driven policies remain interchangeable experimental conditions
+until evaluation establishes which combination is useful. A Zettelkasten-style linked-note representation may be
+included as a simple baseline, but static note linking is too limited to govern temporal change, uncertainty,
+counterevidence, outcome feedback, and user control.
 7. Experimental Design
 7.1 Study status
 The evaluation is preregistered in this paper before results are collected. All thresholds, prompts, model 
@@ -567,11 +610,13 @@ benchmark because it explicitly couples memory, agent decisions, and environment
 At minimum, all experiments include:
 1. no persistent memory;
 2. full or maximum available context;
-3. vector retrieval over raw episodes;
+3. ordinary RAG or vector retrieval over raw episodes;
 4. rolling summary memory;
-5. episode retrieval plus direct insight extraction;
-6. ELL without concept consolidation;
-7. full ELL.
+5. linked-note or Zettelkasten-style retrieval;
+6. episode retrieval plus direct insight extraction;
+7. ELL without concept consolidation;
+8. ELL without outcome feedback or temporal adaptation;
+9. full ELL with compact intuition packets.
 Where reproducible implementations and compatible licences are available, A-MEM, Reflective Memory 
 Management, GAAMA, and PlugMem will be evaluated using their released code or carefully documented 
 reimplementations (Xu et al. 2025; Z. Tan et al. 2025; Paul, Sharma, and Sareen 2026; Yang et al. 2026). A 
@@ -612,6 +657,21 @@ Efficiency metrics
 • median and tail latency;
 • energy or hardware-time proxy where measurable;
 • task utility per 1,000 retrieved tokens.
+
+Product success criteria
+• shorthand resolution accuracy without requiring the user to restate stable context;
+• precision and recall of proactive just-in-time context, including a penalty for intrusive or irrelevant retrieval;
+• useful generalisation to structurally related but lexically dissimilar situations;
+• change-detection delay and correction latency after explicit or behavioural counterevidence;
+• calibration and selective abstention when evidence is weak, stale, or contradictory;
+• explanation faithfulness, citation validity, and user ability to correct, scope, or delete the underlying memory;
+• end-to-end task utility per token, latency, storage, model call, and energy or hardware-time proxy, including
+background consolidation cost;
+• zero cross-workspace leakage and complete tested invalidation of deleted evidence from derived projections.
+
+Thresholds for these criteria will be frozen before choosing a production memory substrate or learned policy.
+An implementation is not successful merely because it stores more, produces persuasive summaries, or retrieves
+plausible context.
 7.6 Human evaluation
 Concept quality cannot be reduced entirely to lexical matching. A stratified sample will be rated by at least 
 three annotators who are blind to the system condition. The rubric covers correctness, support, scope, 
@@ -631,7 +691,10 @@ The following components are removed one at a time:
 • source-episode restoration at retrieval;
 • graph associations beyond vector similarity.
 Additional sweeps vary reflection frequency, promotion thresholds, retrieval budget, and confidence 
-formulation.
+formulation. Architecture ablations compare lexical, vector, graph, temporal, and hybrid association; fixed versus
+learned extraction and consolidation policy; concept-only versus episode-restored packets; and eager versus
+event-triggered background processing. This keeps dynamic graph organisation, probabilistic hypotheses, and
+other research directions behind evidence gates instead of presuming a settled winner.
 7.8 Statistical analysis
 Binary outcomes use paired tests such as McNemar’s test where appropriate. Continuous or ordinal metrics 
 use paired bootstrap confidence intervals and report effect sizes. Multiple random seeds are used for synthetic 
@@ -763,6 +826,13 @@ complete configurations, but residual implementation differences remain.
 Seventh, the architecture adds cost and operational complexity. The system is unsuccessful if the concept layer 
 does not deliver enough transfer, safety, or efficiency to justify reflection, validation, storage, and governance 
 overhead.
+Eighth, the term intuition can encourage anthropomorphism or hide uncertainty behind fluent behaviour. In this
+paper it is only an operational label for measured context selection and adaptation. A compact packet may also
+compress away rare but important exceptions, so source restoration, counterevidence retrieval, and abstention
+must be evaluated explicitly.
+Ninth, reduced prompt tokens do not necessarily reduce total energy or latency. Background embedding,
+association, graph maintenance, reflection, and consolidation can move cost out of the visible request path.
+Efficiency claims therefore require end-to-end accounting over both write-time and read-time work.
 Finally, cognitive analogies are limited. Human episodic and semantic memory motivate the separation of 
 roles, but ELL should not be interpreted as an account of biological memory or consciousness.
 11. Expected Outcomes and Falsifiability
@@ -809,7 +879,7 @@ Phase 3 — External benchmarks
 • integrate MemBench and MemoryArena where licences and compute permit;
 • reproduce selected open memory baselines under equal budgets;
 • complete human evaluation and calibration.
-Exit criterion: results can support or reject H1–H4 across at least one conversational and one action 
+Exit criterion: results can support or reject H1–H6 across at least one conversational and one action
 benchmark.
 Phase 4 — Paper completion
 • replace this preregistration status with methods and results generated from tagged releases;
@@ -821,9 +891,23 @@ Phase 4 — Paper completion
 
 The research architecture above asks whether evidence-grounded concepts improve transfer and future behaviour. The product architecture developed after the v0.1 preregistration generalises that research scaffold into L: an open, local-first experience-learning layer usable by people, applications, and AI agents. This expansion does not replace the original empirical question. It makes the operational boundaries needed to test and eventually deploy it explicit.
 
-L is not primarily a chatbot, note-taking application, vector database, or graph visualisation. Its product loop is to capture an experience, preserve its source, extract typed candidates, decide under deterministic policy what may become durable, consolidate related memories without losing contradictions, retrieve the smallest useful context, observe outcomes, and revise future behaviour. Models interpret meaning and propose. Deterministic services validate, authorize, version, and commit.
+L is not primarily a chatbot, note-taking application, Zettelkasten, vector database, or graph visualisation. Its north star is to give any AI a natural, evolving intuition about the user or organisation—grounded in experience, economical to use, sensitive to change, explainable when inspected, and always under user control. Its product loop is to capture an experience, preserve its source, extract typed candidates, decide under deterministic policy what may become durable, consolidate related memories without losing contradictions, retrieve the smallest useful context, observe outcomes, and revise future behaviour. Models interpret meaning and propose. Deterministic services validate, authorize, version, and commit.
 
-13.1 Plural memory semantics
+Intuition is an emergent capability of this loop, not another row type or a claim that the system resembles a person. Evidence-grounded compression, prediction, association, relevance selection, temporal adaptation, and outcome feedback should together support shorthand, proactive just-in-time context, useful generalisation, rapid correction, change detection, calibrated uncertainty, and optional explanation. The delivery object is a compact intuition packet with sufficient evidence and uncertainty to be useful, plus stable references for deeper inspection.
+
+13.1 System layers and technology boundaries
+
+The product architecture has three independently evolvable layers:
+
+• input and capture adapters turn chats, Recall recordings, documents, application events, and future connectors into immutable source artifacts, normalized events, and bounded episodes;
+• memory and retrieval infrastructure provides replaceable persistence, search, association, graph, vector, or hosted-memory projections;
+• the canonical learning layer evaluates evidence, maintains temporal and probabilistic hypotheses, governs durable concepts, records applications and outcomes, and controls revision, contradiction, and forgetting.
+
+The first layer and the provider-neutral kernel have verified foundations. The second is not yet operational end to end in the current reference implementation: SQLite, TencentDB Agent Memory, hosted memory services, vector indexes, graphs, and TurboVec remain candidate adapters or projections to integrate and compare. The third has deterministic Phase 0 lifecycle contracts, but not yet the complete closed learning loop. This distinction prevents an external memory product from silently becoming L’s truth or policy authority.
+
+The proposed direction is immutable evidence plus dynamic, temporal, probabilistic concepts and hypotheses. Extraction, association, consolidation, retrieval, and forgetting policies should be pluggable and may become model-driven or learned. Their proposals remain subject to deterministic provenance, permissions, workspace isolation, deletion, schema, and canonical commit governance. No fixed graph, vector method, note-linking scheme, or model family is selected as the final architecture before the success criteria and ablations in Section 7 are run.
+
+13.2 Plural memory semantics
 
 The v0.1 paper distinguishes episodes, reflections, concepts, applications, and outcomes. The broader product architecture retains these objects while distinguishing additional memory semantics that have different authority, lifetime, and retrieval rules:
 
@@ -840,7 +924,7 @@ The v0.1 paper distinguishes episodes, reflections, concepts, applications, and 
 
 These forms may share infrastructure, but they must not be flattened into one untyped table with identical lifecycle semantics. The useful product is the explainable connection layer, not a decorative node cloud.
 
-13.2 Source, event, and episode boundary
+13.3 Source, event, and episode boundary
 
 All provider connectors terminate at a common normalization boundary. An immutable SourceArtifact preserves source identity, checksums, timestamps, sensitivity, consent, and stable spans. Normalized ExperienceEvents represent user messages, assistant messages, tool calls and results, file changes, decisions, feedback, and external events. One or more events form a bounded Episode containing inputs, responses, actions, observations, and outcomes.
 
@@ -848,7 +932,7 @@ Stable deterministic identifiers make ingestion rerunnable. The same connector, 
 
 Historical consumer ChatGPT history is acquired through documented exports rather than undocumented APIs. A future live Codex source may map thread, turn, item, tool, and result events into the same boundary. ChatGPT account access through a Codex runtime is not treated as arbitrary access to consumer ChatGPT history.
 
-13.3 Governed candidate and commit path
+13.4 Governed candidate and commit path
 
 A model response is untrusted structured input. It enters a CandidateMemory quarantine and cannot participate in normal retrieval. Deterministic validation checks the schema, cited source and span existence, workspace access, sensitivity inheritance, temporal fields, allowed predicates, and referenced memories. Policy then selects one of three initial outcomes:
 
@@ -858,13 +942,13 @@ A model response is untrusted structured input. It enters a CandidateMemory quar
 
 The commit service is the sole canonical writer. It uses idempotency keys and optimistic concurrency, writes an immutable revision, appends a content-minimized audit event, and schedules disposable projections. A correction creates a new memory and closes the validity of the superseded revision. It never rewrites history. A lower-authority inference cannot supersede explicit user evidence.
 
-13.4 Policy-bound evidence retrieval
+13.5 Policy-bound evidence retrieval
 
 Retrieval is a typed service rather than direct database or vector-index access. A request includes actor, purpose, workspace, scope, allowed memory types, maximum sensitivity, evidence preference, and a fixed context budget. Authorization and lifecycle filtering happen before relevance ranking. Superseded, forgotten, expired, cross-workspace, and sensitivity-incompatible records do not enter ordinary results.
 
-Candidate generation may combine lexical search, vectors, relation neighbourhoods, time, pinning, procedures, and later learned rerankers. Exact-vector, HNSW, and TurboVec indexes remain replaceable projections to benchmark; no index is canonical memory. The response is an EvidencePacket containing selected current claims, scoped preferences, episodes, procedures, commitments, citations, selection explanations, uncertainty, and known material contradictions. A compact concept never becomes a naked instruction detached from its source.
+Candidate generation may combine lexical search, vectors, relation neighbourhoods, time, pinning, procedures, and later learned rerankers. Exact-vector, HNSW, graph, TurboVec, TencentDB Agent Memory, and hosted memory adapters remain replaceable projections to benchmark; no index or provider is canonical memory. The response is an EvidencePacket, presented at the product boundary as an intuition packet, containing selected current claims, scoped preferences, episodes, procedures, commitments, citations, selection explanations, uncertainty, and known material contradictions. A compact concept never becomes a naked instruction detached from its source.
 
-13.5 Local-first and provider-neutral topology
+13.6 Local-first and provider-neutral topology
 
 A complete usable state can live on one device. Network absence must not prevent capture, browsing, correction, or lexical retrieval. Remote processing visibly degrades to local processors or queued work. A practical reference adapter may use SQLite, content-addressed encrypted files, FTS5, and a replaceable vector index, but these technologies do not define the domain.
 
@@ -874,7 +958,7 @@ Forgetting immediately excludes a record, writes a tombstone, removes projection
 
 14. Reference Implementation Status
 
-The repository now contains an executable Phase 0 proof aligned with the expanded architecture. This is implementation evidence, not an empirical result for H1-H4.
+The repository now contains an executable Phase 0 proof aligned with the expanded architecture. This is implementation evidence, not an empirical result for H1-H6.
 
 14.1 Versioned contracts and deterministic identity
 
@@ -894,7 +978,7 @@ At this revision, the paper-first repository contains 31 passing Python tests an
 
 14.4 Remaining gates
 
-The in-memory proof does not yet demonstrate persistent SQLite rebuilds, deletion propagation through projections, encrypted sync, extension capability isolation, provider egress enforcement, job checkpoint recovery, or live cross-client operation. Those invariants are explicit deferred release gates for the phases that introduce the relevant adapters. The first Phase 1 preview adds a macOS chat connector, append-only local source/event/episode JSONL, deterministic completed-turn boundaries, a fixture provider, and an OpenAI-ready provider seam. This is input-pipeline evidence rather than a result for H1-H4. Incremental ChatGPT export import, SQLite, association indexes, and comparative TencentDB or hosted-memory evaluation remain subsequent Phase 1 work behind stable ports.
+The in-memory proof does not yet demonstrate persistent SQLite rebuilds, deletion propagation through projections, encrypted sync, extension capability isolation, provider egress enforcement, job checkpoint recovery, or live cross-client operation. Those invariants are explicit deferred release gates for the phases that introduce the relevant adapters. The first Phase 1 preview adds a macOS chat connector, append-only local source/event/episode JSONL, deterministic completed-turn boundaries, a fixture provider, and an OpenAI-ready provider seam. This is input-pipeline evidence rather than a result for H1-H6. Incremental ChatGPT export import, SQLite, association indexes, and comparative TencentDB or hosted-memory evaluation remain subsequent Phase 1 work behind stable ports.
 
 15. Conclusion
 The Experience Learning Layer begins from a simple distinction: access to old experience is not the same as 
@@ -906,6 +990,10 @@ ELL proposes an explicit path from episodes to provisional reflections, from ref
 and from concepts to measured applications and outcomes. The architecture preserves both support and 
 counterevidence, treats scope and temporal validity as first-class fields, and makes revision reversible and 
 auditable. Its value will be determined empirically, not by the plausibility of the design.
+The product expression of that hypothesis is an evolving intuition: economical, timely context that helps an AI
+understand shorthand and adapt to change without hiding where its guidance came from. Whether compact
+intuition packets deliver this experience more accurately and efficiently than no memory, raw history, ordinary
+RAG, rolling summaries, or dynamic-memory baselines remains an open empirical question.
 The project is open by default. The paper, schemas, benchmark generator, implementation, prompts, and 
 evaluation harness are intended to make the research easy to inspect, reproduce, criticise, and extend. The 
 immediate next step is not to claim a finished learning system, but to build the controlled benchmark and 
