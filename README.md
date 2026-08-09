@@ -59,3 +59,8 @@ make test
 See `AGENTS.md` for development rules and commands. Architecture decisions are in
 `docs/adr`. The repository remains paper-first while its Phase 1 surface now includes
 the small live-chat capture client and append-only local episode adapter.
+
+## License
+
+Experience Learning Layer is open-source software available under the
+[MIT License](LICENSE).
