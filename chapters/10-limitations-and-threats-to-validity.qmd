@@ -1,0 +1,29 @@
+# Limitations and Threats to Validity
+
+First, textual concepts favour knowledge that can be expressed as propositions or instructions. Tacit motor skills, perceptual expertise, and distributed representations may not fit this format. ELL may therefore complement rather than replace parametric or executable skill learning.
+
+Second, provenance does not guarantee truth. Episodes can be incorrect, duplicated, biased, or malicious. A perfectly traceable concept may still be grounded in poor evidence. Source reliability and adversarial robustness require separate study.
+
+Third, LLM-generated reflections may introduce causal stories that are plausible but unsupported. The validation and counterevidence stages reduce this risk but cannot eliminate it. Human evaluation remains necessary for high-stakes domains.
+
+Fourth, the proposed confidence formula is heuristic. Evidence counts are not independent observations, and application outcomes may be delayed or confounded. Calibration must be empirical and domain-specific.
+
+Fifth, synthetic benchmarks can overstate progress if their latent rules resemble the system’s representation.
+
+The controlled benchmark is useful for diagnosis but must be paired with natural conversations and agentic tasks.
+
+Sixth, comparisons across memory systems are difficult because ingestion granularity, retrieval budget, model backbone, prompts, and judge choice can dominate results. The protocol therefore fixes budgets and reports complete configurations, but residual implementation differences remain.
+
+Seventh, the architecture adds cost and operational complexity. The system is unsuccessful if the concept layer does not deliver enough transfer, safety, or efficiency to justify reflection, validation, storage, and governance overhead.
+
+Eighth, the term intuition can encourage anthropomorphism or hide uncertainty behind fluent behaviour. In this paper it is only an operational label for measured context selection and adaptation. A compact packet may also compress away rare but important exceptions, so source restoration, counterevidence retrieval, and abstention must be evaluated explicitly.
+
+Ninth, reduced prompt tokens do not necessarily reduce total energy or latency. Background embedding, association, graph maintenance, reflection, and consolidation can move cost out of the visible request path.
+
+Efficiency claims therefore require end-to-end accounting over both write-time and read-time work.
+
+Tenth, learned memory operations introduce reward misspecification and policy-opacity risks. A policy may improve benchmark reward by discarding inconvenient counterevidence, overfitting retrieval to the judge, or retaining sensitive information. Immutable sources and deterministic commit constraints reduce but do not eliminate this risk.
+
+Eleventh, neural and parametric memory may improve adaptation while weakening inspectability and selective deletion. An external provenance ledger can record how an update was produced, but it cannot by itself prove which parameter encodes a fact or that a deletion has removed all influence. Such methods cannot satisfy ELL's canonical governance requirements without new verification techniques.
+
+Finally, cognitive analogies are limited. Human episodic and semantic memory motivate the separation of roles, but ELL should not be interpreted as an account of biological memory or consciousness.

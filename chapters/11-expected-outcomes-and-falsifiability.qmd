@@ -1,0 +1,14 @@
+# Expected Outcomes and Falsifiability
+
+This work is intended to produce a testable system rather than an unfalsifiable architecture diagram. The primary claim would be weakened or rejected under any of the following outcomes:
+
+- concept-level metrics improve but downstream transfer does not;
+- direct insight extraction matches ELL on scope and contradiction handling at lower cost;
+- concepts systematically omit exceptions that episode retrieval preserves;
+- confidence remains poorly calibrated across model families;
+- revision creates instability or catastrophic concept churn;
+- open-weight models cannot generate sufficiently reliable structured reflections;
+- privacy-preserving deletion cannot remove derived information without rebuilding the store;
+- performance gains disappear under equal retrieval budgets.
+
+Negative results remain useful. They can show that explicit concept objects are unnecessary for some task classes, that reflection should be triggered only by failures, or that evidence-grounded retrieval is more valuable than consolidation. The proposed benchmark is structured so that these alternatives can be tested without preserving the original hypothesis.

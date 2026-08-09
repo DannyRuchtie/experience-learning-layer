@@ -1,0 +1,64 @@
+project:
+  type: book
+  output-dir: _book
+  resources:
+    - chapters/assets/
+    - examples/
+
+book:
+  title: "From Episodes to Revisable Concepts"
+  subtitle: "The Experience Learning Layer for Evidence-Grounded Learning in Language Agents"
+  author: "Danny Ruchtie"
+  date: "2026-08-09"
+  description: "An open research specification for evidence-grounded learning in language agents."
+  output-file: "experience-learning-layer"
+  page-navigation: true
+  search: true
+  downloads: [pdf]
+  repo-url: https://github.com/DannyRuchtie/experience-learning-layer
+  repo-branch: main
+  repo-actions: [edit, issue, source]
+  sidebar:
+    style: docked
+    background: light
+  chapters:
+    - index.qmd
+    - chapters/01-introduction.qmd
+    - chapters/02-problem-definition.qmd
+    - chapters/03-related-work-and-positioning.qmd
+    - chapters/04-experience-learning-layer-architecture.qmd
+    - chapters/05-proposed-algorithms.qmd
+    - chapters/06-data-model-and-public-interfaces.qmd
+    - chapters/07-experimental-design.qmd
+    - chapters/08-open-source-research-publication.qmd
+    - chapters/09-ethics-privacy-and-security.qmd
+    - chapters/10-limitations-and-threats-to-validity.qmd
+    - chapters/11-expected-outcomes-and-falsifiability.qmd
+    - chapters/12-research-and-implementation-roadmap.qmd
+    - chapters/13-experience-learning-layer-expansion.qmd
+    - chapters/14-research-artifact-status.qmd
+    - chapters/15-conclusion.qmd
+    - chapters/acknowledgements.qmd
+    - chapters/references.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    smooth-scroll: true
+    link-external-newwindow: true
+  pdf:
+    documentclass: scrreprt
+    papersize: a4
+    toc: true
+    number-sections: true
+    colorlinks: true
+    geometry:
+      - top=24mm
+      - bottom=24mm
+      - left=24mm
+      - right=24mm
+
+lang: en

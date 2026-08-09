@@ -1,0 +1,3 @@
+# Acknowledgements {.unnumbered}
+
+This working draft was developed as part of the open Experience Learning Layer project. Future versions will list contributors according to documented authorship and contribution criteria.

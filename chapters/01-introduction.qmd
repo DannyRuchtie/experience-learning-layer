@@ -1,0 +1,53 @@
+# Introduction
+
+A language agent can remember an earlier event without learning anything general from it. A retrieval system may surface five examples of the same failure, yet the agent may still repeat that failure because the episodes have never been converted into a reusable and appropriately scoped principle. This distinction matters as agents move from single-turn assistance toward persistent collaboration, long-running tasks, and multi-session interaction.
+
+The intended user experience is stronger than factual continuity. An AI should understand conversational shorthand, surface relevant context just in time, generalise usefully across related situations, notice when a previous pattern has changed, correct itself rapidly, and express calibrated uncertainty. Explanations should be available when requested without forcing provenance detail into every interaction. These behaviours constitute the proposed operational meaning of an evolving intuition; they do not imply consciousness, personhood, or a simulation of human cognition.
+
+The first generation of agent-memory systems established that external memory could improve continuity beyond a model’s context window. Generative Agents stored observations, ranked them for retrieval, and periodically synthesised higher-level reflections that influenced later plans (Park et al. 2023). Reflexion used textual feedback about prior attempts as a non-parametric learning signal (Shinn et al. 2023). ExpeL extracted natural-language insights from collections of task experiences and reused both insights and successful trajectories at inference time (Zhao et al. 2024). MemGPT approached the problem as virtual context management, allowing an agent to move information between limited working context and external storage (Packer et al. 2023). CoALA organised these developments within a broader cognitive architecture containing working, episodic, semantic, and procedural memory (Sumers et al. 2024).
+
+Subsequent systems have increasingly abstracted experience rather than merely retrieving it. Voyager accumulated reusable executable skills (G. Wang et al. 2023). Agent Workflow Memory induced recurring action routines from prior trajectories (Z. Z. Wang et al. 2025). A-MEM dynamically linked and revised memory notes as new information arrived (Xu et al. 2025). Reflective Memory Management used prospective and retrospective reflection to improve memory granularity and retrieval (Z. Tan et al. 2025). Temporal Semantic Memory consolidated temporally related events into durative representations (Su et al. 2026). More recent architectures explicitly construct schemas, concepts, semantic knowledge, or procedural knowledge from episodes, including DCPM, GAAMA, and PlugMem (Fei et al. 2026; Paul, Sharma, and Sareen 2026; Yang et al. 2026).
+
+This rapid progress changes the research question. It is no longer defensible to claim that transforming episodes into abstractions is itself novel. The more precise question is: How should an agent maintain a transparent and revisable chain from raw experience, through provisional interpretation, to general concepts whose evidential support and behavioural usefulness can be tested?
+
+ELL addresses this question by separating four objects that are often collapsed into one textual memory:
+
+1. An episode records what occurred in a specific context.
+2. A reflection is a provisional interpretation of one or more episodes.
+3. A concept is a reusable proposition or strategy supported by multiple reflections and episodes.
+4. An application outcome records whether using a concept helped in a later situation.
+
+The separation is important because a plausible explanation is not automatically reliable knowledge. Suppose a project proposal is rejected after stakeholders were consulted late. A reflection may state that late stakeholder involvement caused the rejection. That is a useful hypothesis, but a single episode does not justify a universal rule. A concept should only be promoted after corroborating cases, explicit checks for counterexamples, and a scope statement such as “cross-functional initiatives with external implementation dependencies.” New evidence may later narrow, challenge, or replace it.
+
+ELL treats every concept as a versioned claim rather than a timeless fact. The system retains the episodes that support it, episodes that contradict it, the contexts in which it has been applied, and the outcomes of those applications. This makes concept formation inspectable and enables evaluation at the level where learning is claimed to occur.
+
+The architecture is inspired by, but does not attempt to reproduce, human memory. Tulving’s distinction between episodic and semantic memory motivates the separation between event-specific records and general knowledge (Tulving 1972). Complementary Learning Systems theory motivates a fast episodic path and a slower consolidation path that integrates common structure across experiences (McClelland, McNaughton, and O’Reilly 1995; Kumaran, Hassabis, and McClelland 2016). Bartlett’s account of reconstructive remembering provides a warning as much as an inspiration: abstraction can impose existing schemas on ambiguous experience and thereby distort it (Bartlett 1932). For this reason, ELL preserves provenance, counterevidence, and reversible revisions.
+
+## Scope
+
+ELL is an external learning layer. It does not update the parameters of the underlying language model. It does not prescribe how raw activity is captured from calendars, files, screens, sensors, or chat applications. It starts after an application has produced a canonical stream of consented experience records. It is designed to support conversation histories, task trajectories, product-work records, and other event streams through a shared schema.
+
+The initial research scope is deliberately narrower than a complete personal-intelligence system. It focuses on:
+
+- association between episodes;
+- reflection over individual and grouped episodes;
+- concept formation and consolidation;
+- application of concepts to later decisions;
+- revision after new evidence and outcomes;
+- direct evaluation of concept quality and transfer.
+
+Perception, multimodal capture, large-scale identity resolution, and parametric fine-tuning are outside the first paper.
+
+## Contributions
+
+This working paper specifies five intended contributions.
+
+A typed experience-to-concept architecture. It defines distinct schemas and operations for episodes, associations, reflections, concepts, evidence links, applications, and outcomes.
+
+An evidence-grounded concept lifecycle. Concepts move through explicit states—proposed, corroborated, contested, revised, superseded, and retired—while retaining lineage and provenance.
+
+A separation between confidence and eloquence. Concept confidence is computed from observable evidence, contradiction, diversity, and outcome history rather than accepted directly from an LLM’s self-reported certainty.
+
+A direct evaluation protocol. In addition to downstream task performance, the evaluation measures concept correctness, evidence precision and recall, scope accuracy, contradiction handling, revision latency, calibration, transfer, and cost.
+
+An open reference implementation. Versioned releases will include code, schemas, prompts, experiment configurations, synthetic data generators, evaluation scripts, and paper sources under permissive licences, with reproducibility runs using open-weight models.

@@ -1,0 +1,67 @@
+# Problem Definition
+
+## Experience learning
+
+Let an agent encounter an ordered experience stream E={e1 ,e2 ,…,en}.
+
+Each episode ei contains a time-bounded record of context, observation, action, outcome, source, and metadata. Given this stream, an experience-learning system should produce a set of concepts C that improve decisions on future situations while remaining grounded in the episodes from which they were induced.
+
+The goal is not to compress the entire history into a shorter text. Compression can preserve frequent information while losing exceptions, causal uncertainty, temporal change, and source identity. The desired output is a set of claims or strategies with explicit conditions and evidence.
+
+A concept is useful only if it satisfies several properties:
+
+- Grounded: its support can be traced to specific episodes and reflections.
+- General: it applies beyond a single remembered case.
+- Scoped: it states where it is expected to apply and where it may not.
+- Revisable: contradictory evidence can change its status or content.
+
+- Actionable: it can affect a later response, plan, or decision.
+- Measurable: its correctness and utility can be evaluated independently.
+
+## Failure modes addressed
+
+ELL is designed around seven common failure modes.
+
+Episode replay without abstraction. Relevant cases are retrieved, but no reusable principle is formed.
+
+Premature generalisation. A single salient episode becomes a broad rule.
+
+Self-confirming reflection. Once a reflection is stored, later retrieval favours evidence that agrees with it.
+
+Context collapse. A concept loses the conditions under which it was valid.
+
+Temporal staleness. New evidence changes what is true, but the old concept continues to guide behaviour.
+
+Provenance loss. A generated statement can no longer be connected to the experience that justified it.
+
+Behavioural ambiguity. A system claims to have learned because it stored a summary, without showing improved transfer or decision quality.
+
+## Research questions
+
+The first empirical study will answer five questions.
+
+RQ1 — Separation. Does representing reflections as provisional objects before concept consolidation reduce unsupported generalisation compared with direct episode-to-rule summarisation?
+
+RQ2 — Revision. Do explicit counterevidence, temporal validity, and versioned lifecycle states improve adaptation when the underlying pattern changes?
+
+RQ3 — Transfer. Do consolidated concepts improve performance on new situations that share latent structure but differ in wording and surface details?
+
+RQ4 — Efficiency. Can compact concepts plus selected source episodes match or improve downstream performance while using less retrieval context than episode-only methods?
+
+RQ5 — Intuition quality. Can a compact, uncertainty-aware intuition packet improve shorthand understanding, just-in-time relevance, change detection, and rapid correction compared with no-memory, raw-history, and ordinary retrieval-augmented generation baselines?
+
+## Hypotheses
+
+H1. ELL will produce higher concept-scope accuracy and lower overgeneralisation than a direct insight-extraction baseline.
+
+H2. ELL will revise or contest invalid concepts more quickly after contradictory evidence than append-only reflection or rolling-summary baselines.
+
+H3. ELL will yield a positive transfer gain on held-out tasks whose latent rule is represented in prior experiences, even when lexical similarity to those experiences is low.
+
+H4. Retrieving concepts together with a small number of supporting episodes will reduce median input tokens per decision without reducing task success.
+
+H5. Compact intuition packets will improve shorthand resolution, just-in-time context precision, change detection, and calibrated correction over no-memory, raw-history, and ordinary RAG baselines at an equal retrieval budget.
+
+H6. ELL will reduce end-to-end decision tokens, latency, and measured hardware-time or energy proxies while preserving or improving task utility; this hypothesis includes the cost of background association, reflection, and consolidation rather than treating those operations as free.
+
+These hypotheses are falsified if the confidence intervals include no practically meaningful improvement, if concept-level gains fail to translate into behaviour, or if the added architecture costs more than the retrieval it replaces without delivering measurable benefits.
