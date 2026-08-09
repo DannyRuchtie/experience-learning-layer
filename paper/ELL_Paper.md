@@ -5,8 +5,8 @@ From Episodes to Revisable Concepts
 The Experience Learning Layer for Evidence-Grounded Learning 
 in Language Agents
 Danny Ruchtie
-Living working draft v0.3 - 9 August 2026
-Revision note. Version 0.3 retains the preregistered research proposal from v0.1, the governed architecture and verified Phase 0 status from v0.2, and makes the product north star, system-layer boundaries, and pre-implementation success criteria explicit. The archived v0.1 PDF remains available for comparison.
+Living working draft v0.4 - 9 August 2026
+Revision note. Version 0.4 retains the preregistered proposal and governed intuition architecture, and adds a primary-source review of production memory infrastructure, learned memory operations, experience-derived skills, neural test-time memory, and current evaluation protocols. The archived v0.1 PDF remains available for comparison.
 OPEN RESEARCH SPECIFICATION  ·  EXPERIMENTAL PROTOCOL
 Research status. This document is a working architecture paper and preregistered evaluation plan. It defines the 
 proposed system, hypotheses, data model, implementation contract, and experiments. It does not report empirical 
@@ -203,29 +203,43 @@ replaces without delivering measurable benefits.
 EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
 5
 3. Related Work and Positioning
-3.1 Persistent context and episodic retrieval
-Long-term agent memory initially focused on maintaining continuity beyond a finite context window. 
-MemoryBank stored and updated user-related memories for sustained interaction (Zhong et al. 2024), while 
-MemGPT introduced a virtual-memory analogy in which an agent manages different context tiers (Packer et 
-al. 2023). Zep later represented evolving information in a temporal knowledge graph (Rasmussen et al. 2025). 
-These systems demonstrate that long-running interaction requires explicit write, update, and retrieval 
-mechanisms rather than a single ever-growing prompt.
-Benchmarks have exposed the limits of retrieval-centric designs. LoCoMo evaluates question answering, 
-summarisation, and dialogue generation over long multi-session conversations (Maharana et al. 2024). 
-LongMemEval tests information extraction, cross-session reasoning, temporal reasoning, knowledge updates, 
-and abstention (Wu et al. 2025). These tasks are central to persistent memory, but they primarily evaluate 
-whether a system can recover or reason over stored information. They do not fully determine whether a general 
-concept was correctly induced.
-3.2 Reflection and non-parametric learning
+3.1 Production memory and context infrastructure
+Production-oriented systems establish useful implementation patterns without settling ELL's epistemic model.
+MemGPT, now developed as Letta, treats a finite context window as a managed hierarchy and gives the agent
+explicit operations for moving information between tiers (Packer et al. 2023; Letta 2026). Mem0 provides a
+developer-facing memory layer that extracts, consolidates, and retrieves salient conversational information, with
+an optional graph representation (Chhikara et al. 2025). Zep and its open-source Graphiti engine maintain
+temporally valid entities and relations, preserve episode provenance, and combine semantic, lexical, and graph
+retrieval (Rasmussen et al. 2025; Zep 2026). TencentDB Agent Memory implements a local layered pipeline from
+raw conversations through atomic memories and scenes to personas, with inspectable files and hybrid retrieval
+(TencentDB Agent Memory Team 2026).
+
+ELL adopts four principles from this family: explicit context-budget management; incremental temporal updates;
+hybrid candidate retrieval; and a drill-down path from compact context to source episodes. The corresponding
+integration points are replaceable ContextManager, MemoryProjection, TemporalRelationIndex, and
+RetrievalCandidateProvider ports. It rejects the assumption that any provider's extracted fact, persona, graph
+edge, summary, or context block is canonical truth. Such outputs enter ELL as untrusted candidates and remain
+subject to evidence, workspace, permission, version, deletion, and commit policy.
+
+These projects are comparatively mature as deployable software, but their public evaluations use different
+models, prompts, budgets, datasets, and product configurations. Vendor- or project-reported latency, token, and
+accuracy results therefore motivate reproduction; they are not evidence that one substrate should be adopted as
+ELL's governing architecture. The current ELL implementation has not integrated or validated any of these
+systems end to end.
+
+3.2 Reflection, reasoning memory, and non-parametric learning
 Generative Agents introduced periodic reflection over accumulated observations, producing higher-level 
 statements that could themselves be retrieved (Park et al. 2023). Reflexion showed that verbal feedback stored 
 in episodic memory can improve repeated task attempts without weight updates (Shinn et al. 2023). ExpeL 
 extended this idea by extracting insights across training experiences and transferring them to test tasks (Zhao et 
-al. 2024). Reflective Memory Management used forward-looking summarisation and backward-looking 
-evidence-based retrieval refinement (Z. Tan et al. 2025).
+al. 2024). ReasoningBank distils strategies from both successful and failed trajectories and combines them with
+memory-aware test-time scaling (Ouyang et al. 2026). Reflective Memory Management used forward-looking
+summarisation and backward-looking evidence-based retrieval refinement (Z. Tan et al. 2025).
 These systems establish reflection as a useful learning operator. ELL adopts that operator but makes a stricter 
 distinction: a reflection is a candidate interpretation, not yet a trusted concept. This distinction enables explicit 
-evidence thresholds, counterevidence checks, and lifecycle transitions.
+evidence thresholds, counterevidence checks, and lifecycle transitions. Self-judged success or failure is useful as
+one outcome signal but cannot be the sole authority for canonical learning; independent validators, task rewards,
+user corrections, and uncertainty must be retained where available.
 3.3 Semantic, procedural, and graph-based abstraction
 A second line of work converts experience into structured knowledge or reusable procedures. Voyager stores 
 executable skills; Agent Workflow Memory induces reusable task routines; and A-MEM dynamically 
@@ -252,15 +266,79 @@ EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
 6
 The implementation can use a graph, relational database, vector index, or a combination. The contribution is 
 the contract and lifecycle, not a requirement for one storage technology.
-3.4 Evaluation of agent memory
-MemBench broadens evaluation to factual and reflective memory under different interaction roles, measuring 
-effectiveness, efficiency, and capacity (H. Tan et al. 2025). MemoryArena further couples memory with later 
-action in multi-session agent-environment loops (He et al. 2026). These directions are important because 
-successful retrieval does not guarantee useful behaviour.
-ELL adds a controlled concept-induction benchmark in which the latent patterns, exceptions, supporting 
-episodes, and change points are known. Existing benchmarks are retained for ecological validity, while the 
-controlled benchmark isolates whether a system formed the right concept for the right reasons.
-3.5 Cognitive inspiration and its limits
+
+3.4 Learned memory-operation policies
+AgeMem exposes store, retrieve, update, summarise, and discard as tool actions and learns a unified short- and
+long-term memory policy with progressive reinforcement learning (Y. Yu et al. 2026). AtomMem decomposes
+management into atomic create, read, update, and delete operations and learns their orchestration with supervised
+and reinforcement learning (Huo et al. 2026). MemSkill instead represents extraction, consolidation, and pruning
+as reusable skills selected by a controller and revised by a designer that examines hard cases (H. Zhang et al.
+2026).
+
+ELL adopts the separation between atomic operations and policy, adaptive operation selection, and explicit
+learning from policy failures. These map to versioned MemoryOperationPolicy, ExtractionPolicy,
+ConsolidationPolicy, RetrievalPolicy, and ForgettingPolicy ports. A fixed heuristic and a learned policy should be
+interchangeable under the same typed inputs, outputs, budgets, and audit traces.
+
+The rejected assumption is that task reward alone grants authority to mutate durable memory. Reward design can
+favour short-term benchmark success, opaque policies can make a write difficult to explain, and update or delete
+actions can destroy evidence needed for correction and scientific audit. ELL therefore permits learned policies to
+propose operations, but deterministic services enforce append-only provenance, authorization, idempotency,
+workspace isolation, tombstones, and canonical commit. These methods are recent research systems evaluated on
+bounded benchmark suites; their transfer, reward robustness, and deletion safety remain experimental questions.
+
+3.5 Experience graphs and evolving skills
+Experience-oriented systems increasingly represent reusable behaviour rather than only conversational facts.
+EXG organises successful and failed trajectories into an experience graph for online growth and offline reuse
+(Jin et al. 2026). ReasoningBank and ExpeL distil general strategies across trajectories (Ouyang et al. 2026; Zhao
+et al. 2024). MUSE-Autoskill manages skill creation, storage, selection, evaluation, refinement, and skill-level
+experience under one lifecycle (Lin et al. 2026). Memento-Skills uses a learned router and reflective read-write
+loop to evolve structured external skills (Zhou et al. 2026).
+
+ELL adopts graph-organised candidate generation, contrast between successes and failures, explicit skill
+lifecycle, and cross-task transfer measurement. A proposed SkillVersion should contain immutable identity,
+preconditions, scope, implementation or instruction content, lineage, tests, approval requirements, and rollback
+metadata. Each use should emit an ApplicationReceipt linking the exact skill and concept versions, retrieved
+evidence, action, cost, validator, and independently observed outcome. Outcome history may propose a new
+SkillVersion; it must not silently rewrite the version that was executed.
+
+The rejected assumptions are that a skill file is self-validating, that repeated reuse proves causality, or that an
+LLM's reflection is an independent outcome measure. The named systems offer promising evidence in web,
+software-engineering, reasoning, and skill benchmarks, but do not yet establish universal transfer or safe
+autonomous modification. ELL therefore places ExperienceGraph, SkillGenerator, SkillRouter, and SkillEvaluator
+behind experiment ports and compares them under fixed token, latency, and validation budgets.
+
+3.6 Neural and parametric test-time memory
+Titans introduces a neural long-term memory module that learns to compress historical context and combines it
+with attention (Behrouz, Zhong, and Mirrokni 2025). Nested Learning interprets models and optimizers as nested
+optimization problems with distinct context flows; its HOPE architecture combines a self-modifying sequence
+model with a continuum memory system (Behrouz et al. 2025). TMEM distils experience into online LoRA updates
+so that a fast parameter state changes subsequent behaviour within an episode (Ren et al. 2026).
+
+These approaches suggest promising accelerators for long context, fast adaptation, and policy specialization.
+ELL may evaluate them through NeuralMemoryAccelerator or ParametricAdaptation ports while separately
+recording the source data, training objective, base model, update sequence, parameter delta, evaluation result, and
+deletion obligations. They are not suitable as the sole canonical store: a parameter update does not natively
+provide statement-level provenance, deterministic correction, workspace isolation, selective export, or reliable
+evidence-aware deletion. Their current evidence is primarily model- and benchmark-level; reproducibility,
+catastrophic interference, privacy erasure, and auditability remain release gates.
+
+3.7 Evaluation of memory and intuition
+LongMemEval evaluates information extraction, cross-session reasoning, temporal reasoning, knowledge updates,
+and abstention in long-term interactive memory (Wu et al. 2025). MemoryAgentBench adds incremental multi-turn
+evaluation of accurate retrieval, test-time learning, long-range understanding, and selective forgetting (Hu,
+Wang, and McAuley 2025). MemBench broadens factual and reflective memory evaluation across interaction roles
+(H. Tan et al. 2025), while MemoryArena couples memory with later action in multi-session environments (He et
+al. 2026).
+
+ELL will use these benchmarks for comparability, but none alone establishes the intended intuition capability.
+An ELL-specific sealed benchmark must additionally measure evidence-supported compression, shorthand
+resolution, proactive relevance, structurally distant transfer, calibrated uncertainty, change-point detection,
+correction latency, version and deletion lineage, and whether applying a retrieved concept or skill improved an
+independently measured outcome. Results must include background consolidation cost and compare fixed,
+learned, graph, external-memory, and neural accelerators under equal budgets.
+
+3.8 Cognitive inspiration and its limits
 The episodic-semantic distinction and complementary learning systems provide useful engineering metaphors 
 (Tulving 1972; McClelland, McNaughton, and O’Reilly 1995; Kumaran, Hassabis, and McClelland 2016). 
 They suggest preserving specific experiences while separately integrating common structure. However, ELL is 
@@ -514,10 +592,12 @@ proposition, scope, conditions,
 implication, support, counterevidence, 
 confidence, validity, version, lifecycle 
 state
-Application Record of concept use task, retrieved concepts, retrieved 
-episodes, decision, timestamp
-Outcome Evidence about application result reward or judgement, source, 
-reliability, delay, linked application
+SkillVersion Proposed immutable reusable capability skill ID and version, preconditions, scope,
+implementation or instruction, tests, lineage, approvals, rollback metadata
+ApplicationReceipt Immutable record of concept or skill use task, exact concept and skill versions, retrieved
+episodes, decision, validator, cost, timestamp
+Outcome Evidence about application result reward or judgement, independent source,
+reliability, delay, linked application receipt
 AuditEvent Immutable record of system change actor, operation, object, prior version, 
 new version, method, timestamp
 6.2 Concept states
@@ -541,6 +621,8 @@ reconcile_concepts(reflection_ids) -> list[ConceptVersion]
 retrieve_learning(query, context, budget) -> LearningPacket
 record_application(packet, decision) -> ApplicationID
 record_outcome(application_id, outcome) -> list[ConceptUpdate]
+propose_skill(experience_ids, policy) -> list[SkillVersion]
+record_skill_application(skill_version_id, receipt) -> ApplicationID
 explain_concept(concept_id, version=None) -> EvidenceReport
 delete_subject_data(subject_id, policy) -> DeletionReport
 
@@ -598,7 +680,9 @@ reasoning, temporal reasoning, updates, abstention, and long-range dialogue unde
 EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
 14
 Maharana et al. 2024). MemBench will add reflective-memory and efficiency measures where licensing and 
-harness compatibility permit (H. Tan et al. 2025).
+harness compatibility permit (H. Tan et al. 2025). MemoryAgentBench will test retrieval, test-time learning,
+long-range understanding, and selective forgetting in incremental multi-turn interaction (Hu, Wang, and
+McAuley 2025).
 ELL is not expected to dominate span-recall tasks solely because it forms concepts. These benchmarks test 
 whether the abstraction layer preserves ordinary memory performance and whether concept retrieval helps 
 multi-session inference.
@@ -606,7 +690,45 @@ Stage C: memory-dependent action
 MemoryArena will test whether information learned in earlier sessions improves later task execution (He et al. 
 2026). A smaller open environment may be added for rapid iteration, but MemoryArena is the target action 
 benchmark because it explicitly couples memory, agent decisions, and environment outcomes.
-7.3 Baselines
+Stage D: ELL intuition and outcome benchmark
+The ELL-specific benchmark combines controlled organisational and personal-work streams with later tasks that
+require conversational shorthand, proactive but non-intrusive context, structurally distant transfer, adaptation at
+known change points, and explicit correction. Each decision records an ApplicationReceipt and an independently
+scored outcome. Gold data identifies required context, irrelevant private context, support, counterevidence,
+validity intervals, and deletion cascades. The benchmark therefore measures not only whether information was
+recalled, but whether a compact intuition packet selected the right evidence, improved behaviour, remained
+calibrated, and changed or forgot appropriately.
+
+7.3 Memory Dynamics and Intuition Simulation Lab
+The evaluation will include a reproducible simulation laboratory for studying memory dynamics before any
+policy is considered for deployment. The laboratory replays deterministic, timestamped scenario streams through
+the same typed ports used by the reference architecture. It supports parameter sweeps and side-by-side policy
+comparisons for extraction, association, consolidation, retrieval, revision, and forgetting without granting an
+experimental policy authority to mutate canonical evidence. Each run fixes the scenario version, configuration,
+model and prompt identifiers, random seed, permissions, and resource budget. It emits immutable decision and
+ApplicationReceipts that resolve every selected context item, candidate mutation, committed version, action,
+outcome, evaluator judgement, and cost to its permitted source evidence.
+
+Scenarios use synthetic or appropriately de-identified longitudinal personas representing both individuals and
+organisations. They include stable preferences, weak signals, sensitive attributes that must not be inferred or
+revealed, explicit consent changes, contradictions, temporal drift, delayed outcomes, workspace boundaries, and
+deletion requests. Chronological train, development, and sealed test intervals prevent policies from learning from
+future events; change points and deletion events remain hidden from the system until they occur in replay. The
+laboratory compares no memory, raw-history or maximum-context prompting, ordinary RAG, and the candidate
+systems and ELL ablations in Section 7.4 under matched sources, model conditions, context budgets, and outcome
+opportunities.
+
+Preregistered primary measures cover retrieval precision and recall; faithfulness and calibration of claims;
+adaptation latency after change or correction; contradiction and stale-memory rates; transfer and downstream task
+utility; overpersonalisation and unjustified inference; privacy, consent, and cross-workspace leakage; deletion-
+cascade completeness; and latency, token, storage, and energy or hardware-time cost, including consolidation.
+Scoring is deterministic wherever gold state and event traces permit. Outcome and safety judgements are produced
+by evaluators independent of the policy under test; subjective conversational naturalness is assessed separately by
+blinded human reviewers. Stochastic conditions use multiple preregistered seeds and report confidence intervals
+and effect sizes. This laboratory is an evaluation proposal, not evidence that the present implementation already
+provides adaptive intuition or safe learned memory operations.
+
+7.4 Baselines
 At minimum, all experiments include:
 1. no persistent memory;
 2. full or maximum available context;
@@ -621,14 +743,19 @@ Where reproducible implementations and compatible licences are available, A-MEM,
 Management, GAAMA, and PlugMem will be evaluated using their released code or carefully documented 
 reimplementations (Xu et al. 2025; Z. Tan et al. 2025; Paul, Sharma, and Sareen 2026; Yang et al. 2026). A 
 method will not be included under another system’s name if key behaviour cannot be reproduced.
-7.4 Model conditions
+Additional experiment tracks compare Graphiti/Zep, Mem0, Letta/MemGPT, and TencentDB Agent Memory as
+replaceable retrieval or context substrates; AgeMem, AtomMem, and MemSkill as learned operation policies;
+EXG, ReasoningBank, MUSE-Autoskill, and Memento-Skills as experience or skill learners; and Titans, HOPE,
+and TMEM as neural or parametric accelerators. A named comparison is reported only when its public interface or
+paper can be reproduced under the same source stream, model condition, context budget, and outcome metric.
+7.5 Model conditions
 The main reproducibility track uses at least two openly licensed instruction-tuned models from different model 
 families and two capacity bands. Model names are recorded only when the experiment is frozen, because 
 available open models change rapidly. All generation settings, quantisation, serving software, prompts, and 
 hardware are logged.
 A hosted-model comparison may be reported separately, but the paper’s core claims must remain reproducible 
 without proprietary APIs.
-7.5 Metrics
+7.6 Metrics
 Downstream metrics
 • task success or benchmark accuracy;
 • answer faithfulness to retrieved evidence;
@@ -672,7 +799,7 @@ background consolidation cost;
 Thresholds for these criteria will be frozen before choosing a production memory substrate or learned policy.
 An implementation is not successful merely because it stores more, produces persuasive summaries, or retrieves
 plausible context.
-7.6 Human evaluation
+7.7 Human evaluation
 Concept quality cannot be reduced entirely to lexical matching. A stratified sample will be rated by at least 
 three annotators who are blind to the system condition. The rubric covers correctness, support, scope, 
 usefulness, and whether counterevidence was handled appropriately. Inter-rater agreement is reported using 
@@ -680,7 +807,7 @@ Krippendorff’s alpha. Disagreements are retained rather than resolved solely b
 LLM-based judges may scale evaluation, but they will be calibrated against the human sample. Prompts and 
 raw judgements will be released. The same model used to generate a concept will not be the only judge of that 
 concept.
-7.7 Ablations
+7.8 Ablations
 The following components are removed one at a time:
 • reflection–concept separation;
 • counterevidence retrieval;
@@ -695,7 +822,10 @@ formulation. Architecture ablations compare lexical, vector, graph, temporal, an
 learned extraction and consolidation policy; concept-only versus episode-restored packets; and eager versus
 event-triggered background processing. This keeps dynamic graph organisation, probabilistic hypotheses, and
 other research directions behind evidence gates instead of presuming a settled winner.
-7.8 Statistical analysis
+Safety ablations separately disable deterministic validation around learned write, update, and discard proposals;
+independent outcome validation around skill evolution; and canonical evidence restoration around neural or
+parametric adaptation. These conditions are diagnostic and are not deployment configurations.
+7.9 Statistical analysis
 Binary outcomes use paired tests such as McNemar’s test where appropriate. Continuous or ordinal metrics 
 use paired bootstrap confidence intervals and report effect sizes. Multiple random seeds are used for synthetic 
 generation and stochastic inference. The primary comparisons and practical significance thresholds are frozen 
@@ -833,6 +963,14 @@ must be evaluated explicitly.
 Ninth, reduced prompt tokens do not necessarily reduce total energy or latency. Background embedding,
 association, graph maintenance, reflection, and consolidation can move cost out of the visible request path.
 Efficiency claims therefore require end-to-end accounting over both write-time and read-time work.
+Tenth, learned memory operations introduce reward misspecification and policy-opacity risks. A policy may improve
+benchmark reward by discarding inconvenient counterevidence, overfitting retrieval to the judge, or retaining
+sensitive information. Immutable sources and deterministic commit constraints reduce but do not eliminate this
+risk.
+Eleventh, neural and parametric memory may improve adaptation while weakening inspectability and selective
+deletion. An external provenance ledger can record how an update was produced, but it cannot by itself prove
+which parameter encodes a fact or that a deletion has removed all influence. Such methods cannot satisfy ELL's
+canonical governance requirements without new verification techniques.
 Finally, cognitive analogies are limited. Human episodic and semantic memory motivate the separation of 
 roles, but ELL should not be interpreted as an account of biological memory or consciousness.
 11. Expected Outcomes and Falsifiability
@@ -864,10 +1002,13 @@ Exit criterion: a contributor can record episodes, create a reflection, promote 
 evidence, and run the test suite locally.
 Phase 1 — Controlled benchmark
 • implement the latent-pattern stream generator;
+• implement the Memory Dynamics and Intuition Simulation Lab with deterministic replay, policy sweeps,
+immutable receipts, and chronological train, development, and sealed test partitions;
 • define gold concepts, evidence, counterevidence, exceptions, and change points;
-• freeze metrics and annotation rubric;
+• freeze metrics, policy comparison budgets, privacy and deletion tests, and the annotation rubric;
 • publish baseline results for raw retrieval, rolling summary, and direct insights.
-Exit criterion: a complete benchmark run produces concept and downstream metrics with fixed seeds.
+Exit criterion: a complete replay produces concept, outcome, safety, and cost metrics with fixed seeds and
+reproducible receipts.
 Phase 2 — Reflection and Concept Engines
 • add structured model adapters for local open-weight inference;
 • implement validation, promotion, merge, split, and revision;
@@ -876,8 +1017,10 @@ Phase 2 — Reflection and Concept Engines
 Exit criterion: ELL can be compared with baselines on the sealed synthetic test set.
 Phase 3 — External benchmarks
 • integrate LongMemEval and LoCoMo;
-• integrate MemBench and MemoryArena where licences and compute permit;
+• integrate MemoryAgentBench, MemBench, and MemoryArena where licences and compute permit;
 • reproduce selected open memory baselines under equal budgets;
+• compare learned memory-operation, experience-graph, skill-evolution, and neural-memory tracks behind the
+same provider-neutral ports and canonical governance boundary;
 • complete human evaluation and calibration.
 Exit criterion: results can support or reject H1–H6 across at least one conversational and one action
 benchmark.
@@ -948,6 +1091,8 @@ Retrieval is a typed service rather than direct database or vector-index access.
 
 Candidate generation may combine lexical search, vectors, relation neighbourhoods, time, pinning, procedures, and later learned rerankers. Exact-vector, HNSW, graph, TurboVec, TencentDB Agent Memory, and hosted memory adapters remain replaceable projections to benchmark; no index or provider is canonical memory. The response is an EvidencePacket, presented at the product boundary as an intuition packet, containing selected current claims, scoped preferences, episodes, procedures, commitments, citations, selection explanations, uncertainty, and known material contradictions. A compact concept never becomes a naked instruction detached from its source.
 
+Concrete comparison adapters may wrap Graphiti/Zep temporal graphs, Mem0 extraction and retrieval, Letta-style context management, or TencentDB Agent Memory's layered local store. Learned-policy adapters may implement AgeMem-style tool actions, AtomMem-style atomic operations, or MemSkill-style evolving routines. Experience and skill adapters may provide EXG-style graphs, ReasoningBank-style strategies, or lifecycle-managed skill candidates. Neural accelerators may provide Titans-, HOPE-, or TMEM-style state. In every case, the adapter returns candidates or acceleration state; current canonical SourceArtifact, CandidateMemory, and MemoryRecord contracts, together with proposed SkillVersion, ApplicationReceipt, and deletion records, remain governed by ELL.
+
 13.6 Local-first and provider-neutral topology
 
 A complete usable state can live on one device. Network absence must not prevent capture, browsing, correction, or lexical retrieval. Remote processing visibly degrades to local processors or queued work. A practical reference adapter may use SQLite, content-addressed encrypted files, FTS5, and a replaceable vector index, but these technologies do not define the domain.
@@ -1007,13 +1152,28 @@ EXPERIENCE LEARNING LAYER  ·  WORKING DRAFT v0.1
 21
 References
 Bartlett, Frederic C. 1932. Remembering: A Study in Experimental and Social Psychology. Cambridge University Press.
+Behrouz, Ali, Meisam Razaviyayn, Peilin Zhong, and Vahab Mirrokni. 2025. ‘Nested Learning: The Illusion of Deep Learning
+Architectures’. https://arxiv.org/abs/2512.24695.
+Behrouz, Ali, Peilin Zhong, and Vahab Mirrokni. 2025. ‘Titans: Learning to Memorize at Test Time’.
+https://arxiv.org/abs/2501.00663.
+Chhikara, Prateek, Dev Khant, Saket Aryan, Taranjeet Singh, and Deshraj Yadav. 2025. ‘Mem0: Building Production-Ready AI
+Agents with Scalable Long-Term Memory’. https://arxiv.org/abs/2504.19413.
 Fei, Tianxiang, Mingyang Song, Mao Zheng, and Xiang Yu. 2026. ‘Memory Beyond Recall: A Dual-Process Cognitive Memory System 
 for Self-Evolving LLM Agents’. https://arxiv.org/abs/2606.09483.
 He, Zexue, Yu Wang, Churan Zhi, Yuanzhe Hu, Tzu-Ping Chen, Lang Yin, Ze Chen, et al. 2026. ‘MemoryArena: Benchmarking Agent 
 Memory in Interdependent Multi-Session Agentic Tasks’. https://arxiv.org/abs/2602.16313.
+Hu, Yuanzhe, Yu Wang, and Julian McAuley. 2025. ‘Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions’.
+https://arxiv.org/abs/2507.05257.
+Huo, Yupeng, Yaxi Lu, Zhong Zhang, Haotian Chen, and Yankai Lin. 2026. ‘AtomMem: Learnable Dynamic Agentic Memory with
+Atomic Memory Operation’. https://arxiv.org/abs/2601.08323.
+Jin, Yuxin, Siyuan Zhang, Hanchen Wang, Lu Qin, Ying Zhang, and Wenjie Zhang. 2026. ‘EXG: Self-Evolving Agents with
+Experience Graphs’. https://arxiv.org/abs/2605.17721.
 Kumaran, Dharshan, Demis Hassabis, and James L. McClelland. 2016. ‘What Learning Systems Do Intelligent Agents Need? 
 Complementary Learning Systems Theory Updated’. Trends in Cognitive Sciences 20 (7): 512–34. 
 https://doi.org/10.1016/j.tics.2016.05.004.
+Letta. 2026. ‘Letta: Platform for Building Stateful Agents’. Software repository. https://github.com/letta-ai/letta.
+Lin, Huawei, Peng Li, Jie Song, Fuxin Jiang, and Tieying Zhang. 2026. ‘MUSE-Autoskill: Self-Evolving Agents via Skill
+Creation, Memory, Management, and Evaluation’. https://arxiv.org/abs/2605.27366.
 Maharana, Adyasha, Dong-Ho Lee, Sergey Tulyakov, Mohit Bansal, Francesco Barbieri, and Yuwei Fang. 2024. ‘Evaluating Very 
 Long-Term Conversational Memory of LLM Agents’. In Proceedings of the 62nd Annual Meeting of the Association for 
 Computational Linguistics, 13851–70. https://doi.org/10.18653/v1/2024.acl-long.747.
@@ -1022,6 +1182,9 @@ Hippocampus and Neocortex: Insights from the Successes and Failures of Connectio
 Psychological Review 102 (3): 419–57. https://doi.org/10.1037/0033-295X.102.3.419.
 Packer, Charles, Sarah Wooders, Kevin Lin, Vivian Fang, Shishir G. Patil, Ion Stoica, and Joseph E. Gonzalez. 2023. ‘MemGPT: 
 Towards LLMs as Operating Systems’. https://arxiv.org/abs/2310.08560.
+Ouyang, Siru, Jun Yan, I-Hung Hsu, Yanfei Chen, Ke Jiang, Zifeng Wang, Rujun Han, et al. 2026. ‘ReasoningBank: Scaling Agent
+Self-Evolving with Reasoning Memory’. In International Conference on Learning Representations.
+https://arxiv.org/abs/2509.25140.
 Park, Joon Sung, Joseph C. O’Brien, Carrie J. Cai, Meredith Ringel Morris, Percy Liang, and Michael S. Bernstein. 2023. ‘Generative 
 Agents: Interactive Simulacra of Human Behavior’. In Proceedings of the 36th Annual ACM Symposium on User Interface 
 Software and Technology, 1–22. https://doi.org/10.1145/3586183.3606763.
@@ -1029,6 +1192,8 @@ Paul, Swarna Kamal, Shubhendu Sharma, and Nitin Sareen. 2026. ‘GAAMA: Graph Au
 https://arxiv.org/abs/2603.27910.
 Rasmussen, Preston, Pavlo Paliychuk, Travis Beauvais, Jack Ryan, and Daniel Chalef. 2025. ‘Zep: A Temporal Knowledge Graph 
 Architecture for Agent Memory’. https://arxiv.org/abs/2501.13956.
+Ren, Tao, Weiyao Luo, Hui Yang, Rongzhi Zhu, Xiang Huang, Yuchuan Wu, Bingxue Chou, et al. 2026. ‘Scaling Self-Evolving
+Agents via Parametric Memory’. https://arxiv.org/abs/2606.04536.
 Shinn, Noah, Federico Cassano, Edward Berman, Ashwin Gopinath, Karthik Narasimhan, and Shunyu Yao. 2023. ‘Reflexion: Language 
 Agents with Verbal Reinforcement Learning’. In Advances in Neural Information Processing Systems. Vol. 36. 
 https://arxiv.org/abs/2303.11366.
@@ -1042,6 +1207,8 @@ https://arxiv.org/abs/2506.21605.
 Tan, Zhen, Jun Yan, I-Hung Hsu, Rujun Han, Zifeng Wang, Long T. Le, Yiwen Song, et al. 2025. ‘In Prospect and Retrospect: 
 Reflective Memory Management for Long-Term Personalized Dialogue Agents’. In Proceedings of the 63rd Annual Meeting of the 
 Association for Computational Linguistics, 8416–39. https://doi.org/10.18653/v1/2025.acl-long.413.
+TencentDB Agent Memory Team. 2026. ‘TencentDB Agent Memory’. Software repository.
+https://github.com/TencentCloud/TencentDB-Agent-Memory.
 Tulving, Endel. 1972. ‘Episodic and Semantic Memory’. In Organization of Memory, edited by Endel Tulving and Wayne Donaldson, 
 381–403. Academic Press.
 Wang, Guanzhi, Yuqi Xie, Yunfan Jiang, Ajay Mandlekar, Chaowei Xiao, Yuke Zhu, Linxi Fan, and Anima Anandkumar. 2023. 
@@ -1056,11 +1223,19 @@ Xu, Wujiang, Zujie Liang, Kai Mei, Hang Gao, Juntao Tan, and Yongfeng Zhang. 202
 In Advances in Neural Information Processing Systems. https://arxiv.org/abs/2502.12110.
 Yang, Ke, Zixi Chen, Xuan He, Jize Jiang, Michel Galley, Chenglong Wang, Jianfeng Gao, Jiawei Han, and ChengXiang Zhai. 2026. 
 ‘PlugMem: A Task-Agnostic Plugin Memory Module for LLM Agents’. https://arxiv.org/abs/2603.03296.
+Yu, Yi, Liuyi Yao, Yuexiang Xie, Qingquan Tan, Jiaqi Feng, Yaliang Li, and Libing Wu. 2026. ‘Agentic Memory: Learning Unified
+Long-Term and Short-Term Memory Management for Large Language Model Agents’. https://arxiv.org/abs/2601.01885.
 Zhang, Jiawen, Kejia Chen, Jiachen Ma, Yangfan Hu, Lipeng He, Yechao Zhang, Jian Liu, Xiaohu Yang, Tianwei Zhang, and Ruoxi Jia. 
 2026. ‘Beyond Similarity: Trustworthy Memory Search for Personal AI Agents’. https://arxiv.org/abs/2606.06054.
+Zhang, Haozhen, Quanyu Long, Jianzhu Bao, Tao Feng, Weizhi Zhang, Haodong Yue, and Wenya Wang. 2026. ‘MemSkill: Learning
+and Evolving Memory Skills for Self-Evolving Agents’. https://arxiv.org/abs/2602.02474.
 Zhao, Andrew, Daniel Huang, Quentin Xu, Matthieu Lin, Yong-Jin Liu, and Gao Huang. 2024. ‘ExpeL: LLM Agents Are Experiential 
 Learners’. In Proceedings of the AAAI Conference on Artificial Intelligence, 38:19632–42. 17. 
 https://doi.org/10.1609/aaai.v38i17.29936.
 Zhong, Wanjun, Lianghong Guo, Qiqi Gao, He Ye, and Yanlin Wang. 2024. ‘MemoryBank: Enhancing Large Language Models with 
 Long-Term Memory’. In Proceedings of the AAAI Conference on Artificial Intelligence, 38:19724–31. 17. 
 https://doi.org/10.1609/aaai.v38i17.29946.
+Zhou, Huichi, Siyuan Guo, Anjie Liu, Zhongwei Yu, Ziqin Gong, Bowen Zhao, Zhixun Chen, et al. 2026. ‘Memento-Skills: Let
+Agents Design Agents’. https://arxiv.org/abs/2603.18743.
+Zep. 2026. ‘Graphiti: Build Real-Time Knowledge Graphs for AI Agents’. Software repository.
+https://github.com/getzep/graphiti.
