@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import argparse
+import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import List, Tuple
 from urllib.parse import unquote, urlparse
 
-from paper.build_html import DEFAULT_OUTPUT, DEFAULT_SOURCE, split_sections
+from paper.build_html import DEFAULT_OUTPUT, DEFAULT_SOURCE, split_sections, write_site
+from paper.build_paper import DEFAULT_OUTPUT as DEFAULT_PDF_OUTPUT
+from paper.build_paper import build as build_pdf
 from paper.diagrams import DIAGRAMS
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,7 +47,47 @@ def _local_target(page: Path, reference: str) -> Path | None:
     return (page.parent / unquote(parsed.path)).resolve()
 
 
-def verify(source_path: Path = DEFAULT_SOURCE, output_dir: Path = DEFAULT_OUTPUT) -> None:
+def _generated_site_files(output_dir: Path) -> List[Path]:
+    """List the files derived from the canonical manuscript and diagram definitions."""
+    files = [output_dir / ".nojekyll", output_dir / "index.html"]
+    files.extend(sorted((output_dir / "paper").glob("*.html")))
+    files.append(output_dir / "assets" / "paper.css")
+    files.extend(sorted((output_dir / "assets" / "diagrams").glob("*.svg")))
+    return files
+
+
+def _verify_generated_outputs(source_path: Path, output_dir: Path, pdf_path: Path) -> None:
+    """Prove tracked HTML, SVG, CSS, and PDF outputs equal a clean rebuild."""
+    with tempfile.TemporaryDirectory(prefix="ell-publication-") as temporary:
+        temporary_root = Path(temporary)
+        fresh_docs = temporary_root / "docs"
+        fresh_pdf = temporary_root / "paper.pdf"
+        write_site(source_path, fresh_docs)
+        build_pdf(source_path, fresh_pdf)
+
+        stale: List[str] = []
+        for tracked in _generated_site_files(output_dir):
+            relative = tracked.relative_to(output_dir)
+            fresh = fresh_docs / relative
+            if (
+                not tracked.is_file()
+                or not fresh.is_file()
+                or tracked.read_bytes() != fresh.read_bytes()
+            ):
+                stale.append(str(relative))
+        if not pdf_path.is_file() or pdf_path.read_bytes() != fresh_pdf.read_bytes():
+            stale.append(str(pdf_path.relative_to(ROOT)))
+        if stale:
+            raise ValueError(
+                "generated publication is stale; run `make paper`: " + ", ".join(stale)
+            )
+
+
+def verify(
+    source_path: Path = DEFAULT_SOURCE,
+    output_dir: Path = DEFAULT_OUTPUT,
+    pdf_path: Path = DEFAULT_PDF_OUTPUT,
+) -> None:
     """Fail loudly when the static publication is incomplete or internally broken."""
     source = source_path.read_text(encoding="utf-8")
     _, sections = split_sections(source)
@@ -98,6 +141,7 @@ def verify(source_path: Path = DEFAULT_SOURCE, output_dir: Path = DEFAULT_OUTPUT
     found = [term for term in forbidden if term.lower() in source.lower()]
     if found:
         raise ValueError(f"retired app terminology remains in manuscript: {found}")
+    _verify_generated_outputs(source_path, output_dir, pdf_path)
 
 
 def main() -> None:
@@ -105,8 +149,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--pdf", type=Path, default=DEFAULT_PDF_OUTPUT)
     args = parser.parse_args()
-    verify(args.source.resolve(), args.output.resolve())
+    verify(args.source.resolve(), args.output.resolve(), args.pdf.resolve())
 
 
 if __name__ == "__main__":

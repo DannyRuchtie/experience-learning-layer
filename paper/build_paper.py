@@ -56,6 +56,7 @@ class LivingPaperTemplate(BaseDocTemplate):
         super().__init__(
             filename,
             pagesize=A4,
+            invariant=1,
             title=title,
             author=author,
             subject="Experience Learning Layer research and architecture specification",

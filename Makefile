@@ -23,7 +23,7 @@ html:
 verify-publication:
 	python3 -m paper.verify_publication
 
-check: lint typecheck test paper verify-publication
+check: lint typecheck paper test verify-publication
 
 clean:
 	find . -type d \( -name __pycache__ -o -name .pytest_cache -o -name .mypy_cache -o -name .ruff_cache \) -prune -exec rm -rf {} +

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from paper.build_html import split_sections, write_site
+from paper.build_paper import build as build_pdf
 from paper.diagrams import DIAGRAMS, diagram_svg
 from paper.verify_publication import verify
 
@@ -25,3 +26,14 @@ def test_shared_diagrams_are_accessible_standalone_svg() -> None:
         assert f'<title id="title">{diagram.title}</title>' in svg
         assert '<desc id="desc">' in svg
         assert 'marker-end="url(#arrow)"' in svg
+
+
+def test_pdf_build_is_byte_reproducible(tmp_path: Path) -> None:
+    source_path = Path("paper/ELL_Paper.md").resolve()
+    first = tmp_path / "first.pdf"
+    second = tmp_path / "second.pdf"
+
+    build_pdf(source_path, first)
+    build_pdf(source_path, second)
+
+    assert first.read_bytes() == second.read_bytes()

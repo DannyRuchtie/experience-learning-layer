@@ -1107,7 +1107,7 @@ A fixture-backed DeterministicMockProvider advertises provider-neutral capabilit
 
 The versioned synthetic corpus covers explicit scoped preferences, single-event inference, unsupported claims, sensitive inference, explicit correction, material contradiction, temporal change, Dutch evidence, and prompt injection embedded in imported content. Each JSONL case has a stable ID, exact evidence excerpt, typed candidate description, and expected policy or lifecycle outcome. Corpus validation rejects malformed or duplicate cases.
 
-At this revision, the paper-first repository contains 31 passing kernel and contract tests plus 2 publication tests for the generated HTML edition and shared diagrams. Strict static type checking passes for the Python domain source, and repository-wide Ruff lint passes. Product clients, databases, hosted services, provider SDKs, and vendor-specific memory scaffolding remain outside the repository and outside the canonical kernel.
+At this revision, the paper-first repository contains 31 passing kernel and contract tests plus 3 publication tests for the generated HTML edition, shared diagrams, and deterministic PDF output. Strict static type checking passes for the Python domain source, and repository-wide Ruff lint passes. Product clients, databases, hosted services, provider SDKs, and vendor-specific memory scaffolding remain outside the repository and outside the canonical kernel.
 
 14.4 Remaining gates
 
