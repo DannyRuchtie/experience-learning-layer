@@ -33,13 +33,15 @@ LongMemEval and LoCoMo will test whether ELL remains competitive on factual extr
 
 Maharana et al. 2024). MemBench will add reflective-memory and efficiency measures where licensing and harness compatibility permit (H. Tan et al. 2025). MemoryAgentBench will test retrieval, test-time learning, long-range understanding, and selective forgetting in incremental multi-turn interaction (Hu, Wang, and McAuley 2025).
 
+LoCoMo-Plus adds cue–trigger semantic disconnect, where a later prompt must activate an earlier latent constraint despite low lexical similarity (Li et al. 2026). It is the preferred external test for the structurally distant retrieval aspect of the ELL claim, although it does not provide gold concept lifecycles.
+
 ELL is not expected to dominate span-recall tasks solely because it forms concepts. These benchmarks test whether the abstraction layer preserves ordinary memory performance and whether concept retrieval helps multi-session inference.
 
 ### Stage C: memory-dependent action
 
 MemoryArena will test whether information learned in earlier sessions improves later task execution (He et al.
 
-2026). A smaller open environment may be added for rapid iteration, but MemoryArena is the target action benchmark because it explicitly couples memory, agent decisions, and environment outcomes.
+2026). Mem2ActBench tests whether established preferences and task state are applied to tool selection and parameters rather than only restated in an answer (Shen et al. 2026). A smaller deterministic environment will be used for rapid development, while these external benchmarks test whether a result survives outside the synthetic generator.
 
 ### Stage D: ELL intuition and outcome benchmark
 
@@ -49,7 +51,7 @@ The ELL-specific benchmark combines controlled organisational and personal-work 
 
 The evaluation will include a reproducible simulation laboratory for studying memory dynamics before any policy is considered for deployment. The laboratory replays deterministic, timestamped scenario streams through the same typed ports used by the reference architecture. It supports parameter sweeps and side-by-side policy comparisons for extraction, association, consolidation, retrieval, revision, and forgetting without granting an experimental policy authority to mutate canonical evidence. Each run fixes the scenario version, configuration, model and prompt identifiers, random seed, permissions, and resource budget. It emits immutable decision and ApplicationReceipts that resolve every selected context item, candidate mutation, committed version, action, outcome, evaluator judgement, and cost to its permitted source evidence.
 
-Scenarios use synthetic or appropriately de-identified longitudinal personas representing both individuals and organisations. They include stable preferences, weak signals, sensitive attributes that must not be inferred or revealed, explicit consent changes, contradictions, temporal drift, delayed outcomes, workspace boundaries, and deletion requests. Chronological train, development, and sealed test intervals prevent policies from learning from future events; change points and deletion events remain hidden from the system until they occur in replay. The laboratory compares no memory, raw-history or maximum-context prompting, ordinary RAG, and the candidate systems and ELL ablations in Section 7.4 under matched sources, model conditions, context budgets, and outcome opportunities.
+Scenarios use synthetic or appropriately de-identified longitudinal personas representing both individuals and organisations. They include stable preferences, weak signals, sensitive attributes that must not be inferred or revealed, explicit consent changes, contradictions, temporal drift, delayed outcomes, workspace boundaries, and deletion requests. Chronological train, development, and sealed test intervals prevent policies from learning from future events; change points and deletion events remain hidden from the system until they occur in replay. The laboratory compares no memory, raw-history or maximum-context prompting, ordinary retrieval, direct insight extraction, and ELL-Core ablations under matched sources, model conditions, context budgets, and outcome opportunities.
 
 Preregistered primary measures cover retrieval precision and recall; faithfulness and calibration of claims; adaptation latency after change or correction; contradiction and stale-memory rates; transfer and downstream task utility; overpersonalisation and unjustified inference; privacy, consent, and cross-workspace leakage; deletion-cascade completeness; and latency, token, storage, and energy or hardware-time cost, including consolidation.
 
@@ -61,17 +63,27 @@ At minimum, all experiments include:
 
 1. no persistent memory;
 2. full or maximum available context;
-3. ordinary RAG or vector retrieval over raw episodes;
-4. rolling summary memory;
-5. linked-note or Zettelkasten-style retrieval;
-6. episode retrieval plus direct insight extraction;
-7. ELL without concept consolidation;
-8. ELL without outcome feedback or temporal adaptation;
-9. full ELL with compact intuition packets.
+3. BM25 retrieval over raw episodes;
+4. exact vector retrieval over raw episodes;
+5. fixed BM25–vector fusion over raw episodes;
+6. rolling summary memory;
+7. episode retrieval plus direct insight extraction;
+8. ELL-Core without concept consolidation;
+9. full ELL-Core with evidence-restored learning packets.
 
-Where reproducible implementations and compatible licences are available, A-MEM, Reflective Memory Management, GAAMA, and PlugMem will be evaluated using their released code or carefully documented reimplementations (Xu et al. 2025; Z. Tan et al. 2025; Paul, Sharma, and Sareen 2026; Yang et al. 2026). A method will not be included under another system’s name if key behaviour cannot be reproduced.
+The strongest of conditions 3–7 is selected on development data before the sealed run and becomes the confirmatory comparator. This prevents a weak hand-picked baseline from making ELL look effective.
 
-Additional experiment tracks compare Graphiti/Zep, Mem0, Letta/MemGPT, and TencentDB Agent Memory as replaceable retrieval or context substrates; AgeMem, AtomMem, and MemSkill as learned operation policies; EXG, ReasoningBank, MUSE-Autoskill, and Memento-Skills as experience or skill learners; and Titans, HOPE, and TMEM as neural or parametric accelerators. A named comparison is reported only when its public interface or paper can be reproduced under the same source stream, model condition, context budget, and outcome metric.
+Where reproducible implementations and compatible licences are available, Hindsight, A-MEM, and Reflective Memory Management form the first named comparison tier because they are close to ELL's reflection and structured-memory claim (Latimer et al. 2026; Xu et al. 2025; Z. Tan et al. 2025). GAAMA and PlugMem may be added if their key behaviour can be reproduced (Paul, Sharma, and Sareen 2026; Yang et al. 2026). A method will not be included under another system's name when critical behaviour is missing or reimplemented only approximately.
+
+Separate substrate experiments compare Letta/MemGPT, Mem0, Graphiti/Zep, Hindsight, and TencentDB Agent Memory as context or memory providers. Retrieval-only experiments compare deterministic scan, BM25, exact vectors, HNSW, and TurboVec. Learned operation, experience-graph, skill-evolution, and neural or parametric memory systems are deferred exploratory tracks; they do not enter the first confirmatory comparison.
+
+## Matching and accounting protocol
+
+Every eligible condition receives the same chronological source stream, answer model, answer-generation settings, task opportunities, and maximum answer budget. Retrieval context is capped by the same token budget. Systems may use their native write and retrieval prompts, but every prompt, model call, intermediate artefact, retry, cache policy, and background job is recorded.
+
+Two cost views are reported. Read-path cost measures the user-visible decision. Amortised end-to-end cost includes ingestion, embeddings, extraction, graph or index maintenance, reflection, validation, consolidation, retrieval, and generation over the complete stream. A system is not credited with efficiency by moving work into an unreported background process.
+
+The answer model is prevented from seeing system labels. Where possible, retrieved packets are normalised into a common envelope containing content, timestamps, provenance references, and system-supplied scores. The sealed test is run once per frozen configuration. Failed runs, exclusions, and provider errors remain in the released trace.
 
 ## Model conditions
 
@@ -116,7 +128,7 @@ Efficiency metrics
 - energy or hardware-time proxy where measurable;
 - task utility per 1,000 retrieved tokens.
 
-Product success criteria
+Product-facing secondary criteria
 
 - shorthand resolution accuracy without requiring the user to restate stable context;
 - precision and recall of proactive just-in-time context, including a penalty for intrusive or irrelevant retrieval;
@@ -127,7 +139,7 @@ Product success criteria
 - end-to-end task utility per token, latency, storage, model call, and energy or hardware-time proxy, including background consolidation cost;
 - zero cross-workspace leakage and complete tested invalidation of deleted evidence from derived projections.
 
-Thresholds for these criteria will be frozen before choosing a production memory substrate or learned policy.
+These product-facing measures cannot establish the primary claim. The preregistered decision gates in Section 11 determine whether ELL-Core is supported, partially supported, or rejected before a production memory substrate or learned policy is chosen.
 
 An implementation is not successful merely because it stores more, produces persuasive summaries, or retrieves plausible context.
 
@@ -156,6 +168,6 @@ Safety ablations separately disable deterministic validation around learned writ
 
 ## Statistical analysis
 
-Binary outcomes use paired tests such as McNemar’s test where appropriate. Continuous or ordinal metrics use paired bootstrap confidence intervals and report effect sizes. Multiple random seeds are used for synthetic generation and stochastic inference. The primary comparisons and practical significance thresholds are frozen in the experiment configuration before the sealed tests.
+The primary binary task outcome uses a paired absolute difference with a paired bootstrap 95% confidence interval; McNemar's test is reported as a sensitivity analysis where appropriate. Continuous or ordinal metrics use paired bootstrap confidence intervals and report effect sizes. Multiple random seeds are used for synthetic generation and stochastic inference. The benchmark size is chosen before the sealed run to provide at least 80% power for the five-percentage-point minimum practically important transfer effect defined in Section 11.
 
 Results are reported by task category and stream length, not only as a single average. Failure analysis separates write, association, reflection, consolidation, retrieval, reasoning, and application errors.

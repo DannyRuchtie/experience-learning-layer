@@ -1,14 +1,54 @@
-# Expected Outcomes and Falsifiability
+# Definition of Success and Falsifiability
 
-This work is intended to produce a testable system rather than an unfalsifiable architecture diagram. The primary claim would be weakened or rejected under any of the following outcomes:
+## Decision rule
 
-- concept-level metrics improve but downstream transfer does not;
-- direct insight extraction matches ELL on scope and contradiction handling at lower cost;
-- concepts systematically omit exceptions that episode retrieval preserves;
-- confidence remains poorly calibrated across model families;
-- revision creates instability or catastrophic concept churn;
-- open-weight models cannot generate sufficiently reliable structured reflections;
-- privacy-preserving deletion cannot remove derived information without rebuilding the store;
-- performance gains disappear under equal retrieval budgets.
+ELL-Core succeeds only if it improves future behaviour and passes every mandatory guardrail. Better-looking concepts, persuasive examples, high retrieval recall, or lower foreground prompt cost are insufficient on their own. The following thresholds are minimum practically important effects for the first confirmatory study, fixed before the sealed test is opened.
 
-Negative results remain useful. They can show that explicit concept objects are unnecessary for some task classes, that reflection should be triggered only by failures, or that evidence-grounded retrieval is more valuable than consolidation. The proposed benchmark is structured so that these alternatives can be tested without preserving the original hypothesis.
+::: {.content-visible when-format="html"}
+![**The ELL decision rule.** The same stream and model conditions feed the strongest eligible baseline and ELL-Core. A positive transfer result is reported as supported only when every guardrail also passes.](assets/diagrams/success-gates.svg)
+:::
+
+::: {.content-visible when-format="pdf"}
+![**The ELL decision rule.** The same stream and model conditions feed the strongest eligible baseline and ELL-Core. A positive transfer result is reported as supported only when every guardrail also passes.](assets/diagrams/success-gates.png)
+:::
+
+| Gate | Measure | Pass rule |
+|---|---|---|
+| Primary transfer | Paired task-success difference on structurally related, lexically distant sealed cases | Point estimate at least **+5 percentage points** over the strongest eligible baseline and the paired 95% confidence interval excludes zero |
+| Unsupported generalisation | Decisions that apply a concept outside its gold or adjudicated scope | Upper bound of the paired 95% confidence interval is less than a **+2-point non-inferiority margin** relative to the comparator |
+| Evidence quality | Precision of cited support and recall of material counterevidence | Support precision at least **0.95** and counterevidence recall at least **0.90** on the controlled benchmark |
+| Change adaptation | Delay after a gold change point or material correction | At least **90%** of affected concepts are contested or revised within two relevant contradictory episodes; post-change stale-guidance rate remains below **5%** |
+| Cost efficiency | Task utility divided by all amortised input and output tokens | At least **10% higher utility per 1,000 total tokens** than the confirmatory comparator, including background work |
+| Governance invariants | Workspace isolation, idempotency, lineage, deletion and projection invalidation | **100% pass** on deterministic and adversarial contract tests; no observed cross-workspace retrieval and no deleted evidence remaining reachable in tested projections |
+| Replication | Sensitivity to model and task family | Primary transfer and unsupported-generalisation gates pass with two open model families; the transfer direction is also positive on at least one external cognitive or action benchmark |
+
+The benchmark sample size will be selected to provide at least 80% power for the five-point paired primary effect. Exact power assumptions, exclusions, seeds, and analysis code will be committed before the sealed run.
+
+## Outcome labels
+
+**Supported.** Every gate passes. The paper may conclude that ELL-Core provides evidence for a useful governed concept layer under the tested conditions.
+
+**Partially supported.** Transfer improves, but one or more safety, adaptation, efficiency, governance, or replication gates fail. The paper must name the failed gate and cannot recommend the full architecture for deployment.
+
+**Not supported.** The primary transfer gate fails, or the strongest simple baseline matches ELL at lower cost. Work should then focus on the winning simpler method, such as evidence-grounded retrieval, agent-controlled search, or direct insights.
+
+**Unsafe.** A governance invariant fails. The affected configuration is ineligible for deployment regardless of average task performance.
+
+## Product success is a later claim
+
+After the confirmatory result, a product study may test whether people experience less repetition, better shorthand understanding, timely context, rapid correction, and trustworthy control. Product success requires blinded task evaluation and user research; it cannot be inferred from synthetic benchmark accuracy. The word *intuition* remains a product-level description of these behaviours, not the primary scientific outcome.
+
+## Explicit rejection conditions
+
+The central approach is weakened or rejected if:
+
+- direct insight extraction or agent-controlled flat memory matches ELL at lower cost;
+- concept metrics improve without improving held-out decisions;
+- concept packets omit exceptions that raw episode retrieval preserves;
+- gains disappear under equal total-compute accounting;
+- revision causes unstable concept churn or slow recovery after change;
+- results depend on one model family, one generator, or one evaluator;
+- the system cannot invalidate derived state after deletion; or
+- outcome feedback strengthens concepts without independent evidence that their use helped.
+
+Negative results remain valuable. They can show that explicit concepts are unnecessary for some task classes, that consolidation should be triggered only by failures, or that governed evidence retrieval is more useful than concept formation.

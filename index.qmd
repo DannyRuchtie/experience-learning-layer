@@ -1,7 +1,7 @@
 # Abstract {.unnumbered}
 
-::: {.callout-note title="Living working draft v0.5 - 9 August 2026"}
-Version 0.5 presents ELL as a paper-first open research project, adds a visual HTML reading edition and shared architecture diagrams, and narrows the repository to the manuscript, reproducible publication tools, and synthetic examples. Earlier drafts remain available through Git history.
+::: {.callout-note title="Living working draft v0.6 - 9 August 2026"}
+Version 0.6 sharpens the contribution boundary after a review of current agent-memory, experience-learning, provenance, belief-revision, and evaluation research. It defines one confirmatory outcome, explicit success and failure gates, a benchmark-first implementation plan, and a narrower ELL-Core. Earlier drafts remain available through Git history.
 
 **Research status.** This document is a working architecture paper and preregistered evaluation plan. It defines the proposed system, hypotheses, data model, implementation contract, and experiments. It does not report empirical results. Results will be added only after the open implementation and evaluation harness can reproduce them.
 :::
@@ -14,7 +14,7 @@ The system north star is to give any AI a natural, evolving intuition about the 
 
 Here intuition is neither anthropomorphism nor a new memory category. It names an emergent system capability produced by evidence-grounded compression, prediction, association, relevance selection, temporal adaptation, and outcome feedback. At use time, ELL should supply a compact intuition packet rather than dump raw history into a model, while retaining links that permit inspection, correction, deletion, and uncertainty-aware expansion.
 
-The paper contributes a typed architecture, a concept-lifecycle protocol, an evidence ledger, an experimental benchmark for controlled concept induction, and a reproducibility plan based on openly licensed code and open-weight models. The central hypothesis is that separating reflection from concept consolidation, while preserving support and counterevidence, will improve transfer to structurally similar situations and reduce unsupported generalisation compared with episode-only retrieval or direct summarisation. The proposal is deliberately falsifiable: concept correctness, evidence coverage, revision behaviour, transfer, downstream task success, calibration, and cost are all measured independently.
+The paper contributes a minimal typed architecture, a concept-lifecycle protocol, an evidence ledger, a controlled benchmark, and an evaluation-first implementation plan. It does not claim that reflection, abstraction, provenance, temporal memory, or external memory is individually novel. Its primary confirmatory claim is narrower: under matched model and total-compute conditions, an evidence-governed concept layer should improve transfer to structurally related but lexically different tasks over the strongest eligible non-parametric baseline, while satisfying preregistered guardrails for unsupported generalisation, evidence quality, adaptation, governance, and cost. If it does not, the concept layer is not justified.
 
 *Keywords: agent memory; experiential learning; reflection; concept formation; semantic memory; continual learning; provenance; language agents; open source*
 

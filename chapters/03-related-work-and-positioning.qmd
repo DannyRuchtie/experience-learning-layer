@@ -4,11 +4,23 @@
 
 Production-oriented systems establish useful implementation patterns without settling ELL's epistemic model.
 
-MemGPT, now developed as Letta, treats a finite context window as a managed hierarchy and gives the agent explicit operations for moving information between tiers (Packer et al. 2023; Letta 2026). Mem0 provides a developer-facing memory layer that extracts, consolidates, and retrieves salient conversational information, with an optional graph representation (Chhikara et al. 2025). Zep and its open-source Graphiti engine maintain temporally valid entities and relations, preserve episode provenance, and combine semantic, lexical, and graph retrieval (Rasmussen et al. 2025; Zep 2026). TencentDB Agent Memory implements a local layered pipeline from raw conversations through atomic memories and scenes to personas, with inspectable files and hybrid retrieval (TencentDB Agent Memory Team 2026).
+MemGPT, now developed as Letta, treats a finite context window as a managed hierarchy and gives the agent explicit operations for moving information between tiers (Packer et al. 2023; Letta 2026). Mem0 provides a developer-facing memory layer that extracts, consolidates, and retrieves salient conversational information, with an optional graph representation (Chhikara et al. 2025). Zep and its open-source Graphiti engine maintain temporally valid entities and relations, preserve episode provenance, and combine semantic, lexical, and graph retrieval (Rasmussen et al. 2025; Zep 2026). Hindsight separates world, experience, observation, and opinion networks, combining vector, keyword, graph, and temporal retrieval with evolving confidence-bearing opinions (Latimer et al. 2026).
+
+TencentDB Agent Memory has expanded from layered conversational memory into a team-oriented memory hub. Its public design includes L0 conversations, L1 atoms, L2 scenarios, and L3 core or persona representations, alongside versioned skills, Wiki, CodeGraph, ownership, status, visibility, agent bindings, access-control lists, and budgeted BM25, vector, and reciprocal-rank-fusion retrieval (TencentDB Agent Memory Team 2026). These features overlap with several earlier ELL design goals. TencentDB must therefore be treated as a substantive comparison system, not described merely as a raw-memory store.
+
+TurboVec belongs at a different layer. It is a local compressed vector index built on TurboQuant, with online ingestion and query-time allow-list filtering; it does not define memory semantics, concept lifecycle, or learning policy (Shukla, Pandey, and Tiwari 2026). ELL may evaluate it as a `RetrievalCandidateProvider` against exact search, HNSW, and other approximate indexes, but it is not an end-to-end memory-system baseline.
 
 ELL adopts four principles from this family: explicit context-budget management; incremental temporal updates; hybrid candidate retrieval; and a drill-down path from compact context to source episodes. The corresponding integration points are replaceable ContextManager, MemoryProjection, TemporalRelationIndex, and RetrievalCandidateProvider ports. It rejects the assumption that any provider's extracted fact, persona, graph edge, summary, or context block is canonical truth. Such outputs enter ELL as untrusted candidates and remain subject to evidence, workspace, permission, version, deletion, and commit policy.
 
 These projects are comparatively mature as deployable software, but their public evaluations use different models, prompts, budgets, datasets, and product configurations. Vendor- or project-reported latency, token, and accuracy results therefore motivate reproduction; they are not evidence that one substrate should be adopted as ELL's governing architecture. The present ELL proposal has not integrated or validated any of these systems end to end.
+
+## Empirical cautions for ELL
+
+Recent evidence argues against assuming that more elaborate memory architecture implies better learning. A 2026 survey places cross-trajectory abstraction at the frontier of a broader storage–reflection–experience progression, making abstraction a field direction rather than an ELL-specific novelty (Luo et al. 2026). Sequential-task experiments further show that external memory relocates rather than removes the continual-learning problem: abstract procedures can improve forward transfer while retrieval competition and negative transfer harm hard cases (Hu, Long, and Wang 2026).
+
+Cross-scenario comparisons report that a self-managed flat-file agent harness can rank above more specialised memory systems, which challenges the assumption that a fixed structured store will generalise across dialogue, code, search, and long-horizon tasks (Chen et al. 2026). Controlled analysis of graph and non-graph dialogue memory likewise finds that implementation details and strong simple baselines can matter as much as the graph abstraction itself (S. Hu et al. 2026). These findings require ELL to earn every layer through ablation. Graph association, learned memory operations, and specialised indexes remain optional conditions until they beat a simple baseline under the same evidence and cost budget.
+
+Trustworthiness is also a retrieval problem, not only a write problem. Semantically related memory can be inappropriate for the current task and can create cross-domain leakage, sycophancy, tool drift, or memory-induced prompt attacks (J. Zhang et al. 2026). ELL therefore treats retrieval as a policy-bound admission decision and measures both relevant inclusion and harmful inclusion.
 
 ## Reflection, reasoning memory, and non-parametric learning
 
@@ -65,9 +77,28 @@ ELL may evaluate them through NeuralMemoryAccelerator or ParametricAdaptation po
 
 LongMemEval evaluates information extraction, cross-session reasoning, temporal reasoning, knowledge updates, and abstention in long-term interactive memory (Wu et al. 2025). MemoryAgentBench adds incremental multi-turn evaluation of accurate retrieval, test-time learning, long-range understanding, and selective forgetting (Hu, Wang, and McAuley 2025). MemBench broadens factual and reflective memory evaluation across interaction roles (H. Tan et al. 2025), while MemoryArena couples memory with later action in multi-session environments (He et al. 2026).
 
+LoCoMo-Plus is especially relevant to the product-facing intuition hypothesis because it tests cue–trigger semantic disconnect: a later situation requires an implicit constraint from an earlier, lexically distant interaction (Li et al. 2026). Mem2ActBench tests whether prior preferences and task state are proactively applied to tool selection and parameters rather than merely recalled in an answer (Shen et al. 2026). Neither benchmark directly labels ELL-style concepts, evidence sets, or revision lineage, but both provide external tests of whether the proposed layer changes behaviour.
+
 ELL will use these benchmarks for comparability, but none alone establishes the intended intuition capability.
 
-An ELL-specific sealed benchmark must additionally measure evidence-supported compression, shorthand resolution, proactive relevance, structurally distant transfer, calibrated uncertainty, change-point detection, correction latency, version and deletion lineage, and whether applying a retrieved concept or skill improved an independently measured outcome. Results must include background consolidation cost and compare fixed, learned, graph, external-memory, and neural accelerators under equal budgets.
+An ELL-specific sealed benchmark must additionally measure evidence-supported compression, structurally distant transfer, calibrated uncertainty, change-point detection, correction latency, version and deletion lineage, and whether applying a retrieved concept improved an independently measured outcome. Product-facing shorthand and proactive relevance remain secondary external-validity tests. Results must include background consolidation cost and compare full ELL-Core with simple fixed baselines before any learned, graph, external-memory, or neural extension is considered.
+
+## Earlier foundations: revision, time, and provenance
+
+ELL's governance mechanisms also have important predecessors outside the recent LLM-memory literature. Truth Maintenance Systems recorded justifications for beliefs and revised them when assumptions changed (Doyle 1979); Assumption-based Truth Maintenance Systems maintained alternative environments under inconsistent information (de Kleer 1986). AGM belief revision formalised contraction and revision of logically closed belief sets under new information (Alchourrón, Gärdenfors, and Makinson 1985). Bitemporal database work distinguished when a statement is valid in the world from when the database learned or recorded it (Clifford and Isakowitz 1992). W3C PROV defines interoperable entities, activities, agents, and qualified derivation relations for provenance exchange (Lebo, Sahoo, and McGuinness 2013).
+
+ELL does not reproduce the formal guarantees of these traditions, and natural-language concepts are not deductively closed belief sets. The relevant lesson is narrower: reasons, assumptions, valid time, recorded time, derivations, and retraction dependencies should be explicit rather than buried inside generated prose. ELL's research contribution can only be the operational combination and empirical evaluation of these ideas for language-agent experience streams.
+
+## Positioning summary
+
+| Family | Representative systems | Role in the ELL study |
+|---|---|---|
+| Context and production memory | Letta/MemGPT, Mem0, Zep/Graphiti, Hindsight, TencentDB Agent Memory | Strong external systems to reproduce selectively; never assumed to be canonical ELL state |
+| Experience abstraction | Reflexion, ExpeL, RMM, DCPM, GAAMA, PlugMem | Nearest methodological comparators for reflection, insights, concepts, and semantic or procedural abstraction |
+| Agent-controlled memory | AgeMem, AutoMEM, MemCon (Y. Yu et al. 2026; Chen et al. 2026; Jiang et al. 2026) | Exploratory policy comparators after deterministic ELL-Core is evaluated |
+| Retrieval infrastructure | exact vector search, HNSW, TurboVec | Replaceable candidate-generation substrates; they do not define learning semantics |
+| Revision and provenance | TMS, ATMS, AGM, bitemporal databases, W3C PROV | Earlier foundations that constrain ELL's novelty claim and inform its audit contract |
+| ELL-Core | evidence, episodes, reflections, concepts, applications, outcomes | The object of the confirmatory test: whether governed concepts improve transfer without violating guardrails |
 
 ## Cognitive inspiration and its limits
 

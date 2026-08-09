@@ -1,5 +1,19 @@
 # Limitations and Threats to Validity
 
+## Critical appraisal of the approach
+
+The strongest criticism of ELL is that it may be an over-engineered combination of ideas that already exist in agent memory, truth maintenance, belief revision, temporal databases, and provenance systems. Reflection, experience abstraction, confidence-bearing opinions, temporal graphs, versioned skills, and evidence tracing all have close precedents. A paper that presents their combination as self-evidently better would be a systems manifesto rather than a research contribution.
+
+The second criticism is attribution. If the first implementation simultaneously adds a graph, vector search, reflection, a concept registry, learned policies, provider adapters, and outcome feedback, an improvement cannot be assigned to the concept lifecycle. The same complexity also creates many tuning degrees of freedom and a large risk of test-set adaptation.
+
+The third criticism is representational favouritism. A synthetic generator with explicit latent concepts naturally rewards a system that stores explicit concepts. Strong raw-retrieval or agent-controlled memory may perform better in open environments where the useful regularity is procedural, perceptual, or difficult to state. External benchmarks and negative-transfer cases are therefore required.
+
+The fourth criticism is causal. An application receipt shows that a concept was present when an action was taken; it does not prove that the concept caused the outcome. The answer model may ignore the packet, rely on prior knowledge, or succeed for another reason. Factorial packet ablations and randomised inclusion on eligible tasks are needed before making causal utility claims.
+
+These criticisms determine the implementation order: benchmark first, simple baselines second, deterministic ELL-Core third, model-assisted consolidation fourth, and optional infrastructure only after the primary result. The first study has one confirmatory outcome and explicit stop conditions. This discipline is part of the proposal, not an implementation detail.
+
+## Specific threats
+
 First, textual concepts favour knowledge that can be expressed as propositions or instructions. Tacit motor skills, perceptual expertise, and distributed representations may not fit this format. ELL may therefore complement rather than replace parametric or executable skill learning.
 
 Second, provenance does not guarantee truth. Episodes can be incorrect, duplicated, biased, or malicious. A perfectly traceable concept may still be grounded in poor evidence. Source reliability and adversarial robustness require separate study.

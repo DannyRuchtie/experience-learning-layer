@@ -1,5 +1,9 @@
 # Proposed Algorithms
 
+## Minimum algorithm and comparison discipline
+
+The first implementation favours transparent rules over an optimised end-to-end pipeline. Each stage must expose its candidate inputs, accepted outputs, rejected outputs, cost, and reason code. A more complex policy is added only after the simpler condition has a frozen baseline result. This ordering separates the value of the concept contract from the value of a particular embedding model, graph, reranker, or learned controller.
+
 ## Reflection scheduling
 
 Running reflection after every episode would be expensive and may create redundant interpretations. ELL therefore uses event-based scheduling. An episode or cluster enters the reflection queue when one or more conditions are met:
@@ -39,7 +43,7 @@ Reflections are grouped by semantic compatibility and scope overlap. A proposed 
 - an explicit scope and exception list;
 - a concise proposition and expected implication.
 
-The default policy will require support from at least three episodes across at least two distinct contexts. This is a configurable research parameter rather than a universal rule.
+The initial development policy will require support from at least three episodes across at least two distinct contexts. The threshold is not a claim about how many observations create knowledge. It is a preregistered control variable, swept only on development streams and frozen before the sealed test.
 
 A simplified proposal procedure is: for each reflection cluster R: evidence = union(supporting episodes in R) counter = retrieve plausible counterevidence candidate = generate_concept(R, evidence, counter) checks = validate(candidate, evidence, counter) if checks pass promotion policy: register(candidate, state="proposed")
 
@@ -49,7 +53,7 @@ LLMs are not assumed to be calibrated judges of their own abstractions. ELL comp
 
 confidence(c)=1/(1+exp(-z_c)) , where zc is a weighted score that increases with supporting evidence, evidence diversity, and observed application utility, and decreases with counterevidence, age without revalidation, and validator disagreement.
 
-The formula is deliberately transparent and will be calibrated on held-out development data. A simpler Bayesian or rule-based alternative will be included as a baseline. Confidence is never used to hide counterevidence; the raw counts and links remain visible.
+The formula is deliberately transparent and will be calibrated on held-out development data. A fixed rule based on support, contradiction, and outcome counts is the mandatory baseline; logistic and Bayesian alternatives are secondary conditions. Confidence is never used to hide counterevidence, and it is not interpreted as a probability until calibration supports that interpretation. The raw counts and links remain visible.
 
 ## Revision and temporal validity
 

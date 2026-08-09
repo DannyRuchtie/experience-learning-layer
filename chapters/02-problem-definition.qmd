@@ -36,9 +36,9 @@ Provenance loss. A generated statement can no longer be connected to the experie
 
 Behavioural ambiguity. A system claims to have learned because it stored a summary, without showing improved transfer or decision quality.
 
-## Research questions
+## Research questions and claim hierarchy
 
-The first empirical study will answer five questions.
+The first empirical study will answer five questions, but they do not have equal confirmatory status.
 
 RQ1 — Separation. Does representing reflections as provisional objects before concept consolidation reduce unsupported generalisation compared with direct episode-to-rule summarisation?
 
@@ -49,6 +49,8 @@ RQ3 — Transfer. Do consolidated concepts improve performance on new situations
 RQ4 — Efficiency. Can compact concepts plus selected source episodes match or improve downstream performance while using less retrieval context than episode-only methods?
 
 RQ5 — Intuition quality. Can a compact, uncertainty-aware intuition packet improve shorthand understanding, just-in-time relevance, change detection, and rapid correction compared with no-memory, raw-history, and ordinary retrieval-augmented generation baselines?
+
+RQ3 is the primary confirmatory question. RQ1 is its epistemic safety guardrail: a transfer gain does not count if it is purchased through materially greater unsupported generalisation. RQ2 and RQ4 are secondary mechanism and efficiency questions. RQ5 is an exploratory product-facing question and cannot establish the core claim by itself.
 
 ## Hypotheses
 
@@ -64,4 +66,10 @@ H5. Compact intuition packets will improve shorthand resolution, just-in-time co
 
 H6. ELL will reduce end-to-end decision tokens, latency, and measured hardware-time or energy proxies while preserving or improving task utility; this hypothesis includes the cost of background association, reflection, and consolidation rather than treating those operations as free.
 
-These hypotheses are falsified if the confidence intervals include no practically meaningful improvement, if concept-level gains fail to translate into behaviour, or if the added architecture costs more than the retrieval it replaces without delivering measurable benefits.
+## Primary estimand
+
+The primary estimand is the paired absolute difference in task success between full ELL-Core and the strongest eligible baseline on sealed transfer cases whose latent rule was present in the experience stream but whose wording and surface structure differ from the supporting episodes. Eligibility requires the same source stream, base model, response budget, retrieval opportunity, and outcome information. Total cost includes ingestion, embedding, reflection, validation, consolidation, retrieval, and answer generation.
+
+Concept accuracy, citation quality, and calibration remain necessary diagnostics, but they cannot rescue a failed behavioural result. Conversely, a transfer improvement does not count as success unless the overgeneralisation, evidence, adaptation, governance, replication, and cost gates in Section 11 also pass.
+
+These hypotheses are weakened or rejected if the primary confidence interval includes no improvement, if the practically meaningful effect threshold is missed, if concept-level gains fail to translate into behaviour, or if the added architecture violates a guardrail. This hierarchy prevents exploratory intuition scores or a favourable component metric from being reported as proof of learning.

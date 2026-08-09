@@ -10,7 +10,18 @@
 
 ## Core entities
 
-Entity Purpose Required fields Episode Immutable record of a bounded experience ID, event time, observed time, context, observation, action, outcome, source, access metadata Association Typed relation between episodes or knowledge objects source ID, target ID, relation type, score, method, provenance Reflection Provisional interpretation or question statement, type, scope, support, counterevidence, uncertainty, status Concept Reusable versioned knowledge object proposition, scope, conditions, implication, support, counterevidence, confidence, validity, version, lifecycle state SkillVersion Proposed immutable reusable capability skill ID and version, preconditions, scope, implementation or instruction, tests, lineage, approvals, rollback metadata ApplicationReceipt Immutable record of concept or skill use task, exact concept and skill versions, retrieved episodes, decision, validator, cost, timestamp Outcome Evidence about application result reward or judgement, independent source, reliability, delay, linked application receipt AuditEvent Immutable record of system change actor, operation, object, prior version, new version, method, timestamp
+| Entity | Purpose | Required fields |
+|---|---|---|
+| `SourceArtifact` | Immutable addressable evidence | ID, content hash, source type, stable spans, event and observed time, consent, sensitivity, workspace |
+| `Episode` | Bounded experience derived from one or more sources | ID, context, observation, action, outcome, source spans, access metadata |
+| `Reflection` | Provisional interpretation or question | statement, type, scope, support, counterevidence, uncertainty, review status |
+| `ConceptVersion` | Reusable versioned claim or strategy | proposition, scope, conditions, implication, support, counterevidence, confidence, validity, version, lifecycle state |
+| `EvidenceLink` | Typed derivation or challenge relation | source ID and span, target ID and version, relation, method, validator, timestamp |
+| `ApplicationReceipt` | Immutable record of a concept's use | task, exact concept versions, restored evidence, decision, model, cost, timestamp |
+| `Outcome` | Independently sourced evidence about an application | linked receipt, observation or reward, source, reliability, delay |
+| `AuditEvent` | Content-minimised lifecycle record | actor, operation, object, prior version, new version, method, timestamp |
+
+`Association` is an optional typed projection used for candidate generation. `SkillVersion` and provider-specific memory assets are deferred extension objects and are not required to test the primary ELL-Core claim.
 
 ## Concept states
 
@@ -26,13 +37,27 @@ A revision never overwrites its parent. A revised version can later become corro
 
 ## API contract
 
-A reference implementation should expose the following model-independent operations: record_episode(episode) -> EpisodeID associate(episode_id, policy) -> list[Association] run_reflection(scope, trigger) -> list[Reflection] reconcile_concepts(reflection_ids) -> list[ConceptVersion] retrieve_learning(query, context, budget) -> LearningPacket record_application(packet, decision) -> ApplicationID record_outcome(application_id, outcome) -> list[ConceptUpdate] propose_skill(experience_ids, policy) -> list[SkillVersion] record_skill_application(skill_version_id, receipt) -> ApplicationID explain_concept(concept_id, version=None) -> EvidenceReport delete_subject_data(subject_id, policy) -> DeletionReport
+A reference implementation should expose the following model-independent minimum operations:
+
+```text
+record_source(source) -> SourceID
+record_episode(episode) -> EpisodeID
+propose_reflections(scope, trigger) -> list[Reflection]
+reconcile_concepts(reflection_ids) -> list[ConceptVersion]
+retrieve_learning(query, context, budget) -> LearningPacket
+record_application(packet, decision) -> ApplicationID
+record_outcome(application_id, outcome) -> list[ConceptUpdate]
+explain_concept(concept_id, version=None) -> EvidenceReport
+invalidate_source(source_id, policy) -> InvalidationReport
+```
+
+Association, skill proposal, graph traversal, provider import, and learned-policy APIs are optional ports layered around this contract.
 
 LearningPacket is the central read object. It contains concepts, relevant evidence, conflicts, and budget accounting. It never contains only a naked concept statement.
 
 ## Storage independence
 
-The core schema is storage-neutral. A starter implementation should use an in-memory store before adding SQLite as the first persistent baseline. Production adapters may add PostgreSQL, a vector index, or a graph database. Storage choices are evaluated by correctness, write cost, query latency, deletion support, and operational simplicity rather than by architectural fashion.
+The core schema is storage-neutral. A starter implementation uses an in-memory store and deterministic scan before adding SQLite and full-text search as the first persistent baseline. Exact vector search is evaluated before approximate indexes. Production adapters may later add PostgreSQL, TurboVec or another vector index, a graph database, or a hosted memory system. Storage choices are evaluated by correctness, write cost, query latency, deletion support, reproducibility, and operational simplicity rather than by architectural fashion.
 
 The same principle applies to model providers. The engine depends on a structured-generation interface, not a vendor SDK. Reproducibility experiments use open-weight models, while optional adapters may support hosted models for comparison.
 

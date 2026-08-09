@@ -1,5 +1,7 @@
 # References {.unnumbered}
 
+Alchourrón, Carlos E., Peter Gärdenfors, and David Makinson. 1985. ‘On the Logic of Theory Change: Partial Meet Contraction and Revision Functions’. Journal of Symbolic Logic 50 (2): 510–30. https://doi.org/10.2307/2274239.
+
 Bartlett, Frederic C. 1932. Remembering: A Study in Experimental and Social Psychology. Cambridge University Press.
 
 Behrouz, Ali, Meisam Razaviyayn, Peilin Zhong, and Vahab Mirrokni. 2025. ‘Nested Learning: The Illusion of Deep Learning Architectures’. https://arxiv.org/abs/2512.24695.
@@ -8,15 +10,29 @@ Behrouz, Ali, Peilin Zhong, and Vahab Mirrokni. 2025. ‘Titans: Learning to Mem
 
 Chhikara, Prateek, Dev Khant, Saket Aryan, Taranjeet Singh, and Deshraj Yadav. 2025. ‘Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory’. https://arxiv.org/abs/2504.19413.
 
+Chen, Zhikai, Jialiang Gu, Junyu Yin, Xianxuan Long, Shenglai Zeng, Xiaoze Liu, Kai Guo, Keren Zhou, and Jiliang Tang. 2026. ‘Exploring Cross-Scenario Generality of Agentic Memory Systems: Diagnostics and a Strong Baseline’. https://arxiv.org/abs/2606.04315.
+
+Clifford, James, and Tomas Isakowitz. 1992. ‘On the Semantics of Transaction Time and Valid Time in Bitemporal Databases’. NYU Working Paper IS-92-42. https://ssrn.com/abstract=1289024.
+
+de Kleer, Johan. 1986. ‘An Assumption-Based TMS’. Artificial Intelligence 28 (2): 127–62. https://doi.org/10.1016/0004-3702(86)90080-9.
+
+Doyle, Jon. 1979. ‘A Truth Maintenance System’. Artificial Intelligence 12 (3): 231–72. https://doi.org/10.1016/0004-3702(79)90008-0.
+
 Fei, Tianxiang, Mingyang Song, Mao Zheng, and Xiang Yu. 2026. ‘Memory Beyond Recall: A Dual-Process Cognitive Memory System for Self-Evolving LLM Agents’. https://arxiv.org/abs/2606.09483.
 
 He, Zexue, Yu Wang, Churan Zhi, Yuanzhe Hu, Tzu-Ping Chen, Lang Yin, Ze Chen, et al. 2026. ‘MemoryArena: Benchmarking Agent Memory in Interdependent Multi-Session Agentic Tasks’. https://arxiv.org/abs/2602.16313.
 
 Hu, Yuanzhe, Yu Wang, and Julian McAuley. 2025. ‘Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions’. https://arxiv.org/abs/2507.05257.
 
+Hu, Qisheng, Quanyu Long, and Wenya Wang. 2026. ‘When Continual Learning Moves to Memory: A Study of Experience Reuse in LLM Agents’. https://arxiv.org/abs/2604.27003.
+
+Hu, Sen, Yuxiang Wei, Jiaxin Ran, Zhiyuan Yao, Xueran Han, Huacan Wang, Ronghao Chen, and Lei Zou. 2026. ‘Does Memory Need Graphs? A Unified Framework and Empirical Analysis for Long-Term Dialog Memory’. In Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics, 26758–82. https://aclanthology.org/2026.acl-long.1232/.
+
 Huo, Yupeng, Yaxi Lu, Zhong Zhang, Haotian Chen, and Yankai Lin. 2026. ‘AtomMem: Learnable Dynamic Agentic Memory with Atomic Memory Operation’. https://arxiv.org/abs/2601.08323.
 
 Jin, Yuxin, Siyuan Zhang, Hanchen Wang, Lu Qin, Ying Zhang, and Wenjie Zhang. 2026. ‘EXG: Self-Evolving Agents with Experience Graphs’. https://arxiv.org/abs/2605.17721.
+
+Jiang, Eric Hanchen, Zhi Zhang, Yuchen Wu, Levina Li, Dong Liu, Xiao Liang, Rui Sun, Yubei Li, Edward Sun, Haozheng Luo, Zhaolu Kang, Aylin Caliskan, Kai-Wei Chang, and Ying Nian Wu. 2026. ‘Memory as a Controlled Process: Learned Adaptive Memory Management for LLM Agents’. https://arxiv.org/abs/2607.13591.
 
 Kumaran, Dharshan, Demis Hassabis, and James L. McClelland. 2016. ‘What Learning Systems Do Intelligent Agents Need?
 
@@ -24,7 +40,15 @@ Complementary Learning Systems Theory Updated’. Trends in Cognitive Sciences 2
 
 Letta. 2026. ‘Letta: Platform for Building Stateful Agents’. Software repository. https://github.com/letta-ai/letta.
 
+Latimer, Christopher, Nicolò Boschi, Andrew Neeser, Chris Bartholomew, Gaurav Srivastava, Xuan Wang, and Naren Ramakrishnan. 2026. ‘Hindsight: Structured Agent Memory that Retains, Recalls, and Reflects’. In Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics: System Demonstrations, 275–85. https://doi.org/10.18653/v1/2026.acl-demo.27.
+
+Lebo, Timothy, Satya Sahoo, and Deborah McGuinness, eds. 2013. ‘PROV-O: The PROV Ontology’. W3C Recommendation. https://www.w3.org/TR/prov-o/.
+
+Li, Yifei, Weidong Guo, Lingling Zhang, Rongman Xu, Muye Huang, Hui Liu, Lijiao Xu, Yu Xu, and Jun Liu. 2026. ‘LoCoMo-Plus: Beyond-Factual Cognitive Memory Evaluation Framework for LLM Agents’. In Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics, 25085–100. https://doi.org/10.18653/v1/2026.acl-long.1150.
+
 Lin, Huawei, Peng Li, Jie Song, Fuxin Jiang, and Tieying Zhang. 2026. ‘MUSE-Autoskill: Self-Evolving Agents via Skill Creation, Memory, Management, and Evaluation’. https://arxiv.org/abs/2605.27366.
+
+Luo, Jinghao, Yuchen Tian, Chuxue Cao, Ziyang Luo, Hongzhan Lin, Kaixin Li, Chuyi Kong, Ruichao Yang, and Jing Ma. 2026. ‘From Storage to Experience: A Survey on the Evolution of LLM Agent Memory Mechanisms’. In Findings of the Association for Computational Linguistics: ACL 2026, 41622–52. https://doi.org/10.18653/v1/2026.findings-acl.2069.
 
 Maharana, Adyasha, Dong-Ho Lee, Sergey Tulyakov, Mohit Bansal, Francesco Barbieri, and Yuwei Fang. 2024. ‘Evaluating Very Long-Term Conversational Memory of LLM Agents’. In Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics, 13851–70. https://doi.org/10.18653/v1/2024.acl-long.747.
 
@@ -46,6 +70,10 @@ Ren, Tao, Weiyao Luo, Hui Yang, Rongzhi Zhu, Xiang Huang, Yuchuan Wu, Bingxue Ch
 
 Shinn, Noah, Federico Cassano, Edward Berman, Ashwin Gopinath, Karthik Narasimhan, and Shunyu Yao. 2023. ‘Reflexion: Language Agents with Verbal Reinforcement Learning’. In Advances in Neural Information Processing Systems. Vol. 36. https://arxiv.org/abs/2303.11366.
 
+Shen, Yiting, Kun Li, Wei Zhou, and Songlin Hu. 2026. ‘Mem2ActBench: A Benchmark for Evaluating Long-Term Memory Utilization in Task-Oriented Autonomous Agents’. In Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics, 8173–90. https://doi.org/10.18653/v1/2026.acl-long.370.
+
+Shukla, Navnit, Kamal Pandey, and Omsankar Tiwari. 2026. ‘TurboVec: A Case Study in Cost-Efficient Private Retrieval for Enterprise RAG via Codebook-Oblivious Quantization’. https://arxiv.org/abs/2607.16973.
+
 Su, Miao, Yucan Guo, Zhongni Hou, Long Bai, Zixuan Li, Yufei Zhang, Guojun Yin, et al. 2026. ‘Beyond Dialogue Time: Temporal Semantic Memory for Personalized LLM Agents’. https://arxiv.org/abs/2601.07468.
 
 Sumers, Theodore R., Shunyu Yao, Karthik Narasimhan, and Thomas L. Griffiths. 2024. ‘Cognitive Architectures for Language Agents’.
@@ -56,7 +84,7 @@ Tan, Haoran, Zeyu Zhang, Chen Ma, Xu Chen, Quanyu Dai, and Zhenhua Dong. 2025. �
 
 Tan, Zhen, Jun Yan, I-Hung Hsu, Rujun Han, Zifeng Wang, Long T. Le, Yiwen Song, et al. 2025. ‘In Prospect and Retrospect: Reflective Memory Management for Long-Term Personalized Dialogue Agents’. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics, 8416–39. https://doi.org/10.18653/v1/2025.acl-long.413.
 
-TencentDB Agent Memory Team. 2026. ‘TencentDB Agent Memory’. Software repository. https://github.com/TencentCloud/TencentDB-Agent-Memory.
+TencentDB Agent Memory Team. 2026. ‘TencentDB Agent Memory’. Software repository, accessed 9 August 2026. https://github.com/TencentCloud/TencentDB-Agent-Memory.
 
 Tulving, Endel. 1972. ‘Episodic and Semantic Memory’. In Organization of Memory, edited by Endel Tulving and Wayne Donaldson, 381–403. Academic Press.
 
@@ -78,9 +106,7 @@ Yang, Ke, Zixi Chen, Xuan He, Jize Jiang, Michel Galley, Chenglong Wang, Jianfen
 
 Yu, Yi, Liuyi Yao, Yuexiang Xie, Qingquan Tan, Jiaqi Feng, Yaliang Li, and Libing Wu. 2026. ‘Agentic Memory: Learning Unified Long-Term and Short-Term Memory Management for Large Language Model Agents’. https://arxiv.org/abs/2601.01885.
 
-Zhang, Jiawen, Kejia Chen, Jiachen Ma, Yangfan Hu, Lipeng He, Yechao Zhang, Jian Liu, Xiaohu Yang, Tianwei Zhang, and Ruoxi Jia.
-
-1. ‘Beyond Similarity: Trustworthy Memory Search for Personal AI Agents’. https://arxiv.org/abs/2606.06054.
+Zhang, Jiawen, Kejia Chen, Jiachen Ma, Yangfan Hu, Lipeng He, Yechao Zhang, Jian Liu, Xiaohu Yang, Tianwei Zhang, and Ruoxi Jia. 2026. ‘Beyond Similarity: Trustworthy Memory Search for Personal AI Agents’. https://arxiv.org/abs/2606.06054.
 
 Zhang, Haozhen, Quanyu Long, Jianzhu Bao, Tao Feng, Weizhi Zhang, Haodong Yue, and Wenya Wang. 2026. ‘MemSkill: Learning and Evolving Memory Skills for Self-Evolving Agents’. https://arxiv.org/abs/2602.02474.
 

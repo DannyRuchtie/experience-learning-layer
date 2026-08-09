@@ -14,6 +14,12 @@ The architecture separates three concerns. The input and capture layer normalise
 
 External memory services and indexes can propose candidates, but they do not define canonical truth, identity, policy, or learning state.
 
+## ELL-Core and deferred extensions
+
+The confirmatory system is deliberately small. ELL-Core contains seven durable objects: `SourceArtifact`, `Episode`, `Reflection`, `ConceptVersion`, `EvidenceLink`, `ApplicationReceipt`, and `Outcome`. `AuditEvent` records lifecycle operations. Associations may be computed ephemerally or stored as disposable projections. Skills, graphs, learned memory-operation policies, provider-specific memory objects, neural state, multimodal capture, and product clients are deferred extensions.
+
+This boundary is methodological, not only architectural. If a concept layer cannot beat simple retrieval and direct-insight baselines with this minimum object set, adding a graph database, learned controller, or specialised vector index would make attribution harder rather than rescue the claim.
+
 ## Canonical episode store
 
 The input is a canonical episode rather than an application-specific chat message. An episode is represented as e_i=(id_i,t_event_i,t_observed_i,x_i,o_i,a_i,y_i,s_i,p_i), where id_i is the episode identifier, t_event_i and t_observed_i are event and observation time, x_i is context, o_i is an observation, a_i is an action, yi is an outcome, si is source metadata, and pi contains privacy and access-control metadata. The two timestamps allow delayed reports and later corrections to be represented.
@@ -22,7 +28,7 @@ The raw episode store is append-only. Corrections create new records linked by r
 
 ## Association layer
 
-The association layer creates typed links between episodes. Initial relation types are:
+The optional association layer creates typed links between episodes. Initial relation types are:
 
 - semantic similarity;
 - shared entities or participants;
@@ -35,7 +41,7 @@ The association layer creates typed links between episodes. Initial relation typ
 
 Only some edges are objective. Temporal sequence and shared identifiers can be deterministic; causal and contradiction edges may be model-generated hypotheses. Every edge therefore records its method, score, model or rule version, and source evidence.
 
-The layer supports both local neighbourhood retrieval and clustering. Reflection should not operate only on the nearest embeddings because lexically distant episodes may share a goal, failure pattern, or outcome. Hybrid candidate generation combines semantic, structural, temporal, and outcome-based signals.
+The layer supports both local neighbourhood retrieval and clustering. Reflection should not operate only on the nearest embeddings because lexically distant episodes may share a goal, failure pattern, or outcome. Hybrid candidate generation combines semantic, structural, temporal, and outcome-based signals. The first benchmark also includes lexical-only, vector-only, and deterministic gold-cluster conditions so the value of association is measured rather than presumed.
 
 ## Reflection Engine
 
