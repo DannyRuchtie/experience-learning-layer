@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Experience Learning Layer paper: evidence-grounded learning from episodes to revisable concepts.">
+  <title>7. Experimental Design · Experience Learning Layer</title>
+  <link rel="stylesheet" href="../assets/paper.css">
+</head>
+<body>
+  <a class="skip-link" href="#paper">Skip to paper</a>
+  <header class="site-header">
+    <a class="brand" href="../index.html">Experience Learning Layer</a>
+    <nav aria-label="Repository links">
+      <a href="../../README.md">Overview</a>
+      <a href="../../output/pdf/Experience-Learning-Layer-Paper-current.pdf">PDF</a>
+      <a href="../../paper/ELL_Paper.md">Source</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="contents" aria-label="Paper contents">
+      <p class="eyebrow">Paper contents</p>
+      <ol><li><a href="../index.html">Abstract</a></li>
+<li><a href="../paper/01-introduction.html">1. Introduction</a></li>
+<li><a href="../paper/02-problem-definition.html">2. Problem Definition</a></li>
+<li><a href="../paper/03-related-work-and-positioning.html">3. Related Work and Positioning</a></li>
+<li><a href="../paper/04-experience-learning-layer-architecture.html">4. Experience Learning Layer Architecture</a></li>
+<li><a href="../paper/05-proposed-algorithms.html">5. Proposed Algorithms</a></li>
+<li><a href="../paper/06-data-model-and-public-interfaces.html">6. Data Model and Public Interfaces</a></li>
+<li><a href="../paper/07-experimental-design.html" aria-current="page">7. Experimental Design</a></li>
+<li><a href="../paper/08-open-source-reference-implementation.html">8. Open-Source Reference Implementation</a></li>
+<li><a href="../paper/09-ethics-privacy-and-security.html">9. Ethics, Privacy, and Security</a></li>
+<li><a href="../paper/10-limitations-and-threats-to-validity.html">10. Limitations and Threats to Validity</a></li>
+<li><a href="../paper/11-expected-outcomes-and-falsifiability.html">11. Expected Outcomes and Falsifiability</a></li>
+<li><a href="../paper/12-research-and-implementation-roadmap.html">12. Research and Implementation Roadmap</a></li>
+<li><a href="../paper/13-experience-learning-layer-expansion.html">13. Experience Learning Layer Expansion</a></li>
+<li><a href="../paper/14-reference-implementation-status.html">14. Reference Implementation Status</a></li>
+<li><a href="../paper/15-conclusion.html">15. Conclusion</a></li>
+<li><a href="../paper/acknowledgements.html">Acknowledgements</a></li>
+<li><a href="../paper/references.html">References</a></li></ol>
+    </aside>
+    <main id="paper" class="paper">
+      <p class="eyebrow">Living paper</p><h1>7. Experimental Design</h1><h2>7.1 Study status</h2>
+<p>The evaluation is preregistered in this paper before results are collected. All thresholds, prompts, model versions, random seeds, exclusions, and statistical tests will be committed before the sealed test sets are run.</p>
+<p>Any later changes will be reported as deviations rather than silently folded into the method.</p>
+<h2>7.2 Evaluation stages</h2>
+<h3>Stage A: controlled latent-pattern streams</h3>
+<p>The project will release a synthetic benchmark in which each experience stream is generated from known latent concepts. A stream contains:</p>
+<ul>
+<li>recurring contextual rules;</li>
+<li>paraphrased surface forms;</li>
+<li>irrelevant but semantically similar episodes;</li>
+<li>exceptions with explicit conditions;</li>
+<li>contradictory observations;</li>
+<li>temporal change points;</li>
+<li>delayed outcomes;</li>
+<li>duplicated or correlated evidence.</li>
+</ul>
+<p>Example latent concept: When a task depends on another team and the owner is not involved before commitment, delivery risk increases; the pattern does not apply to independently executable tasks.</p>
+<p>The generator creates episodes that support, contradict, or fall outside the concept’s scope. The benchmark therefore has gold labels for the concept, its conditions, its evidence, counterevidence, and validity interval.</p>
+<p>Three stream lengths are planned: 50, 200, and 1,000 episodes. Difficulty increases through noise, lexical distance, exceptions, and concept drift. A sealed test generator seed prevents manual prompt tuning against the exact cases.</p>
+<h3>Stage B: long-term conversational memory</h3>
+<p>LongMemEval and LoCoMo will test whether ELL remains competitive on factual extraction, cross-session reasoning, temporal reasoning, updates, abstention, and long-range dialogue understanding (Wu et al. 2025;</p>
+<p>Maharana et al. 2024). MemBench will add reflective-memory and efficiency measures where licensing and harness compatibility permit (H. Tan et al. 2025). MemoryAgentBench will test retrieval, test-time learning, long-range understanding, and selective forgetting in incremental multi-turn interaction (Hu, Wang, and McAuley 2025).</p>
+<p>ELL is not expected to dominate span-recall tasks solely because it forms concepts. These benchmarks test whether the abstraction layer preserves ordinary memory performance and whether concept retrieval helps multi-session inference.</p>
+<h3>Stage C: memory-dependent action</h3>
+<p>MemoryArena will test whether information learned in earlier sessions improves later task execution (He et al.</p>
+<p>2026). A smaller open environment may be added for rapid iteration, but MemoryArena is the target action benchmark because it explicitly couples memory, agent decisions, and environment outcomes.</p>
+<h3>Stage D: ELL intuition and outcome benchmark</h3>
+<p>The ELL-specific benchmark combines controlled organisational and personal-work streams with later tasks that require conversational shorthand, proactive but non-intrusive context, structurally distant transfer, adaptation at known change points, and explicit correction. Each decision records an ApplicationReceipt and an independently scored outcome. Gold data identifies required context, irrelevant private context, support, counterevidence, validity intervals, and deletion cascades. The benchmark therefore measures not only whether information was recalled, but whether a compact intuition packet selected the right evidence, improved behaviour, remained calibrated, and changed or forgot appropriately.</p>
+<h2>7.3 Memory Dynamics and Intuition Simulation Lab</h2>
+<p>The evaluation will include a reproducible simulation laboratory for studying memory dynamics before any policy is considered for deployment. The laboratory replays deterministic, timestamped scenario streams through the same typed ports used by the reference architecture. It supports parameter sweeps and side-by-side policy comparisons for extraction, association, consolidation, retrieval, revision, and forgetting without granting an experimental policy authority to mutate canonical evidence. Each run fixes the scenario version, configuration, model and prompt identifiers, random seed, permissions, and resource budget. It emits immutable decision and ApplicationReceipts that resolve every selected context item, candidate mutation, committed version, action, outcome, evaluator judgement, and cost to its permitted source evidence.</p>
+<p>Scenarios use synthetic or appropriately de-identified longitudinal personas representing both individuals and organisations. They include stable preferences, weak signals, sensitive attributes that must not be inferred or revealed, explicit consent changes, contradictions, temporal drift, delayed outcomes, workspace boundaries, and deletion requests. Chronological train, development, and sealed test intervals prevent policies from learning from future events; change points and deletion events remain hidden from the system until they occur in replay. The laboratory compares no memory, raw-history or maximum-context prompting, ordinary RAG, and the candidate systems and ELL ablations in Section 7.4 under matched sources, model conditions, context budgets, and outcome opportunities.</p>
+<p>Preregistered primary measures cover retrieval precision and recall; faithfulness and calibration of claims; adaptation latency after change or correction; contradiction and stale-memory rates; transfer and downstream task utility; overpersonalisation and unjustified inference; privacy, consent, and cross-workspace leakage; deletion-cascade completeness; and latency, token, storage, and energy or hardware-time cost, including consolidation.</p>
+<p>Scoring is deterministic wherever gold state and event traces permit. Outcome and safety judgements are produced by evaluators independent of the policy under test; subjective conversational naturalness is assessed separately by blinded human reviewers. Stochastic conditions use multiple preregistered seeds and report confidence intervals and effect sizes. This laboratory is an evaluation proposal, not evidence that the present implementation already provides adaptive intuition or safe learned memory operations.</p>
+<h2>7.4 Baselines</h2>
+<p>At minimum, all experiments include:</p>
+<ol>
+<li>no persistent memory;</li>
+<li>full or maximum available context;</li>
+<li>ordinary RAG or vector retrieval over raw episodes;</li>
+<li>rolling summary memory;</li>
+<li>linked-note or Zettelkasten-style retrieval;</li>
+<li>episode retrieval plus direct insight extraction;</li>
+<li>ELL without concept consolidation;</li>
+<li>ELL without outcome feedback or temporal adaptation;</li>
+<li>full ELL with compact intuition packets.</li>
+</ol>
+<p>Where reproducible implementations and compatible licences are available, A-MEM, Reflective Memory Management, GAAMA, and PlugMem will be evaluated using their released code or carefully documented reimplementations (Xu et al. 2025; Z. Tan et al. 2025; Paul, Sharma, and Sareen 2026; Yang et al. 2026). A method will not be included under another system’s name if key behaviour cannot be reproduced.</p>
+<p>Additional experiment tracks compare Graphiti/Zep, Mem0, Letta/MemGPT, and TencentDB Agent Memory as replaceable retrieval or context substrates; AgeMem, AtomMem, and MemSkill as learned operation policies; EXG, ReasoningBank, MUSE-Autoskill, and Memento-Skills as experience or skill learners; and Titans, HOPE, and TMEM as neural or parametric accelerators. A named comparison is reported only when its public interface or paper can be reproduced under the same source stream, model condition, context budget, and outcome metric.</p>
+<h2>7.5 Model conditions</h2>
+<p>The main reproducibility track uses at least two openly licensed instruction-tuned models from different model families and two capacity bands. Model names are recorded only when the experiment is frozen, because available open models change rapidly. All generation settings, quantisation, serving software, prompts, and hardware are logged.</p>
+<p>A hosted-model comparison may be reported separately, but the paper’s core claims must remain reproducible without proprietary APIs.</p>
+<h2>7.6 Metrics</h2>
+<p>Downstream metrics</p>
+<ul>
+<li>task success or benchmark accuracy;</li>
+<li>answer faithfulness to retrieved evidence;</li>
+<li>transfer gain over the episode-only baseline;</li>
+<li>abstention quality;</li>
+<li>action efficiency, including steps to completion.</li>
+</ul>
+<p>Concept metrics Concept correctness. Does the induced proposition match the gold latent pattern or human judgement?</p>
+<p>Evidence precision. What proportion of cited support actually supports the concept?</p>
+<p>Evidence recall. What proportion of relevant support was linked?</p>
+<p>Counterevidence recall. Did the system find important exceptions and contradictions?</p>
+<p>Scope accuracy. Does the concept apply to the right contexts without over-generalising?</p>
+<p>Revision latency. How many contradictory episodes or how much time elapses before a stale concept is contested or revised?</p>
+<p>Lineage correctness. Do revisions, merges, and splits preserve accurate parent and evidence links?</p>
+<p>Calibration. Does stated confidence correspond to observed concept correctness and application success?</p>
+<p>Brier score and expected calibration error will be reported.</p>
+<p>Efficiency metrics</p>
+<ul>
+<li>input and output tokens per episode and per decision;</li>
+<li>model calls per accepted concept;</li>
+<li>storage growth;</li>
+<li>median and tail latency;</li>
+<li>energy or hardware-time proxy where measurable;</li>
+<li>task utility per 1,000 retrieved tokens.</li>
+</ul>
+<p>Product success criteria</p>
+<ul>
+<li>shorthand resolution accuracy without requiring the user to restate stable context;</li>
+<li>precision and recall of proactive just-in-time context, including a penalty for intrusive or irrelevant retrieval;</li>
+<li>useful generalisation to structurally related but lexically dissimilar situations;</li>
+<li>change-detection delay and correction latency after explicit or behavioural counterevidence;</li>
+<li>calibration and selective abstention when evidence is weak, stale, or contradictory;</li>
+<li>explanation faithfulness, citation validity, and user ability to correct, scope, or delete the underlying memory;</li>
+<li>end-to-end task utility per token, latency, storage, model call, and energy or hardware-time proxy, including background consolidation cost;</li>
+<li>zero cross-workspace leakage and complete tested invalidation of deleted evidence from derived projections.</li>
+</ul>
+<p>Thresholds for these criteria will be frozen before choosing a production memory substrate or learned policy.</p>
+<p>An implementation is not successful merely because it stores more, produces persuasive summaries, or retrieves plausible context.</p>
+<h2>7.7 Human evaluation</h2>
+<p>Concept quality cannot be reduced entirely to lexical matching. A stratified sample will be rated by at least three annotators who are blind to the system condition. The rubric covers correctness, support, scope, usefulness, and whether counterevidence was handled appropriately. Inter-rater agreement is reported using Krippendorff’s alpha. Disagreements are retained rather than resolved solely by an LLM judge.</p>
+<p>LLM-based judges may scale evaluation, but they will be calibrated against the human sample. Prompts and raw judgements will be released. The same model used to generate a concept will not be the only judge of that concept.</p>
+<h2>7.8 Ablations</h2>
+<p>The following components are removed one at a time:</p>
+<ul>
+<li>reflection–concept separation;</li>
+<li>counterevidence retrieval;</li>
+<li>evidence diversity threshold;</li>
+<li>temporal validity;</li>
+<li>lifecycle versioning;</li>
+<li>application-outcome feedback;</li>
+<li>source-episode restoration at retrieval;</li>
+<li>graph associations beyond vector similarity.</li>
+</ul>
+<p>Additional sweeps vary reflection frequency, promotion thresholds, retrieval budget, and confidence formulation. Architecture ablations compare lexical, vector, graph, temporal, and hybrid association; fixed versus learned extraction and consolidation policy; concept-only versus episode-restored packets; and eager versus event-triggered background processing. This keeps dynamic graph organisation, probabilistic hypotheses, and other research directions behind evidence gates instead of presuming a settled winner.</p>
+<p>Safety ablations separately disable deterministic validation around learned write, update, and discard proposals; independent outcome validation around skill evolution; and canonical evidence restoration around neural or parametric adaptation. These conditions are diagnostic and are not deployment configurations.</p>
+<h2>7.9 Statistical analysis</h2>
+<p>Binary outcomes use paired tests such as McNemar’s test where appropriate. Continuous or ordinal metrics use paired bootstrap confidence intervals and report effect sizes. Multiple random seeds are used for synthetic generation and stochastic inference. The primary comparisons and practical significance thresholds are frozen in the experiment configuration before the sealed tests.</p>
+<p>Results are reported by task category and stream length, not only as a single average. Failure analysis separates write, association, reflection, consolidation, retrieval, reasoning, and application errors.</p>
+      <nav class="pager" aria-label="Section navigation"><a class="previous" href="06-data-model-and-public-interfaces.html">← Previous</a><a class="next" href="08-open-source-reference-implementation.html">Next →</a></nav>
+    </main>
+  </div>
+</body>
+</html>

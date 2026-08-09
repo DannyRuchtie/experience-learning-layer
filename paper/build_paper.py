@@ -27,6 +27,8 @@ from reportlab.platypus import (
 )
 from reportlab.platypus.tableofcontents import TableOfContents
 
+from paper.diagrams import DIAGRAMS, pdf_diagram_flowables
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = ROOT / "paper" / "ELL_Paper.md"
 DEFAULT_OUTPUT = ROOT / "output" / "pdf" / "Experience-Learning-Layer-Paper-current.pdf"
@@ -35,6 +37,7 @@ PAGE_MARKER = re.compile(r"^--- Page \d+ ---$")
 PAGE_NUMBER = re.compile(r"^\d+$")
 NUMBERED_HEADING = re.compile(r"^(\d+)(?:\.(\d+))?\.?(?:\s+)(.+)$")
 HEADER_PREFIX = "EXPERIENCE LEARNING LAYER"
+DIAGRAM_MARKER = re.compile(r"^\[\[diagram:([a-z0-9-]+)\]\]$")
 
 
 def register_fonts() -> tuple[str, str, str]:
@@ -211,6 +214,15 @@ def make_styles() -> dict[str, ParagraphStyle]:
             textColor=colors.HexColor("#556274"),
             spaceAfter=6,
         ),
+        "caption": ParagraphStyle(
+            "PaperCaption",
+            parent=base["BodyText"],
+            fontName=body_font,
+            fontSize=7.4,
+            leading=10.5,
+            textColor=colors.HexColor("#556274"),
+            spaceAfter=7,
+        ),
     }
 
 
@@ -222,6 +234,9 @@ def clean_lines(source: str) -> list[str]:
         if PAGE_MARKER.fullmatch(line) or PAGE_NUMBER.fullmatch(line):
             continue
         if line.startswith(HEADER_PREFIX) and "WORKING DRAFT" in line:
+            continue
+        if line.startswith(("https://", "http://")) and result and result[-1]:
+            result[-1] = f"{result[-1]} {line}"
             continue
         result.append(line)
     return result
@@ -242,10 +257,24 @@ def heading_level(line: str) -> int | None:
     return 2 if match.group(2) is not None else 1
 
 
+def join_wrapped_lines(parts: list[str]) -> str:
+    """Join extracted manuscript lines without splitting hyphenated words."""
+    text = ""
+    for part in parts:
+        if not text:
+            text = part
+        elif text.endswith("-"):
+            text += part
+        else:
+            text += f" {part}"
+    return text
+
+
 def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[object]:
     """Convert the living plain-Markdown manuscript into Platypus flowables."""
     lines = clean_lines(source)
     revision = next((line for line in lines if line.startswith("Revision note.")), "")
+    version = next((line for line in lines if line.startswith("Living working draft")), "")
     try:
         abstract_index = lines.index("Abstract")
     except ValueError as exc:
@@ -260,7 +289,7 @@ def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[obj
         ),
         Spacer(1, 8 * mm),
         Paragraph("Danny Ruchtie", styles["meta"]),
-        Paragraph("Living working draft v0.2 - 8 August 2026", styles["meta"]),
+        Paragraph(escape(version), styles["meta"]),
         Paragraph("OPEN RESEARCH SPECIFICATION / EXPERIMENTAL PROTOCOL", styles["meta"]),
         Paragraph(escape(revision.removeprefix("Revision note. ")), styles["revision"]),
         PageBreak(),
@@ -294,7 +323,7 @@ def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[obj
 
     def flush_paragraph() -> None:
         if paragraph_parts:
-            text = " ".join(part for part in paragraph_parts if part)
+            text = join_wrapped_lines([part for part in paragraph_parts if part])
             story.append(Paragraph(escape(text), styles["body"]))
             paragraph_parts.clear()
 
@@ -318,6 +347,15 @@ def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[obj
             bullets.clear()
 
     for line in lines[abstract_index:]:
+        marker = DIAGRAM_MARKER.fullmatch(line)
+        if marker:
+            flush_paragraph()
+            flush_bullets()
+            key = marker.group(1)
+            if key not in DIAGRAMS:
+                raise ValueError(f"unknown diagram marker: {key}")
+            story.extend(pdf_diagram_flowables(key, styles["caption"]))
+            continue
         if not line:
             flush_paragraph()
             flush_bullets()
@@ -338,8 +376,11 @@ def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[obj
             bullets.append(line[1:].strip())
             continue
         if bullets:
-            bullets[-1] = f"{bullets[-1]} {line}"
-            continue
+            if bullets[-1].endswith((".", "?", "!")) and line[0].isupper():
+                flush_bullets()
+            else:
+                bullets[-1] = join_wrapped_lines([bullets[-1], line])
+                continue
         paragraph_parts.append(line)
         if line.endswith((".", "?", "!")):
             flush_paragraph()

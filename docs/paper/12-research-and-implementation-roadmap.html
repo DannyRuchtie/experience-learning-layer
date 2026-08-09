@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Experience Learning Layer paper: evidence-grounded learning from episodes to revisable concepts.">
+  <title>12. Research and Implementation Roadmap · Experience Learning Layer</title>
+  <link rel="stylesheet" href="../assets/paper.css">
+</head>
+<body>
+  <a class="skip-link" href="#paper">Skip to paper</a>
+  <header class="site-header">
+    <a class="brand" href="../index.html">Experience Learning Layer</a>
+    <nav aria-label="Repository links">
+      <a href="../../README.md">Overview</a>
+      <a href="../../output/pdf/Experience-Learning-Layer-Paper-current.pdf">PDF</a>
+      <a href="../../paper/ELL_Paper.md">Source</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="contents" aria-label="Paper contents">
+      <p class="eyebrow">Paper contents</p>
+      <ol><li><a href="../index.html">Abstract</a></li>
+<li><a href="../paper/01-introduction.html">1. Introduction</a></li>
+<li><a href="../paper/02-problem-definition.html">2. Problem Definition</a></li>
+<li><a href="../paper/03-related-work-and-positioning.html">3. Related Work and Positioning</a></li>
+<li><a href="../paper/04-experience-learning-layer-architecture.html">4. Experience Learning Layer Architecture</a></li>
+<li><a href="../paper/05-proposed-algorithms.html">5. Proposed Algorithms</a></li>
+<li><a href="../paper/06-data-model-and-public-interfaces.html">6. Data Model and Public Interfaces</a></li>
+<li><a href="../paper/07-experimental-design.html">7. Experimental Design</a></li>
+<li><a href="../paper/08-open-source-reference-implementation.html">8. Open-Source Reference Implementation</a></li>
+<li><a href="../paper/09-ethics-privacy-and-security.html">9. Ethics, Privacy, and Security</a></li>
+<li><a href="../paper/10-limitations-and-threats-to-validity.html">10. Limitations and Threats to Validity</a></li>
+<li><a href="../paper/11-expected-outcomes-and-falsifiability.html">11. Expected Outcomes and Falsifiability</a></li>
+<li><a href="../paper/12-research-and-implementation-roadmap.html" aria-current="page">12. Research and Implementation Roadmap</a></li>
+<li><a href="../paper/13-experience-learning-layer-expansion.html">13. Experience Learning Layer Expansion</a></li>
+<li><a href="../paper/14-reference-implementation-status.html">14. Reference Implementation Status</a></li>
+<li><a href="../paper/15-conclusion.html">15. Conclusion</a></li>
+<li><a href="../paper/acknowledgements.html">Acknowledgements</a></li>
+<li><a href="../paper/references.html">References</a></li></ol>
+    </aside>
+    <main id="paper" class="paper">
+      <p class="eyebrow">Living paper</p><h1>12. Research and Implementation Roadmap</h1><p>Phase 0 — Specification and scaffold</p>
+<ul>
+<li>publish the paper draft, schemas, repository structure, and governance files;</li>
+<li>implement typed models and in-memory stores;</li>
+<li>provide deterministic baseline engines and unit tests;</li>
+<li>open public issues for unresolved design choices.</li>
+</ul>
+<p>Exit criterion: a contributor can record episodes, create a reflection, promote a concept, retrieve it with evidence, and run the test suite locally.</p>
+<p>Phase 1 — Controlled benchmark</p>
+<ul>
+<li>implement the latent-pattern stream generator;</li>
+<li>implement the Memory Dynamics and Intuition Simulation Lab with deterministic replay, policy sweeps, immutable receipts, and chronological train, development, and sealed test partitions;</li>
+<li>define gold concepts, evidence, counterevidence, exceptions, and change points;</li>
+<li>freeze metrics, policy comparison budgets, privacy and deletion tests, and the annotation rubric;</li>
+<li>publish baseline results for raw retrieval, rolling summary, and direct insights.</li>
+</ul>
+<p>Exit criterion: a complete replay produces concept, outcome, safety, and cost metrics with fixed seeds and reproducible receipts.</p>
+<p>Phase 2 — Reflection and Concept Engines</p>
+<ul>
+<li>add structured model adapters for local open-weight inference;</li>
+<li>implement validation, promotion, merge, split, and revision;</li>
+<li>add the evidence ledger and lifecycle reports;</li>
+<li>run component ablations.</li>
+</ul>
+<p>Exit criterion: ELL can be compared with baselines on the sealed synthetic test set.</p>
+<p>Phase 3 — External benchmarks</p>
+<ul>
+<li>integrate LongMemEval and LoCoMo;</li>
+<li>integrate MemoryAgentBench, MemBench, and MemoryArena where licences and compute permit;</li>
+<li>reproduce selected open memory baselines under equal budgets;</li>
+<li>compare learned memory-operation, experience-graph, skill-evolution, and neural-memory tracks behind the same provider-neutral ports and canonical governance boundary;</li>
+<li>complete human evaluation and calibration.</li>
+</ul>
+<p>Exit criterion: results can support or reject H1–H6 across at least one conversational and one action benchmark.</p>
+<p>Phase 4 — Paper completion</p>
+<ul>
+<li>replace this preregistration status with methods and results generated from tagged releases;</li>
+<li>add statistical analysis, failure cases, and limitations discovered in practice;</li>
+<li>release raw experiment artefacts and a reproducibility package;</li>
+<li>submit to an appropriate agent, NLP, HCI, or continual-learning venue.</li>
+</ul>
+      <nav class="pager" aria-label="Section navigation"><a class="previous" href="11-expected-outcomes-and-falsifiability.html">← Previous</a><a class="next" href="13-experience-learning-layer-expansion.html">Next →</a></nav>
+    </main>
+  </div>
+</body>
+</html>

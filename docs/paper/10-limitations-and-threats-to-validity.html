@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Experience Learning Layer paper: evidence-grounded learning from episodes to revisable concepts.">
+  <title>10. Limitations and Threats to Validity · Experience Learning Layer</title>
+  <link rel="stylesheet" href="../assets/paper.css">
+</head>
+<body>
+  <a class="skip-link" href="#paper">Skip to paper</a>
+  <header class="site-header">
+    <a class="brand" href="../index.html">Experience Learning Layer</a>
+    <nav aria-label="Repository links">
+      <a href="../../README.md">Overview</a>
+      <a href="../../output/pdf/Experience-Learning-Layer-Paper-current.pdf">PDF</a>
+      <a href="../../paper/ELL_Paper.md">Source</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="contents" aria-label="Paper contents">
+      <p class="eyebrow">Paper contents</p>
+      <ol><li><a href="../index.html">Abstract</a></li>
+<li><a href="../paper/01-introduction.html">1. Introduction</a></li>
+<li><a href="../paper/02-problem-definition.html">2. Problem Definition</a></li>
+<li><a href="../paper/03-related-work-and-positioning.html">3. Related Work and Positioning</a></li>
+<li><a href="../paper/04-experience-learning-layer-architecture.html">4. Experience Learning Layer Architecture</a></li>
+<li><a href="../paper/05-proposed-algorithms.html">5. Proposed Algorithms</a></li>
+<li><a href="../paper/06-data-model-and-public-interfaces.html">6. Data Model and Public Interfaces</a></li>
+<li><a href="../paper/07-experimental-design.html">7. Experimental Design</a></li>
+<li><a href="../paper/08-open-source-reference-implementation.html">8. Open-Source Reference Implementation</a></li>
+<li><a href="../paper/09-ethics-privacy-and-security.html">9. Ethics, Privacy, and Security</a></li>
+<li><a href="../paper/10-limitations-and-threats-to-validity.html" aria-current="page">10. Limitations and Threats to Validity</a></li>
+<li><a href="../paper/11-expected-outcomes-and-falsifiability.html">11. Expected Outcomes and Falsifiability</a></li>
+<li><a href="../paper/12-research-and-implementation-roadmap.html">12. Research and Implementation Roadmap</a></li>
+<li><a href="../paper/13-experience-learning-layer-expansion.html">13. Experience Learning Layer Expansion</a></li>
+<li><a href="../paper/14-reference-implementation-status.html">14. Reference Implementation Status</a></li>
+<li><a href="../paper/15-conclusion.html">15. Conclusion</a></li>
+<li><a href="../paper/acknowledgements.html">Acknowledgements</a></li>
+<li><a href="../paper/references.html">References</a></li></ol>
+    </aside>
+    <main id="paper" class="paper">
+      <p class="eyebrow">Living paper</p><h1>10. Limitations and Threats to Validity</h1><p>First, textual concepts favour knowledge that can be expressed as propositions or instructions. Tacit motor skills, perceptual expertise, and distributed representations may not fit this format. ELL may therefore complement rather than replace parametric or executable skill learning.</p>
+<p>Second, provenance does not guarantee truth. Episodes can be incorrect, duplicated, biased, or malicious. A perfectly traceable concept may still be grounded in poor evidence. Source reliability and adversarial robustness require separate study.</p>
+<p>Third, LLM-generated reflections may introduce causal stories that are plausible but unsupported. The validation and counterevidence stages reduce this risk but cannot eliminate it. Human evaluation remains necessary for high-stakes domains.</p>
+<p>Fourth, the proposed confidence formula is heuristic. Evidence counts are not independent observations, and application outcomes may be delayed or confounded. Calibration must be empirical and domain-specific.</p>
+<p>Fifth, synthetic benchmarks can overstate progress if their latent rules resemble the system’s representation.</p>
+<p>The controlled benchmark is useful for diagnosis but must be paired with natural conversations and agentic tasks.</p>
+<p>Sixth, comparisons across memory systems are difficult because ingestion granularity, retrieval budget, model backbone, prompts, and judge choice can dominate results. The protocol therefore fixes budgets and reports complete configurations, but residual implementation differences remain.</p>
+<p>Seventh, the architecture adds cost and operational complexity. The system is unsuccessful if the concept layer does not deliver enough transfer, safety, or efficiency to justify reflection, validation, storage, and governance overhead.</p>
+<p>Eighth, the term intuition can encourage anthropomorphism or hide uncertainty behind fluent behaviour. In this paper it is only an operational label for measured context selection and adaptation. A compact packet may also compress away rare but important exceptions, so source restoration, counterevidence retrieval, and abstention must be evaluated explicitly.</p>
+<p>Ninth, reduced prompt tokens do not necessarily reduce total energy or latency. Background embedding, association, graph maintenance, reflection, and consolidation can move cost out of the visible request path.</p>
+<p>Efficiency claims therefore require end-to-end accounting over both write-time and read-time work.</p>
+<p>Tenth, learned memory operations introduce reward misspecification and policy-opacity risks. A policy may improve benchmark reward by discarding inconvenient counterevidence, overfitting retrieval to the judge, or retaining sensitive information. Immutable sources and deterministic commit constraints reduce but do not eliminate this risk.</p>
+<p>Eleventh, neural and parametric memory may improve adaptation while weakening inspectability and selective deletion. An external provenance ledger can record how an update was produced, but it cannot by itself prove which parameter encodes a fact or that a deletion has removed all influence. Such methods cannot satisfy ELL&#x27;s canonical governance requirements without new verification techniques.</p>
+<p>Finally, cognitive analogies are limited. Human episodic and semantic memory motivate the separation of roles, but ELL should not be interpreted as an account of biological memory or consciousness.</p>
+      <nav class="pager" aria-label="Section navigation"><a class="previous" href="09-ethics-privacy-and-security.html">← Previous</a><a class="next" href="11-expected-outcomes-and-falsifiability.html">Next →</a></nav>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,22 +1,16 @@
-# Living paper
+# Paper source and publication builds
 
-`ELL_Paper.md` is the canonical, editable manuscript. It retains the full v0.1
-research proposal and adds dated revisions as the architecture, implementation,
-evaluation, and results evolve.
+`ELL_Paper.md` is the canonical living manuscript. The publication commands derive
+three reader-facing formats from that source and the shared definitions in
+`diagrams.py`:
 
-Build the current PDF from the repository root:
+- `python3 -m paper.build_paper` writes the current PDF to `output/pdf/`;
+- `python3 -m paper.build_html` writes the multi-page reading edition to `docs/`;
+- `python3 -m paper.verify_publication` checks links, page navigation, diagrams,
+  HTML structure, and expected paper sections.
 
-```bash
-make paper
-```
+Use `make paper` to rebuild every publication artifact, then `make check` before
+publishing. Generated HTML, CSS, SVG diagrams, and the current PDF are tracked so a
+reader can use the repository without installing its build environment.
 
-The stable output is
-`output/pdf/Experience-Learning-Layer-Paper-current.pdf`. The checked-in
-`archive/Experience-Learning-Layer-Paper-v0.1.pdf` is the immutable original
-published draft and should never be overwritten. New empirical claims must include
-their experiment configuration and evidence; implementation status must identify
-the exact verified scope and distinguish deferred release gates.
-
-The builder uses ReportLab and generates an A4 paper with bookmarks, a table of
-contents, page numbering, and Unicode-capable bundled fonts. Update the Markdown,
-run `make paper`, inspect the rendered pages, and commit source and output together.
+The archived v0.1 PDF remains under `paper/archive/` for historical comparison.

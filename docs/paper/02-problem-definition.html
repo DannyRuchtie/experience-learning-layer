@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Experience Learning Layer paper: evidence-grounded learning from episodes to revisable concepts.">
+  <title>2. Problem Definition · Experience Learning Layer</title>
+  <link rel="stylesheet" href="../assets/paper.css">
+</head>
+<body>
+  <a class="skip-link" href="#paper">Skip to paper</a>
+  <header class="site-header">
+    <a class="brand" href="../index.html">Experience Learning Layer</a>
+    <nav aria-label="Repository links">
+      <a href="../../README.md">Overview</a>
+      <a href="../../output/pdf/Experience-Learning-Layer-Paper-current.pdf">PDF</a>
+      <a href="../../paper/ELL_Paper.md">Source</a>
+    </nav>
+  </header>
+  <div class="reading-layout">
+    <aside class="contents" aria-label="Paper contents">
+      <p class="eyebrow">Paper contents</p>
+      <ol><li><a href="../index.html">Abstract</a></li>
+<li><a href="../paper/01-introduction.html">1. Introduction</a></li>
+<li><a href="../paper/02-problem-definition.html" aria-current="page">2. Problem Definition</a></li>
+<li><a href="../paper/03-related-work-and-positioning.html">3. Related Work and Positioning</a></li>
+<li><a href="../paper/04-experience-learning-layer-architecture.html">4. Experience Learning Layer Architecture</a></li>
+<li><a href="../paper/05-proposed-algorithms.html">5. Proposed Algorithms</a></li>
+<li><a href="../paper/06-data-model-and-public-interfaces.html">6. Data Model and Public Interfaces</a></li>
+<li><a href="../paper/07-experimental-design.html">7. Experimental Design</a></li>
+<li><a href="../paper/08-open-source-reference-implementation.html">8. Open-Source Reference Implementation</a></li>
+<li><a href="../paper/09-ethics-privacy-and-security.html">9. Ethics, Privacy, and Security</a></li>
+<li><a href="../paper/10-limitations-and-threats-to-validity.html">10. Limitations and Threats to Validity</a></li>
+<li><a href="../paper/11-expected-outcomes-and-falsifiability.html">11. Expected Outcomes and Falsifiability</a></li>
+<li><a href="../paper/12-research-and-implementation-roadmap.html">12. Research and Implementation Roadmap</a></li>
+<li><a href="../paper/13-experience-learning-layer-expansion.html">13. Experience Learning Layer Expansion</a></li>
+<li><a href="../paper/14-reference-implementation-status.html">14. Reference Implementation Status</a></li>
+<li><a href="../paper/15-conclusion.html">15. Conclusion</a></li>
+<li><a href="../paper/acknowledgements.html">Acknowledgements</a></li>
+<li><a href="../paper/references.html">References</a></li></ol>
+    </aside>
+    <main id="paper" class="paper">
+      <p class="eyebrow">Living paper</p><h1>2. Problem Definition</h1><h2>2.1 Experience learning</h2>
+<p>Let an agent encounter an ordered experience stream E={e1 ,e2 ,…,en}.</p>
+<p>Each episode ei contains a time-bounded record of context, observation, action, outcome, source, and metadata. Given this stream, an experience-learning system should produce a set of concepts C that improve decisions on future situations while remaining grounded in the episodes from which they were induced.</p>
+<p>The goal is not to compress the entire history into a shorter text. Compression can preserve frequent information while losing exceptions, causal uncertainty, temporal change, and source identity. The desired output is a set of claims or strategies with explicit conditions and evidence.</p>
+<p>A concept is useful only if it satisfies several properties:</p>
+<ul>
+<li>Grounded: its support can be traced to specific episodes and reflections.</li>
+<li>General: it applies beyond a single remembered case.</li>
+<li>Scoped: it states where it is expected to apply and where it may not.</li>
+<li>Revisable: contradictory evidence can change its status or content.</li>
+</ul>
+<ul>
+<li>Actionable: it can affect a later response, plan, or decision.</li>
+<li>Measurable: its correctness and utility can be evaluated independently.</li>
+</ul>
+<h2>2.2 Failure modes addressed</h2>
+<p>ELL is designed around seven common failure modes.</p>
+<p>Episode replay without abstraction. Relevant cases are retrieved, but no reusable principle is formed.</p>
+<p>Premature generalisation. A single salient episode becomes a broad rule.</p>
+<p>Self-confirming reflection. Once a reflection is stored, later retrieval favours evidence that agrees with it.</p>
+<p>Context collapse. A concept loses the conditions under which it was valid.</p>
+<p>Temporal staleness. New evidence changes what is true, but the old concept continues to guide behaviour.</p>
+<p>Provenance loss. A generated statement can no longer be connected to the experience that justified it.</p>
+<p>Behavioural ambiguity. A system claims to have learned because it stored a summary, without showing improved transfer or decision quality.</p>
+<h2>2.3 Research questions</h2>
+<p>The first empirical study will answer five questions.</p>
+<p>RQ1 — Separation. Does representing reflections as provisional objects before concept consolidation reduce unsupported generalisation compared with direct episode-to-rule summarisation?</p>
+<p>RQ2 — Revision. Do explicit counterevidence, temporal validity, and versioned lifecycle states improve adaptation when the underlying pattern changes?</p>
+<p>RQ3 — Transfer. Do consolidated concepts improve performance on new situations that share latent structure but differ in wording and surface details?</p>
+<p>RQ4 — Efficiency. Can compact concepts plus selected source episodes match or improve downstream performance while using less retrieval context than episode-only methods?</p>
+<p>RQ5 — Intuition quality. Can a compact, uncertainty-aware intuition packet improve shorthand understanding, just-in-time relevance, change detection, and rapid correction compared with no-memory, raw-history, and ordinary retrieval-augmented generation baselines?</p>
+<h2>2.4 Hypotheses</h2>
+<p>H1. ELL will produce higher concept-scope accuracy and lower overgeneralisation than a direct insight-extraction baseline.</p>
+<p>H2. ELL will revise or contest invalid concepts more quickly after contradictory evidence than append-only reflection or rolling-summary baselines.</p>
+<p>H3. ELL will yield a positive transfer gain on held-out tasks whose latent rule is represented in prior experiences, even when lexical similarity to those experiences is low.</p>
+<p>H4. Retrieving concepts together with a small number of supporting episodes will reduce median input tokens per decision without reducing task success.</p>
+<p>H5. Compact intuition packets will improve shorthand resolution, just-in-time context precision, change detection, and calibrated correction over no-memory, raw-history, and ordinary RAG baselines at an equal retrieval budget.</p>
+<p>H6. ELL will reduce end-to-end decision tokens, latency, and measured hardware-time or energy proxies while preserving or improving task utility; this hypothesis includes the cost of background association, reflection, and consolidation rather than treating those operations as free.</p>
+<p>These hypotheses are falsified if the confidence intervals include no practically meaningful improvement, if concept-level gains fail to translate into behaviour, or if the added architecture costs more than the retrieval it replaces without delivering measurable benefits.</p>
+      <nav class="pager" aria-label="Section navigation"><a class="previous" href="01-introduction.html">← Previous</a><a class="next" href="03-related-work-and-positioning.html">Next →</a></nav>
+    </main>
+  </div>
+</body>
+</html>
