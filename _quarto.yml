@@ -50,6 +50,7 @@ format:
     smooth-scroll: true
     link-external-newwindow: true
   pdf:
+    pdf-engine: xelatex
     documentclass: scrreprt
     papersize: a4
     toc: true

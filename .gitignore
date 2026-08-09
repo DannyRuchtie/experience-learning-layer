@@ -1,6 +1,7 @@
 # Quarto build and preview state
 /_book/
 /.quarto/
+/.vercel/
 
 # TeX intermediates
 *.aux
