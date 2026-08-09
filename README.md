@@ -188,9 +188,14 @@ count as validation.
 | **5 — Test replaceable substrates** | Compare SQLite, lexical search, vectors, TurboVec, and external-memory adapters | Changing infrastructure does not change canonical semantics |
 | **6 — Test external validity and a pilot** | Evaluate external benchmarks and a small consented product experience | Benefits transfer without safety regressions and users retain control |
 
-The repository is currently at the **publication and research-contract stage**.
-It contains the working paper and synthetic examples, but not the benchmark or
-an executable ELL-Core. The next empirical step is Phase 1.
+The repository now contains a **Phase 0 freeze candidate plus executable Phase 1
+and Phase 2 reference slices**. The machine-readable contract, deterministic
+stream generator, seven simple baselines, immutable receipts, and in-memory
+ELL-Core are implemented and covered by contract tests. This is implementation
+evidence, not a benchmark result: Phase 0 still needs an immutable release,
+Phase 1 still needs independent clean-machine reproduction, and Phase 2 still
+needs broader property/adversarial coverage before their exit signals are
+claimed.
 
 ## Deliberately outside the first study
 
@@ -214,7 +219,7 @@ identity, permissions, or deletion state exists.
 
 ## How to use this repository today
 
-There are three useful ways to engage with the project now:
+There are four useful ways to engage with the project now:
 
 1. **Read the research argument.** Start with the
    [abstract](index.qmd), [problem definition](chapters/02-problem-definition.qmd),
@@ -225,11 +230,42 @@ There are three useful ways to engage with the project now:
    that make the hypothesis easier to falsify are especially valuable.
 3. **Edit and render the publication.** The canonical source is ordinary Quarto
    Markdown, so the website and PDF are generated from the same reviewable text.
+4. **Reproduce the deterministic artifact.** Generate the JSON Schemas, run the
+   benchmark baselines, and exercise ELL-Core without an LLM or external service.
 
 The synthetic cases in [`examples/golden-cases.jsonl`](examples/golden-cases.jsonl)
 illustrate correction, contradiction, temporal change, unsupported claims,
 sensitive inference, multilingual evidence, and prompt injection. They are
 examples—not benchmark results or proof that ELL works.
+
+## Verify the Phase 0–2 reference artifact
+
+Install the development dependencies into an isolated environment, then run the
+complete local verification gate:
+
+```bash
+python3 -m pip install -e '.[dev]'
+make verify
+```
+
+`make verify` regenerates all 18 Draft 2020-12 JSON Schemas, checks lint and
+strict typing, and runs deterministic contract and adversarial tests. To produce
+development benchmark artifacts without opening the sealed partition:
+
+```bash
+make benchmark-development SEALED_COMMITMENT=sha256:<committed-seed-digest>
+```
+
+Opening the sealed partition requires the committed seed explicitly and should
+only happen after the implementation, prompts, models, policies, and analysis
+configuration are frozen:
+
+```bash
+PYTHONPATH=src python3 -m ell.benchmark \
+  --partition sealed \
+  --sealed-seed <revealed-seed> \
+  --output artifacts/benchmark-sealed
+```
 
 ## Read, edit, and render the paper
 
@@ -279,6 +315,11 @@ the target project when needed.
 | [`chapters/14-research-artifact-status.qmd`](chapters/14-research-artifact-status.qmd) | Current implementation boundary |
 | [`chapters/assets/diagrams/`](chapters/assets/diagrams/) | Shared web and print diagrams |
 | [`examples/`](examples/) | Synthetic lifecycle examples |
+| [`research/research-contract-v0.6.json`](research/research-contract-v0.6.json) | Frozen estimand, gates, power assumptions, baseline selection, and analysis rules |
+| [`schemas/v0.6/`](schemas/v0.6/) | Generated canonical and benchmark JSON Schemas plus digest manifest |
+| [`src/ell/benchmark.py`](src/ell/benchmark.py) | Deterministic 50/200/1,000-event streams, sealed split handling, baselines, receipts, and manifests |
+| [`src/ell/core.py`](src/ell/core.py) | In-memory deterministic ELL-Core lifecycle and governance authority |
+| [`tests/`](tests/) | Reproducibility, contract, lifecycle, and adversarial evidence |
 | [`_quarto.yml`](_quarto.yml) | Publication metadata and build configuration |
 | [`.github/workflows/publish.yml`](.github/workflows/publish.yml) | GitHub Pages publication workflow |
 
@@ -296,5 +337,5 @@ the target project when needed.
 
 ## License
 
-The paper, diagrams, examples, and publishing configuration are available under
+The paper, schemas, reference implementation, tests, diagrams, examples, and publishing configuration are available under
 the [MIT License](LICENSE).

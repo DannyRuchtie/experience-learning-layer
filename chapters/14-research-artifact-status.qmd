@@ -1,21 +1,27 @@
 # Research Artifact Status
 
-The repository is currently a publication artifact, not an executable ELL implementation. This boundary keeps the architecture, hypotheses, and planned contracts inspectable without presenting unvalidated code as evidence for H1-H6.
+The repository contains the publication plus a deterministic Phase 0–2 reference artifact. It does not yet contain model-assisted learning or confirmatory results. The implementation makes the proposed contracts executable without presenting passing unit tests as evidence for H1-H6.
 
 ## Canonical and generated editions
 
-The Quarto Markdown chapters are the sole canonical source. A single `quarto render` derives the multi-page HTML reading edition and the downloadable PDF. Quarto provides navigation, search, section numbering, cross-format links, and publication metadata. Generated output is ignored by Git and rebuilt locally or by the GitHub publishing workflow, keeping ordinary paper edits small and reviewable.
+The Quarto Markdown chapters are the sole canonical publication source. The versioned JSON research contract and schemas are the canonical machine-readable experiment boundary. A single `quarto render` derives the multi-page HTML reading edition and downloadable PDF and copies the contract artifacts into the published site. Quarto provides navigation, search, section numbering, cross-format links, and publication metadata. Generated output is ignored by Git and rebuilt locally or by the GitHub publishing workflow, keeping ordinary paper edits small and reviewable.
 
 ## Synthetic lifecycle examples
 
-The repository includes a small synthetic JSONL collection covering explicit scoped preferences, single-event inference, unsupported claims, sensitive inference, explicit correction, material contradiction, temporal change, Dutch evidence, and prompt injection embedded in imported content. These cases make proposed policy outcomes concrete for readers. They are examples, not a validated benchmark, and no empirical result is inferred from them.
+The repository includes a small synthetic JSONL collection covering explicit scoped preferences, single-event inference, unsupported claims, sensitive inference, explicit correction, material contradiction, temporal change, Dutch evidence, prompt injection embedded in imported content, deletion cascades, permission revocation, derived-state invalidation, and cross-workspace retrieval. These cases make proposed policy outcomes concrete for readers. They are examples, not benchmark results, and no empirical result is inferred from them.
 
-## Deliberately deferred implementation
+## Executable reference slices
 
-Typed runtime schemas, a governed commit kernel, storage adapters, model providers, evaluation code, and product clients are not part of this paper repository. Adding them should happen only with a documented evaluation contract and tests that can support any corresponding implementation claim. Until then, the interfaces and algorithms in Sections 5 and 6 are specifications.
+Draft 2020-12 JSON Schemas are generated from strict runtime contracts for the eight canonical objects, cost and run traces, learning packets, invalidation reports, evaluator judgments, and benchmark records. A machine-readable v0.6 research contract freezes the estimand, gates, baseline-selection rule, power assumptions, exclusions, sealed-seed handling, and cost boundary.
+
+The Phase 1 slice generates deterministic 50, 200, and 1,000-record chronological streams with 30, 120, and 640 paired tasks. Streams include support, contradiction, scoped exceptions, correlated evidence, change points, delayed outcomes, permission denials, deletions, distractors, and sealed-seed commitments. It implements no-memory, maximum-context, BM25, exact-vector, fused-retrieval, rolling-summary, and direct-insight baselines. Every task produces a run manifest, selected-record trace, application receipt, evaluator judgment, and cost trace. Development generation does not materialise the sealed partition.
+
+The Phase 2 slice provides an in-memory deterministic ELL-Core. It validates exact source spans, requires quarantined reflections to pass review, commits immutable concept versions with evidence links, preserves revision lineage, enforces workspace and purpose grants before retrieval, records applications and independently sourced outcomes, rejects conflicting idempotent retries, and invalidates dependent canonical and projection state after deletion. It has no LLM, graph, vector service, hosted memory, or learned policy dependency.
 
 ## Remaining gates
 
-The next research step is the controlled benchmark: deterministic experience streams, sealed evaluation partitions, policy sweeps, application receipts, and reproducible comparisons with episode retrieval, rolling summaries, and direct insight extraction. The strongest eligible baseline will be selected on development data before ELL-Core is evaluated on the sealed partition. A later reference implementation must also demonstrate persistent-store rebuilds, deletion propagation through projections, provider egress enforcement, job recovery, and lifecycle correctness before it can count as evidence for H1-H6.
+Phase 0 still requires an immutable v0.6 tag or archival release. Phase 1 requires two independent clean-machine reproductions and stochastic model conditions within declared intervals; the current deterministic tests are necessary but not that independent evidence. Phase 2 requires broader generated/property testing and an exit report showing every derived object resolves to permitted source evidence across the full adversarial suite. Persistent-store rebuilds, provider egress enforcement, job recovery, and substrate crash recovery remain Phase 5 concerns rather than prerequisites for the in-memory Phase 2 slice.
+
+Phase 3 is the next implementation step only after those exits are independently reviewed. It adds structured generation from two open model families, keeps every output quarantined until deterministic validation, and freezes prompts and policies on development data before any sealed run.
 
 The project does not advance merely because an implementation exists. It advances when the primary transfer result and every mandatory guardrail in Section 11 pass. If a simpler approach matches ELL at lower cost, the research plan explicitly adopts that simpler method and records the concept-layer hypothesis as unsupported for the tested conditions.

@@ -1,0 +1,113 @@
+{
+  "$defs": {
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "ell.v0.6",
+          "pattern": "^ell\\.v0\\.6$",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "span_id": {
+          "minLength": 1,
+          "title": "Span Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "span_id"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    },
+    "EvidenceRelation": {
+      "enum": [
+        "derived_from",
+        "supports",
+        "contradicts",
+        "qualifies"
+      ],
+      "title": "EvidenceRelation",
+      "type": "string"
+    }
+  },
+  "$id": "https://ell.dev/schemas/v0.6/EvidenceLink.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "link_id": {
+      "minLength": 1,
+      "title": "Link Id",
+      "type": "string"
+    },
+    "method": {
+      "minLength": 1,
+      "title": "Method",
+      "type": "string"
+    },
+    "observed_time": {
+      "format": "date-time",
+      "title": "Observed Time",
+      "type": "string"
+    },
+    "relation": {
+      "$ref": "#/$defs/EvidenceRelation"
+    },
+    "schema_version": {
+      "default": "ell.v0.6",
+      "pattern": "^ell\\.v0\\.6$",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/EvidenceRef"
+    },
+    "target_id": {
+      "minLength": 1,
+      "title": "Target Id",
+      "type": "string"
+    },
+    "target_version": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Target Version"
+    },
+    "validator": {
+      "minLength": 1,
+      "title": "Validator",
+      "type": "string"
+    },
+    "workspace_id": {
+      "minLength": 1,
+      "title": "Workspace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "link_id",
+    "workspace_id",
+    "source",
+    "target_id",
+    "relation",
+    "method",
+    "validator",
+    "observed_time"
+  ],
+  "title": "EvidenceLink",
+  "type": "object"
+}

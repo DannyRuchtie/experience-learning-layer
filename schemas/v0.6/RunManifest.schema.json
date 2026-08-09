@@ -1,0 +1,146 @@
+{
+  "$defs": {
+    "CostTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "embedding_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Embedding Tokens",
+          "type": "integer"
+        },
+        "hardware_seconds": {
+          "default": 0.0,
+          "minimum": 0.0,
+          "title": "Hardware Seconds",
+          "type": "number"
+        },
+        "input_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "default": 0.0,
+          "minimum": 0.0,
+          "title": "Latency Ms",
+          "type": "number"
+        },
+        "model_calls": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Model Calls",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "schema_version": {
+          "default": "ell.v0.6",
+          "pattern": "^ell\\.v0\\.6$",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "storage_bytes": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Storage Bytes",
+          "type": "integer"
+        }
+      },
+      "title": "CostTrace",
+      "type": "object"
+    }
+  },
+  "$id": "https://ell.dev/schemas/v0.6/RunManifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "benchmark_version": {
+      "minLength": 1,
+      "title": "Benchmark Version",
+      "type": "string"
+    },
+    "configuration_hash": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Configuration Hash",
+      "type": "string"
+    },
+    "cost": {
+      "$ref": "#/$defs/CostTrace"
+    },
+    "dataset_hash": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Dataset Hash",
+      "type": "string"
+    },
+    "environment": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Environment",
+      "type": "object"
+    },
+    "generator_id": {
+      "minLength": 1,
+      "title": "Generator Id",
+      "type": "string"
+    },
+    "logical_started_at": {
+      "format": "date-time",
+      "title": "Logical Started At",
+      "type": "string"
+    },
+    "model_id": {
+      "minLength": 1,
+      "title": "Model Id",
+      "type": "string"
+    },
+    "partition": {
+      "pattern": "^(train|development|sealed)$",
+      "title": "Partition",
+      "type": "string"
+    },
+    "policy_id": {
+      "minLength": 1,
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "run_id": {
+      "minLength": 1,
+      "title": "Run Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "ell.v0.6",
+      "pattern": "^ell\\.v0\\.6$",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "seed_commitment": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Seed Commitment",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "benchmark_version",
+    "partition",
+    "dataset_hash",
+    "configuration_hash",
+    "generator_id",
+    "seed_commitment",
+    "policy_id",
+    "model_id",
+    "logical_started_at",
+    "cost",
+    "environment"
+  ],
+  "title": "RunManifest",
+  "type": "object"
+}

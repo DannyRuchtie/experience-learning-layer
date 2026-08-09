@@ -1,0 +1,99 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/ExperienceRecord.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "title": "Action",
+      "type": "string"
+    },
+    "change_point": {
+      "default": false,
+      "title": "Change Point",
+      "type": "boolean"
+    },
+    "correlation_group": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Correlation Group"
+    },
+    "deleted": {
+      "default": false,
+      "title": "Deleted",
+      "type": "boolean"
+    },
+    "observed_time": {
+      "format": "date-time",
+      "title": "Observed Time",
+      "type": "string"
+    },
+    "outcome": {
+      "title": "Outcome",
+      "type": "number"
+    },
+    "outcome_observed_time": {
+      "format": "date-time",
+      "title": "Outcome Observed Time",
+      "type": "string"
+    },
+    "permission": {
+      "default": "benchmark",
+      "pattern": "^(benchmark|denied)$",
+      "title": "Permission",
+      "type": "string"
+    },
+    "record_id": {
+      "title": "Record Id",
+      "type": "string"
+    },
+    "regime": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Regime",
+      "type": "integer"
+    },
+    "relation": {
+      "pattern": "^(supports|contradicts|exception|distractor)$",
+      "title": "Relation",
+      "type": "string"
+    },
+    "scope": {
+      "title": "Scope",
+      "type": "string"
+    },
+    "sequence": {
+      "minimum": 0,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "workspace_id": {
+      "title": "Workspace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "record_id",
+    "workspace_id",
+    "sequence",
+    "observed_time",
+    "text",
+    "scope",
+    "action",
+    "outcome",
+    "outcome_observed_time",
+    "relation"
+  ],
+  "title": "ExperienceRecord",
+  "type": "object"
+}

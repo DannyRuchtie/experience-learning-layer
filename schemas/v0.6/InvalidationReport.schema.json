@@ -1,0 +1,58 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/InvalidationReport.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "complete": {
+      "title": "Complete",
+      "type": "boolean"
+    },
+    "invalidated_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Invalidated Ids",
+      "type": "array"
+    },
+    "retained_audit_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Retained Audit Ids",
+      "type": "array"
+    },
+    "schema_version": {
+      "default": "ell.v0.6",
+      "pattern": "^ell\\.v0\\.6$",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_id": {
+      "minLength": 1,
+      "title": "Source Id",
+      "type": "string"
+    },
+    "unreachable_projection_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unreachable Projection Ids",
+      "type": "array"
+    },
+    "workspace_id": {
+      "minLength": 1,
+      "title": "Workspace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "workspace_id",
+    "source_id",
+    "invalidated_ids",
+    "retained_audit_ids",
+    "unreachable_projection_ids",
+    "complete"
+  ],
+  "title": "InvalidationReport",
+  "type": "object"
+}

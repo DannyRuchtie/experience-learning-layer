@@ -1,0 +1,65 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/Outcome.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "application_id": {
+      "minLength": 1,
+      "title": "Application Id",
+      "type": "string"
+    },
+    "observation": {
+      "minLength": 1,
+      "title": "Observation",
+      "type": "string"
+    },
+    "observed_time": {
+      "format": "date-time",
+      "title": "Observed Time",
+      "type": "string"
+    },
+    "outcome_id": {
+      "minLength": 1,
+      "title": "Outcome Id",
+      "type": "string"
+    },
+    "reliability": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Reliability",
+      "type": "number"
+    },
+    "schema_version": {
+      "default": "ell.v0.6",
+      "pattern": "^ell\\.v0\\.6$",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_id": {
+      "minLength": 1,
+      "title": "Source Id",
+      "type": "string"
+    },
+    "value": {
+      "title": "Value",
+      "type": "number"
+    },
+    "workspace_id": {
+      "minLength": 1,
+      "title": "Workspace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "outcome_id",
+    "workspace_id",
+    "application_id",
+    "value",
+    "observation",
+    "source_id",
+    "reliability",
+    "observed_time"
+  ],
+  "title": "Outcome",
+  "type": "object"
+}

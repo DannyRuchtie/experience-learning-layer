@@ -4,6 +4,8 @@ project:
   resources:
     - chapters/assets/
     - examples/
+    - research/
+    - schemas/
 
 book:
   title: "From Episodes to Revisable Concepts"

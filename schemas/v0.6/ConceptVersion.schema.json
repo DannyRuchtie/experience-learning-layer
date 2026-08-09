@@ -1,0 +1,167 @@
+{
+  "$defs": {
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "ell.v0.6",
+          "pattern": "^ell\\.v0\\.6$",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "span_id": {
+          "minLength": 1,
+          "title": "Span Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "span_id"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    },
+    "LifecycleState": {
+      "enum": [
+        "proposed",
+        "corroborated",
+        "contested",
+        "revised",
+        "superseded",
+        "retired",
+        "deleted"
+      ],
+      "title": "LifecycleState",
+      "type": "string"
+    }
+  },
+  "$id": "https://ell.dev/schemas/v0.6/ConceptVersion.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "concept_id": {
+      "minLength": 1,
+      "title": "Concept Id",
+      "type": "string"
+    },
+    "conditions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Conditions",
+      "type": "array"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "counterevidence": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRef"
+      },
+      "title": "Counterevidence",
+      "type": "array"
+    },
+    "implication": {
+      "minLength": 1,
+      "title": "Implication",
+      "type": "string"
+    },
+    "lifecycle_state": {
+      "$ref": "#/$defs/LifecycleState"
+    },
+    "observed_time": {
+      "format": "date-time",
+      "title": "Observed Time",
+      "type": "string"
+    },
+    "parent_versions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Parent Versions",
+      "type": "array"
+    },
+    "proposition": {
+      "minLength": 1,
+      "title": "Proposition",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "ell.v0.6",
+      "pattern": "^ell\\.v0\\.6$",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Scope",
+      "type": "array"
+    },
+    "support": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRef"
+      },
+      "minItems": 1,
+      "title": "Support",
+      "type": "array"
+    },
+    "valid_from": {
+      "format": "date-time",
+      "title": "Valid From",
+      "type": "string"
+    },
+    "valid_to": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Valid To"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "workspace_id": {
+      "minLength": 1,
+      "title": "Workspace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "concept_id",
+    "version",
+    "workspace_id",
+    "proposition",
+    "scope",
+    "conditions",
+    "implication",
+    "support",
+    "counterevidence",
+    "confidence",
+    "valid_from",
+    "observed_time",
+    "lifecycle_state",
+    "parent_versions"
+  ],
+  "title": "ConceptVersion",
+  "type": "object"
+}

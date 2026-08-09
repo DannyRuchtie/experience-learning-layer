@@ -1,0 +1,95 @@
+{
+  "$defs": {
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "default": "ell.v0.6",
+          "pattern": "^ell\\.v0\\.6$",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "span_id": {
+          "minLength": 1,
+          "title": "Span Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "span_id"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    }
+  },
+  "$id": "https://ell.dev/schemas/v0.6/LearningPacket.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "budget_used": {
+      "minimum": 0,
+      "title": "Budget Used",
+      "type": "integer"
+    },
+    "concept_versions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Concept Versions",
+      "type": "array"
+    },
+    "conflicts": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRef"
+      },
+      "title": "Conflicts",
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRef"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "query": {
+      "minLength": 1,
+      "title": "Query",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "ell.v0.6",
+      "pattern": "^ell\\.v0\\.6$",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "uncertainty": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Uncertainty",
+      "type": "number"
+    },
+    "workspace_id": {
+      "minLength": 1,
+      "title": "Workspace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "workspace_id",
+    "query",
+    "concept_versions",
+    "evidence",
+    "conflicts",
+    "uncertainty",
+    "budget_used"
+  ],
+  "title": "LearningPacket",
+  "type": "object"
+}

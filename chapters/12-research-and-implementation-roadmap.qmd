@@ -6,6 +6,8 @@ ELL is built in evidence-producing vertical slices. Each phase must leave a repr
 
 ## Phase 0 — Freeze the research contract
 
+Current status: implementation-complete release candidate. Machine-readable contracts, schemas, worked adversarial examples, and local verification exist; an immutable v0.6 tag or archival release is still required for formal exit.
+
 Deliverables:
 
 - publish paper v0.6 with the narrowed ELL-Core boundary;
@@ -16,6 +18,8 @@ Deliverables:
 Exit criterion: an independent reader can identify exactly what result would support or reject ELL and can rebuild the HTML and PDF from the same sources.
 
 ## Phase 1 — Build the benchmark before ELL
+
+Current status: executable deterministic reference slice. The generator, sealed-development boundary, seven baselines, receipts, manifests, and local reproducibility tests exist. Two independent clean-machine reproductions and the frozen stochastic conditions remain required for formal exit.
 
 Deliverables:
 
@@ -28,6 +32,8 @@ Deliverables:
 Exit criterion: two clean-machine runs reproduce the same dataset hashes and deterministic baseline metrics, and stochastic conditions reproduce within declared intervals. If the benchmark cannot distinguish known-good from deliberately broken policies, stop and repair the benchmark.
 
 ## Phase 2 — Implement deterministic ELL-Core
+
+Current status: executable in-memory reference slice. Lifecycle, provenance, valid and observed time, deletion cascades, idempotency, purpose grants, and workspace isolation have deterministic tests. Broader property/adversarial runs and a formal invariant exit report remain required.
 
 Deliverables:
 
@@ -59,7 +65,7 @@ Deliverables:
 - publish all gate results, confidence intervals, exclusions, failures, and raw receipts;
 - issue a supported, partially supported, not supported, or unsafe verdict using Section 11 without post-hoc threshold changes.
 
-Exit criterion: the result can be reproduced from a tagged benchmark, implementation, configuration, and paper release. If the primary gate fails, stop concept-layer expansion and investigate the winning simpler baseline.
+Exit criterion: the result can be reproduced from a tagged benchmark, implementation, configuration, and paper release. Phase 4 may issue a provisional verdict; the final *supported* label remains reserved until the external replication gate in Phase 6 passes. If the primary gate fails, stop concept-layer expansion and investigate the winning simpler baseline.
 
 ## Phase 5 — Evaluate persistence and replaceable substrates
 

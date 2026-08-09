@@ -1,0 +1,79 @@
+{
+  "baseline_selection": {
+    "eligible": [
+      "bm25",
+      "exact-vector",
+      "fused-retrieval",
+      "rolling-summary",
+      "direct-insight"
+    ],
+    "selection_partition": "development",
+    "tie_breakers": [
+      "higher_task_success",
+      "lower_unsupported_generalization",
+      "higher_utility_per_1000_total_tokens",
+      "lexicographically_smaller_baseline_id"
+    ]
+  },
+  "benchmark": {
+    "chronology": ["train", "development", "sealed"],
+    "failed_provider_runs": "score_as_task_failure_and_retain_trace",
+    "sealed_seed": "commit_hash_before_development_then_reveal_with_results",
+    "test_opening": "once_per_frozen_model_seed_configuration"
+  },
+  "cost_accounting": {
+    "included": [
+      "ingestion",
+      "embedding",
+      "reflection",
+      "validation",
+      "consolidation",
+      "retrieval",
+      "generation",
+      "retries",
+      "cache_warmup",
+      "index_maintenance"
+    ],
+    "primary_efficiency_unit": "task_utility_per_1000_total_tokens",
+    "secondary_units": ["latency_ms", "hardware_seconds", "storage_bytes", "model_calls"]
+  },
+  "decision_gates": {
+    "change_adaptation": {
+      "affected_concepts_revised_within_two_episodes": 0.9,
+      "maximum_stale_guidance_rate": 0.05
+    },
+    "cost_efficiency": {"minimum_relative_improvement": 0.1},
+    "evidence": {"counterevidence_recall": 0.9, "support_precision": 0.95},
+    "governance": {"contract_test_pass_rate": 1.0},
+    "primary_transfer": {
+      "confidence_interval": "paired_percentile_bootstrap_10000",
+      "minimum_absolute_improvement": 0.05,
+      "require_lower_bound_above": 0.0
+    },
+    "unsupported_generalization": {"noninferiority_margin": 0.02}
+  },
+  "estimand": "paired_absolute_task_success_difference_full_ell_core_minus_strongest_eligible_baseline",
+  "exclusions": {
+    "allowed": ["predeclared_corrupt_source_artifact", "duplicate_task_identifier"],
+    "manual_posthoc_exclusions": false
+  },
+  "power": {
+    "alpha_two_sided": 0.05,
+    "assumed_discordant_pair_rate": 0.2,
+    "minimum_power": 0.8,
+    "paired_tasks_per_confirmatory_condition": 640,
+    "target_absolute_effect": 0.05
+  },
+  "replication_sequence": {
+    "phase_4_verdict": "provisional_supported_partial_unsupported_or_unsafe",
+    "phase_6_external_gate": "required_before_final_supported_label"
+  },
+  "schema_version": "ell.research-contract.v0.6",
+  "statistics": {
+    "bootstrap_seed": 260809,
+    "confidence_level": 0.95,
+    "primary_analysis": "paired_by_task",
+    "report_effect_sizes": true
+  }
+}
+

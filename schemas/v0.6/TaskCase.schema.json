@@ -1,0 +1,72 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/TaskCase.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "allowed_actions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Allowed Actions",
+      "type": "array"
+    },
+    "gold_action": {
+      "title": "Gold Action",
+      "type": "string"
+    },
+    "gold_counterevidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Gold Counterevidence Ids",
+      "type": "array"
+    },
+    "gold_evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Gold Evidence Ids",
+      "type": "array"
+    },
+    "observed_time": {
+      "format": "date-time",
+      "title": "Observed Time",
+      "type": "string"
+    },
+    "query": {
+      "title": "Query",
+      "type": "string"
+    },
+    "scope": {
+      "title": "Scope",
+      "type": "string"
+    },
+    "sequence": {
+      "minimum": 0,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "task_id": {
+      "title": "Task Id",
+      "type": "string"
+    },
+    "workspace_id": {
+      "title": "Workspace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "workspace_id",
+    "sequence",
+    "observed_time",
+    "query",
+    "scope",
+    "allowed_actions",
+    "gold_action",
+    "gold_evidence_ids",
+    "gold_counterevidence_ids"
+  ],
+  "title": "TaskCase",
+  "type": "object"
+}

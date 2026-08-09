@@ -16,10 +16,16 @@ experience-learning-layer/
 ├── chapters/
 │   └── assets/diagrams/
 ├── examples/
+├── research/
+├── schemas/v0.6/
+├── src/ell/
+├── tests/
+├── pyproject.toml
+├── Makefile
 └── .github/workflows/publish.yml
 ```
 
-The repository contains the living chapter sources, shared visual diagrams, synthetic lifecycle examples, and the small Quarto configuration required to produce the website and PDF. Generated output is ignored and rebuilt locally or by GitHub Actions. The repository deliberately excludes product code and an executable learning kernel so that proposed architecture is not mistaken for validated implementation evidence.
+The repository contains the living chapter sources, shared visual diagrams, synthetic lifecycle examples, machine-readable research contract, generated JSON Schemas, deterministic benchmark, in-memory governed core, and the small Quarto configuration required to produce the website and PDF. Generated publication and benchmark output is ignored and rebuilt locally or by GitHub Actions. The reference implementation is explicitly labelled pre-confirmatory so passing software checks cannot be mistaken for evidence that the research hypotheses are supported.
 
 ## Reproducibility requirements
 

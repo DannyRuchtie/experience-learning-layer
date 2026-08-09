@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "experience-learning-layer"
+version = "0.6.0"
+description = "Deterministic benchmark and governed ELL-Core research artifact"
+requires-python = ">=3.9"
+dependencies = ["pydantic>=2.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.10"]
+
+[project.scripts]
+ell-benchmark = "ell.benchmark:main"
+ell-export-schemas = "ell.schema_export:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "B", "SIM", "C4"]
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
+packages = ["ell"]
+

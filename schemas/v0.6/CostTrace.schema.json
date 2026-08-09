@@ -1,0 +1,57 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/CostTrace.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "embedding_tokens": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Embedding Tokens",
+      "type": "integer"
+    },
+    "hardware_seconds": {
+      "default": 0.0,
+      "minimum": 0.0,
+      "title": "Hardware Seconds",
+      "type": "number"
+    },
+    "input_tokens": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Input Tokens",
+      "type": "integer"
+    },
+    "latency_ms": {
+      "default": 0.0,
+      "minimum": 0.0,
+      "title": "Latency Ms",
+      "type": "number"
+    },
+    "model_calls": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Model Calls",
+      "type": "integer"
+    },
+    "output_tokens": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Output Tokens",
+      "type": "integer"
+    },
+    "schema_version": {
+      "default": "ell.v0.6",
+      "pattern": "^ell\\.v0\\.6$",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "storage_bytes": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Storage Bytes",
+      "type": "integer"
+    }
+  },
+  "title": "CostTrace",
+  "type": "object"
+}

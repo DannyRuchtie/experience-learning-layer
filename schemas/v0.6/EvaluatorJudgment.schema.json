@@ -1,0 +1,77 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/EvaluatorJudgment.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "cited_support_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Cited Support Ids",
+      "type": "array"
+    },
+    "evaluator_id": {
+      "minLength": 1,
+      "title": "Evaluator Id",
+      "type": "string"
+    },
+    "judgment_id": {
+      "minLength": 1,
+      "title": "Judgment Id",
+      "type": "string"
+    },
+    "missed_counterevidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Missed Counterevidence Ids",
+      "type": "array"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    },
+    "run_id": {
+      "minLength": 1,
+      "title": "Run Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "ell.v0.6",
+      "pattern": "^ell\\.v0\\.6$",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "success": {
+      "title": "Success",
+      "type": "boolean"
+    },
+    "system_blinded": {
+      "title": "System Blinded",
+      "type": "boolean"
+    },
+    "task_id": {
+      "minLength": 1,
+      "title": "Task Id",
+      "type": "string"
+    },
+    "unsupported_generalization": {
+      "title": "Unsupported Generalization",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "judgment_id",
+    "run_id",
+    "task_id",
+    "evaluator_id",
+    "system_blinded",
+    "success",
+    "unsupported_generalization",
+    "cited_support_ids",
+    "missed_counterevidence_ids"
+  ],
+  "title": "EvaluatorJudgment",
+  "type": "object"
+}

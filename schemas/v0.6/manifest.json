@@ -1,0 +1,24 @@
+{
+  "files": {
+    "ApplicationReceipt.schema.json": "sha256:d116f504de2bb023d1fdadaa5f5b0a9625e7623708062e7e4fd47741cc5ea7d4",
+    "AuditEvent.schema.json": "sha256:cc5758a44d2fd96acb02e6dcacab4738d89bf0d82b552f5af3ea7fa8fd247b71",
+    "BaselineRun.schema.json": "sha256:e9b9cce007f331dd9f34c0a9070a997eef603df7a86c7ee8212dc8ac5e3a34b0",
+    "BenchmarkDataset.schema.json": "sha256:8303b30b9b332bc7653c179cebddc76f38bf78a456352d842eb3a86101e934e7",
+    "BenchmarkPartition.schema.json": "sha256:2812cd363aafc0f42feefaf73401c186fce9e1ecc2f4a5e5318d187b77ba7b66",
+    "ConceptVersion.schema.json": "sha256:be951a4afaf426d0469d5994f3efc006cb3f236d6a0f5914b41a2a5713402e14",
+    "CostTrace.schema.json": "sha256:708152b4f20c0cbba14e6a14fc537e6f7daeba3f441c45619803e8c504a0db7b",
+    "Episode.schema.json": "sha256:c325d9ed99d1e82a7180acdd76f0601cf7e5680e4b9d8ed18a0cf3510eb932a6",
+    "EvaluatorJudgment.schema.json": "sha256:968b2692574e0296142802025c57c7dda8373d7510716f49f9ec7f6057358701",
+    "EvidenceLink.schema.json": "sha256:4802051dcc71a94ae8287e1e3504530c47e2d7810b14202eab01d9945d2256f3",
+    "ExperienceRecord.schema.json": "sha256:8bbd1557fec07834546d091c8e19500725b3a739f8386046ad9a5dd487dc466c",
+    "InvalidationReport.schema.json": "sha256:f98047b333bc2b150247f38c00f4a5dd777257eeeffc0154c567dd00a97e912d",
+    "LearningPacket.schema.json": "sha256:604d45d17f93cb2ee2a7d21437b4ee6162de220334383aae2232b39d80fd130b",
+    "Outcome.schema.json": "sha256:0857df4acf9c1d26dba08a2732b6716b9594fd8cfd99257c86f424acce17fa54",
+    "Reflection.schema.json": "sha256:55eea0c53d413b6c4a77dedf6ec09a9a8cb17ee55020ddfaff55119c54176262",
+    "RunManifest.schema.json": "sha256:2004c326b8b135bb7b1c297ace1f55a693ad9ef05f73e225f0ad2d6cf034aaa6",
+    "SourceArtifact.schema.json": "sha256:eeafe280941bb0500ba5106d1486222b311641254a2fcfbe0411d53c604b4850",
+    "TaskCase.schema.json": "sha256:dc9bb50dd9c742f9a06f6b71844d2ef1072f5b5194a2cedf86d5f4e857179c56"
+  },
+  "json_schema_draft": "2020-12",
+  "schema_version": "ell.v0.6"
+}
