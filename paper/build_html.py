@@ -11,7 +11,7 @@ from html import escape
 from pathlib import Path
 from typing import List, Sequence
 
-from paper.build_paper import DEFAULT_SOURCE, clean_lines, heading_level
+from paper.build_paper import DEFAULT_SOURCE, clean_lines, heading_level, join_wrapped_lines
 from paper.diagrams import DIAGRAMS, write_svg_assets
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,7 +62,7 @@ def split_sections(source: str) -> tuple[List[str], List[Section]]:
 
 def _flush_paragraph(parts: List[str], output: List[str]) -> None:
     if parts:
-        output.append(f"<p>{escape(' '.join(parts))}</p>")
+        output.append(f"<p>{escape(join_wrapped_lines(parts))}</p>")
         parts.clear()
 
 
@@ -130,8 +130,11 @@ def render_lines(lines: Sequence[str], *, asset_prefix: str) -> str:
             items.append(numbered.group(1))
             continue
         if items:
-            items[-1] = f"{items[-1]} {line}"
-            continue
+            if items[-1].endswith((".", "?", "!")) and line[0].isupper():
+                _flush_list(items, output, ordered)
+            else:
+                items[-1] = join_wrapped_lines([items[-1], line])
+                continue
         paragraph.append(line)
         if line.endswith((".", "?", "!")):
             _flush_paragraph(paragraph, output)
@@ -357,8 +360,7 @@ figcaption { padding: .8rem .4rem .2rem; color: var(--muted); font-size: .88rem;
 .next { margin-left: auto; }
 @media (max-width: 850px) {
   .reading-layout { display: block; padding-top: 2rem; }
-  .contents { position: static; max-height: none; margin-bottom: 3rem; }
-  .contents ol { columns: 2; }
+  .contents { display: none; }
   .section-index ol { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {

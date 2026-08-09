@@ -60,8 +60,10 @@
 <li>shared action pattern;</li>
 <li>similar outcome;</li>
 <li>candidate causal relation;</li>
-<li>contradiction or correction. Only some edges are objective. Temporal sequence and shared identifiers can be deterministic; causal and contradiction edges may be model-generated hypotheses. Every edge therefore records its method, score, model or rule version, and source evidence. The layer supports both local neighbourhood retrieval and clustering. Reflection should not operate only on the nearest embeddings because lexically distant episodes may share a goal, failure pattern, or outcome. Hybrid candidate generation combines semantic, structural, temporal, and outcome-based signals.</li>
+<li>contradiction or correction.</li>
 </ul>
+<p>Only some edges are objective. Temporal sequence and shared identifiers can be deterministic; causal and contradiction edges may be model-generated hypotheses. Every edge therefore records its method, score, model or rule version, and source evidence.</p>
+<p>The layer supports both local neighbourhood retrieval and clustering. Reflection should not operate only on the nearest embeddings because lexically distant episodes may share a goal, failure pattern, or outcome. Hybrid candidate generation combines semantic, structural, temporal, and outcome-based signals.</p>
 <h2>4.3 Reflection Engine</h2>
 <p>A reflection is a provisional interpretation: r_j=(h_j,t_j,s_j,p_j,n_j,u_j,z_j).</p>
 <p>Here hj is a claim or question, tj is reflection type, sj is scope, pj and nj are supporting and counterevidence episode sets, uj is uncertainty metadata, and zj is review status.</p>
@@ -86,8 +88,9 @@
 <li>Merge: combine concepts that express the same claim and scope.</li>
 <li>Split: separate an over-broad concept when evidence supports distinct conditions.</li>
 <li>Revise: create a new version with changed claim, scope, validity, or confidence.</li>
-<li>Retire or supersede: stop active use while preserving lineage. Promotion requires evidence from more than one episode unless a domain-specific policy explicitly permits single-source facts. Evidence diversity is measured across time, source, participant, task, and surface form to reduce duplicate episodes being mistaken for independent support.</li>
+<li>Retire or supersede: stop active use while preserving lineage.</li>
 </ol>
+<p>Promotion requires evidence from more than one episode unless a domain-specific policy explicitly permits single-source facts. Evidence diversity is measured across time, source, participant, task, and surface form to reduce duplicate episodes being mistaken for independent support.</p>
 <h2>4.5 Concept registry and evidence ledger</h2>
 <p>The concept registry contains the current active version of each concept and its full version chain. The evidence ledger is append-only and records:</p>
 <ul>
@@ -96,13 +99,14 @@
 <li>which model, prompt, rule, or human action produced a change;</li>
 <li>which concepts were retrieved for a decision;</li>
 <li>what action was taken and what outcome followed;</li>
-<li>deletions, access changes, and invalidations. This ledger supports explanation and reproducibility. A user or evaluator should be able to ask: “Why does the system believe this?”, “What evidence disagrees?”, “When did this change?”, and “Did using it help?”</li>
+<li>deletions, access changes, and invalidations.</li>
 </ul>
+<p>This ledger supports explanation and reproducibility. A user or evaluator should be able to ask: “Why does the system believe this?”, “What evidence disagrees?”, “When did this change?”, and “Did using it help?”</p>
 <h2>4.6 Learning retrieval and application</h2>
 <p>At decision time, the retrieval service selects a mixture of concepts and source episodes. Concepts provide compact general guidance; episodes provide specificity, exception handling, and verification. The retrieval policy must be able to return either type independently.</p>
 <p>A concept relevance score can initially be expressed as R(c,q)=w1 S1+w2 S2+w3 S3+w4 S4+w5 confidence(c)-w6 S6,</p>
 <p>where S1 through S4 represent semantic relevance, scope match, temporal validity, and observed utility; confidence(c) is concept confidence; and S6 is active contradiction. This formula is a design heuristic, not a validated scientific result. Weights will be tuned only on development data and frozen before test evaluation.</p>
-<p>The retrieved package includes the concept statement, scope, confidence, current state, relevant support, relevant counterevidence, and source links. At the product boundary this compact, budgeted package is called an intuition packet. It may combine current concepts, selected episodes, procedures, open commitments, uncertainty, and known contradictions. It is a read object, not a new kind of memory. Applications can require a minimum confidence or allow contested concepts to be shown as uncertainty rather than instructions.</p>
+<p>The retrieved package includes the concept statement, scope, confidence, current state, relevant support, relevant counterevidence, and source links. At the application boundary this compact, budgeted package is called an intuition packet. It may combine current concepts, selected episodes, procedures, open commitments, uncertainty, and known contradictions. It is a read object, not a new kind of memory. Applications can require a minimum confidence or allow contested concepts to be shown as uncertainty rather than instructions.</p>
 <p>Formally, an intuition packet for query q, time t, policy context p, and budget b is I(q,t,p,b)=(C*,E*,A*,U*,X*,L*), where C* is the selected set of current concepts or hypotheses, E* is the minimum restored source evidence, A* contains applicable procedures or prospective commitments, U* is calibrated uncertainty, X* is material counterevidence or conflict, and L* is provenance and selection lineage. The packet is valid only if every item satisfies p, its estimated context cost does not exceed b, and its lineage resolves to permitted canonical records.</p>
 <h2>4.7 Outcome loop</h2>
 <p>Every use of a concept creates an application record: am=( xm,Cm,Em,dm,ym,um) .</p>

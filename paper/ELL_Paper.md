@@ -25,7 +25,7 @@ store, creates typed associations between them, represents reflections as provis
 compatible reflections into versioned concepts. Each concept records its scope, supporting evidence, 
 counterevidence, confidence, temporal validity, lineage, and observed utility. Concepts can be corroborated, 
 contested, revised, superseded, or retired without erasing their evidential history.
-The product north star is to give any AI a natural, evolving intuition about the user or organisation: grounded in
+The system north star is to give any AI a natural, evolving intuition about the user or organisation: grounded in
 experience, economical to use, sensitive to change, explainable when inspected, and always under user control.
 Here intuition is neither anthropomorphism nor a new memory category. It names an emergent system capability
 produced by evidence-grounded compression, prediction, association, relevance selection, temporal adaptation,
@@ -38,8 +38,7 @@ support and counterevidence, will improve transfer to structurally similar situa
 generalisation compared with episode-only retrieval or direct summarisation. The proposal is deliberately 
 falsifiable: concept correctness, evidence coverage, revision behaviour, transfer, downstream task success, 
 calibration, and cost are all measured independently.
-Keywords: agent memory; experiential learning; reflection; concept formation; semantic memory; continual 
-learning; provenance; language agents; open source
+Keywords: agent memory; experiential learning; reflection; concept formation; semantic memory; continual learning; provenance; language agents; open source
 1. Introduction
 A language agent can remember an earlier event without learning anything general from it. A retrieval system 
 may surface five examples of the same failure, yet the agent may still repeat that failure because the episodes 
@@ -449,7 +448,7 @@ where S1 through S4 represent semantic relevance, scope match, temporal validity
 concept confidence; and S6 is active contradiction. This formula is a design heuristic, not a validated scientific 
 result. Weights will be tuned only on development data and frozen before test evaluation.
 The retrieved package includes the concept statement, scope, confidence, current state, relevant support, 
-relevant counterevidence, and source links. At the product boundary this compact, budgeted package is called an
+relevant counterevidence, and source links. At the application boundary this compact, budgeted package is called an
 intuition packet. It may combine current concepts, selected episodes, procedures, open commitments, uncertainty,
 and known contradictions. It is a read object, not a new kind of memory. Applications can require a minimum
 confidence or allow contested concepts to be shown as uncertainty rather than instructions.
@@ -1021,25 +1020,25 @@ Phase 4 — Paper completion
 
 The research architecture above asks whether evidence-grounded concepts improve transfer and future behaviour. This expanded architecture generalises the v0.1 scaffold into L: an open, local-first experience-learning layer usable by people, applications, and AI agents. The expansion does not replace the original empirical question. It makes the operational boundaries needed to test the hypothesis explicit.
 
-L is not primarily a chatbot, note-taking application, Zettelkasten, vector database, or graph visualisation. Its north star is to give any AI a natural, evolving intuition about the user or organisation—grounded in experience, economical to use, sensitive to change, explainable when inspected, and always under user control. Its product loop is to capture an experience, preserve its source, extract typed candidates, decide under deterministic policy what may become durable, consolidate related memories without losing contradictions, retrieve the smallest useful context, observe outcomes, and revise future behaviour. Models interpret meaning and propose. Deterministic services validate, authorize, version, and commit.
+L is not primarily a chatbot, note-taking application, Zettelkasten, vector database, or graph visualisation. Its north star is to give any AI a natural, evolving intuition about the user or organisation—grounded in experience, economical to use, sensitive to change, explainable when inspected, and always under user control. Its learning loop captures an experience, preserves its source, extracts typed candidates, decides under deterministic policy what may become durable, consolidates related memories without losing contradictions, retrieves the smallest useful context, observes outcomes, and revises future behaviour. Models interpret meaning and propose. Deterministic services validate, authorize, version, and commit.
 
 Intuition is an emergent capability of this loop, not another row type or a claim that the system resembles a person. Evidence-grounded compression, prediction, association, relevance selection, temporal adaptation, and outcome feedback should together support shorthand, proactive just-in-time context, useful generalisation, rapid correction, change detection, calibrated uncertainty, and optional explanation. The delivery object is a compact intuition packet with sufficient evidence and uncertainty to be useful, plus stable references for deeper inspection.
 
 13.1 System layers and technology boundaries
 
-The product architecture has three independently evolvable layers:
+The expanded architecture has three independently evolvable layers:
 
-• input and capture adapters turn chats, Recall recordings, documents, application events, and future connectors into immutable source artifacts, normalized events, and bounded episodes;
+• input and capture adapters turn conversations, recordings, documents, application events, and future connectors into immutable source artifacts, normalized events, and bounded episodes;
 • memory and retrieval infrastructure provides replaceable persistence, search, association, graph, vector, or hosted-memory projections;
 • the canonical learning layer evaluates evidence, maintains temporal and probabilistic hypotheses, governs durable concepts, records applications and outcomes, and controls revision, contradiction, and forgetting.
 
-The first layer and the provider-neutral kernel have verified foundations. The second is not yet operational end to end in the current reference implementation: SQLite, TencentDB Agent Memory, hosted memory services, vector indexes, graphs, and TurboVec remain candidate adapters or projections to integrate and compare. The third has deterministic Phase 0 lifecycle contracts, but not yet the complete closed learning loop. This distinction prevents an external memory product from silently becoming L’s truth or policy authority.
+The first layer and the provider-neutral kernel have verified foundations. The second is not yet operational end to end in the current reference implementation: SQLite, hosted memory services, vector indexes, and graphs remain candidate adapters or projections to integrate and compare. The third has deterministic Phase 0 lifecycle contracts, but not yet the complete closed learning loop. This distinction prevents an external memory system from silently becoming L’s truth or policy authority.
 
 The proposed direction is immutable evidence plus dynamic, temporal, probabilistic concepts and hypotheses. Extraction, association, consolidation, retrieval, and forgetting policies should be pluggable and may become model-driven or learned. Their proposals remain subject to deterministic provenance, permissions, workspace isolation, deletion, schema, and canonical commit governance. No fixed graph, vector method, note-linking scheme, or model family is selected as the final architecture before the success criteria and ablations in Section 7 are run.
 
 13.2 Plural memory semantics
 
-The v0.1 paper distinguishes episodes, reflections, concepts, applications, and outcomes. The broader product architecture retains these objects while distinguishing additional memory semantics that have different authority, lifetime, and retrieval rules:
+The v0.1 paper distinguishes episodes, reflections, concepts, applications, and outcomes. The broader ELL architecture retains these objects while distinguishing additional memory semantics that have different authority, lifetime, and retrieval rules:
 
 • source memory preserves immutable artifacts and exact addressable spans;
 • working memory holds expiring state for the current task or conversation;
@@ -1052,7 +1051,7 @@ The v0.1 paper distinguishes episodes, reflections, concepts, applications, and 
 • reflective memory records uncertainty, freshness, usefulness, contradictions, and knowledge gaps;
 • policy memory defines retention, consent, provider, sharing, and deletion boundaries and is never ordinary model context.
 
-These forms may share infrastructure, but they must not be flattened into one untyped table with identical lifecycle semantics. The useful product is the explainable connection layer, not a decorative node cloud.
+These forms may share infrastructure, but they must not be flattened into one untyped table with identical lifecycle semantics. The useful layer is the explainable connection between evidence and future behaviour, not a decorative node cloud.
 
 13.3 Source, event, and episode boundary
 
@@ -1076,7 +1075,7 @@ The commit service is the sole canonical writer. It uses idempotency keys and op
 
 Retrieval is a typed service rather than direct database or vector-index access. A request includes actor, purpose, workspace, scope, allowed memory types, maximum sensitivity, evidence preference, and a fixed context budget. Authorization and lifecycle filtering happen before relevance ranking. Superseded, forgotten, expired, cross-workspace, and sensitivity-incompatible records do not enter ordinary results.
 
-Candidate generation may combine lexical search, vectors, relation neighbourhoods, time, pinning, procedures, and later learned rerankers. Exact-vector, HNSW, graph, TurboVec, TencentDB Agent Memory, and hosted memory adapters remain replaceable projections to benchmark; no index or provider is canonical memory. The response is an EvidencePacket, presented at the product boundary as an intuition packet, containing selected current claims, scoped preferences, episodes, procedures, commitments, citations, selection explanations, uncertainty, and known material contradictions. A compact concept never becomes a naked instruction detached from its source.
+Candidate generation may combine lexical search, vectors, relation neighbourhoods, time, pinning, procedures, and later learned rerankers. Exact-vector, HNSW, graph, and hosted memory adapters remain replaceable projections to benchmark; no index or provider is canonical memory. The response is an EvidencePacket, presented at the application boundary as an intuition packet, containing selected current claims, scoped preferences, episodes, procedures, commitments, citations, selection explanations, uncertainty, and known material contradictions. A compact concept never becomes a naked instruction detached from its source.
 
 Concrete comparison adapters may wrap Graphiti/Zep temporal graphs, Mem0 extraction and retrieval, Letta-style context management, or TencentDB Agent Memory's layered local store. Learned-policy adapters may implement AgeMem-style tool actions, AtomMem-style atomic operations, or MemSkill-style evolving routines. Experience and skill adapters may provide EXG-style graphs, ReasoningBank-style strategies, or lifecycle-managed skill candidates. Neural accelerators may provide Titans-, HOPE-, or TMEM-style state. In every case, the adapter returns candidates or acceleration state; current canonical SourceArtifact, CandidateMemory, and MemoryRecord contracts, together with proposed SkillVersion, ApplicationReceipt, and deletion records, remain governed by ELL.
 
@@ -1108,7 +1107,7 @@ A fixture-backed DeterministicMockProvider advertises provider-neutral capabilit
 
 The versioned synthetic corpus covers explicit scoped preferences, single-event inference, unsupported claims, sensitive inference, explicit correction, material contradiction, temporal change, Dutch evidence, and prompt injection embedded in imported content. Each JSONL case has a stable ID, exact evidence excerpt, typed candidate description, and expected policy or lifecycle outcome. Corpus validation rejects malformed or duplicate cases.
 
-At this revision, the paper-first repository contains 31 passing kernel and contract tests plus publication tests for the generated HTML edition and shared diagrams. Strict static type checking passes for the Python domain source, and repository-wide Ruff lint passes. Product clients, databases, hosted services, provider SDKs, and vendor-specific memory scaffolding remain outside the repository and outside the canonical kernel.
+At this revision, the paper-first repository contains 31 passing kernel and contract tests plus 2 publication tests for the generated HTML edition and shared diagrams. Strict static type checking passes for the Python domain source, and repository-wide Ruff lint passes. Product clients, databases, hosted services, provider SDKs, and vendor-specific memory scaffolding remain outside the repository and outside the canonical kernel.
 
 14.4 Remaining gates
 
@@ -1124,7 +1123,7 @@ ELL proposes an explicit path from episodes to provisional reflections, from ref
 and from concepts to measured applications and outcomes. The architecture preserves both support and 
 counterevidence, treats scope and temporal validity as first-class fields, and makes revision reversible and 
 auditable. Its value will be determined empirically, not by the plausibility of the design.
-The product expression of that hypothesis is an evolving intuition: economical, timely context that helps an AI
+The practical expression of that hypothesis is an evolving intuition: economical, timely context that helps an AI
 understand shorthand and adapt to change without hiding where its guidance came from. Whether compact
 intuition packets deliver this experience more accurately and efficiently than no memory, raw history, ordinary
 RAG, rolling summaries, or dynamic-memory baselines remains an open empirical question.

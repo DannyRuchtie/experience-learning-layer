@@ -11,7 +11,7 @@ from typing import Dict, Iterable, Tuple
 
 from reportlab.graphics.shapes import Drawing, Line, Polygon, Rect, String
 from reportlab.lib import colors
-from reportlab.platypus import Paragraph, Spacer
+from reportlab.platypus import KeepTogether, Paragraph, Spacer
 
 
 @dataclass(frozen=True)
@@ -70,42 +70,52 @@ DIAGRAMS: Dict[str, Diagram] = {
             "uses observed outcomes to improve or challenge them."
         ),
         width=960,
-        height=330,
+        height=390,
         nodes=(
             Node(
                 "sources",
-                ("Consented experience", "events, episodes, outcomes"),
-                30,
+                ("Consented experience", "events and episodes"),
+                20,
+                80,
+                170,
                 105,
-                190,
-                110,
                 SLATE,
             ),
             Node(
                 "experience",
-                ("Experience layer", "normalize, preserve, associate"),
+                ("Experience layer", "preserve and associate"),
                 270,
+                80,
+                170,
                 105,
-                190,
-                110,
                 BLUE,
             ),
             Node(
                 "learning",
-                ("Learning layer", "reflect, consolidate, revise"),
+                ("Learning layer", "reflect and revise"),
                 510,
+                80,
+                170,
                 105,
-                190,
-                110,
                 INDIGO,
             ),
-            Node("use", ("Application", "scoped context and decisions"), 750, 105, 180, 110, GREEN),
+            Node("use", ("Application", "scoped decisions"), 770, 80, 170, 105, GREEN),
+            Node(
+                "feedback",
+                ("Observed outcomes", "utility and correction"),
+                610,
+                260,
+                210,
+                90,
+                AMBER,
+            ),
         ),
         edges=(
             Edge("sources", "experience", "provenance"),
             Edge("experience", "learning", "evidence"),
             Edge("learning", "use", "concepts"),
-            Edge("use", "experience", "outcomes", dashed=True),
+            Edge("use", "feedback", "observe"),
+            Edge("feedback", "experience", "revise", dashed=True),
         ),
     ),
     "learning-lifecycle": Diagram(
@@ -281,7 +291,7 @@ def diagram_svg(diagram: Diagram) -> str:
         )
         if edge.label:
             parts.append(
-                f'<text x="{(x1 + x2) / 2:g}" y="{(y1 + y2) / 2 - 8:g}" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" fill="{MUTED}">{escape(edge.label)}</text>'
+                f'<text x="{(x1 + x2) / 2:g}" y="{(y1 + y2) / 2 - 8:g}" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="11" fill="{MUTED}">{escape(edge.label)}</text>'
             )
     for node in diagram.nodes:
         parts.append(
@@ -387,4 +397,4 @@ def pdf_diagram_flowables(key: str, caption_style: object) -> Iterable[object]:
             )
 
     caption = Paragraph(f"<b>{escape(diagram.title)}.</b> {escape(diagram.caption)}", caption_style)
-    return (Spacer(1, 8), drawing, Spacer(1, 4), caption, Spacer(1, 8))
+    return (KeepTogether([drawing, Spacer(1, 4), caption]), Spacer(1, 8))

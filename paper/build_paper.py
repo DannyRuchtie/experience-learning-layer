@@ -235,6 +235,9 @@ def clean_lines(source: str) -> list[str]:
             continue
         if line.startswith(HEADER_PREFIX) and "WORKING DRAFT" in line:
             continue
+        if line.startswith(("https://", "http://")) and result and result[-1]:
+            result[-1] = f"{result[-1]} {line}"
+            continue
         result.append(line)
     return result
 
@@ -252,6 +255,19 @@ def heading_level(line: str) -> int | None:
     if not 1 <= section <= 15:
         return None
     return 2 if match.group(2) is not None else 1
+
+
+def join_wrapped_lines(parts: list[str]) -> str:
+    """Join extracted manuscript lines without splitting hyphenated words."""
+    text = ""
+    for part in parts:
+        if not text:
+            text = part
+        elif text.endswith("-"):
+            text += part
+        else:
+            text += f" {part}"
+    return text
 
 
 def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[object]:
@@ -307,7 +323,7 @@ def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[obj
 
     def flush_paragraph() -> None:
         if paragraph_parts:
-            text = " ".join(part for part in paragraph_parts if part)
+            text = join_wrapped_lines([part for part in paragraph_parts if part])
             story.append(Paragraph(escape(text), styles["body"]))
             paragraph_parts.clear()
 
@@ -360,8 +376,11 @@ def manuscript_story(source: str, styles: dict[str, ParagraphStyle]) -> list[obj
             bullets.append(line[1:].strip())
             continue
         if bullets:
-            bullets[-1] = f"{bullets[-1]} {line}"
-            continue
+            if bullets[-1].endswith((".", "?", "!")) and line[0].isupper():
+                flush_bullets()
+            else:
+                bullets[-1] = join_wrapped_lines([bullets[-1], line])
+                continue
         paragraph_parts.append(line)
         if line.endswith((".", "?", "!")):
             flush_paragraph()

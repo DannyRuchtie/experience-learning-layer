@@ -63,7 +63,10 @@ def verify(source_path: Path = DEFAULT_SOURCE, output_dir: Path = DEFAULT_OUTPUT
     if missing_diagrams:
         raise FileNotFoundError(f"missing generated diagrams: {missing_diagrams}")
 
-    allowed_roots = (ROOT.resolve(), output_dir.resolve())
+    repository_root = ROOT.resolve()
+    generated_root = output_dir.resolve()
+    build_parent = generated_root.parent
+    allowed_roots = (repository_root, generated_root)
     broken: List[Tuple[Path, str]] = []
     for page in sorted(expected_pages):
         parser = PublicationParser()
@@ -74,6 +77,15 @@ def verify(source_path: Path = DEFAULT_SOURCE, output_dir: Path = DEFAULT_OUTPUT
             target = _local_target(page, reference)
             if target is None:
                 continue
+            if not target.exists():
+                try:
+                    repository_relative = target.relative_to(build_parent)
+                except ValueError:
+                    repository_relative = None
+                if repository_relative is not None:
+                    repository_target = repository_root / repository_relative
+                    if repository_target.exists():
+                        continue
             within_repository = any(
                 target == root or root in target.parents for root in allowed_roots
             )

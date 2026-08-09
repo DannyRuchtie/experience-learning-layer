@@ -50,15 +50,16 @@
 <li>a new episode contradicts an active concept;</li>
 <li>association novelty exceeds a threshold;</li>
 <li>the concept has not been reviewed within a time window;</li>
-<li>a user or agent explicitly requests reflection. The scheduler records why a job was triggered. This enables later analysis of whether a scheduling policy created useful concepts or unnecessary model calls.</li>
+<li>a user or agent explicitly requests reflection.</li>
 </ul>
+<p>The scheduler records why a job was triggered. This enables later analysis of whether a scheduling policy created useful concepts or unnecessary model calls.</p>
 <h2>5.2 Reflection generation and critique</h2>
 <p>The Reflection Engine receives a bounded evidence packet: selected episodes, existing nearby reflections, relevant active concepts, and an instruction to produce typed hypotheses. The generator must output structured fields rather than a free-form essay.</p>
 <p>A separate validation pass performs four checks: 1. Entailment: Does each cited episode actually support the claim attributed to it?</p>
 <p>2. Contradiction: Are there nearby episodes that disagree?</p>
 <p>3. Scope: Is the claim broader than its evidence?</p>
 <p>4. Novelty: Is the reflection meaningfully different from existing reflections or concepts?</p>
-<p>The validator can be an independent model, a deterministic rule, a human reviewer, or a combination. Using a separate model call does not guarantee independence, so experiments will include same-model and cross- model validation conditions.</p>
+<p>The validator can be an independent model, a deterministic rule, a human reviewer, or a combination. Using a separate model call does not guarantee independence, so experiments will include same-model and cross-model validation conditions.</p>
 <h2>5.3 Concept proposal</h2>
 <p>Reflections are grouped by semantic compatibility and scope overlap. A proposed concept requires:</p>
 <ul>
@@ -67,8 +68,10 @@
 <li>minimum evidence diversity;</li>
 <li>no unresolved high-confidence contradiction;</li>
 <li>an explicit scope and exception list;</li>
-<li>a concise proposition and expected implication. The default policy will require support from at least three episodes across at least two distinct contexts. This is a configurable research parameter rather than a universal rule. A simplified proposal procedure is: for each reflection cluster R: evidence = union(supporting episodes in R) counter = retrieve plausible counterevidence candidate = generate_concept(R, evidence, counter) checks = validate(candidate, evidence, counter) if checks pass promotion policy: register(candidate, state=&quot;proposed&quot;)</li>
+<li>a concise proposition and expected implication.</li>
 </ul>
+<p>The default policy will require support from at least three episodes across at least two distinct contexts. This is a configurable research parameter rather than a universal rule.</p>
+<p>A simplified proposal procedure is: for each reflection cluster R: evidence = union(supporting episodes in R) counter = retrieve plausible counterevidence candidate = generate_concept(R, evidence, counter) checks = validate(candidate, evidence, counter) if checks pass promotion policy: register(candidate, state=&quot;proposed&quot;)</p>
 <h2>5.4 Evidence-weighted confidence</h2>
 <p>LLMs are not assumed to be calibrated judges of their own abstractions. ELL computes an operational confidence score from external features:</p>
 <p>confidence(c)=1/(1+exp(-z_c)) , where zc is a weighted score that increases with supporting evidence, evidence diversity, and observed application utility, and decreases with counterevidence, age without revalidation, and validator disagreement.</p>
@@ -79,8 +82,9 @@
 <li>add exception: the core claim remains valid but has a narrower boundary;</li>
 <li>narrow scope: the concept was over-generalised;</li>
 <li>change validity interval: the pattern was true during one period but is no longer current;</li>
-<li>replace claim: a new concept version better explains the evidence. Revision produces a new immutable version linked by revises or supersedes. The old version retains its former validity interval and applications. This design supports historical reasoning and avoids treating changed preferences or conditions as contradictions that must erase the past.</li>
+<li>replace claim: a new concept version better explains the evidence.</li>
 </ul>
+<p>Revision produces a new immutable version linked by revises or supersedes. The old version retains its former validity interval and applications. This design supports historical reasoning and avoids treating changed preferences or conditions as contradictions that must erase the past.</p>
 <h2>5.6 Merge and split</h2>
 <p>Duplicate concepts increase retrieval noise, while over-broad concepts hide meaningful exceptions. Merge candidates are identified using proposition similarity, overlapping evidence, compatible scope, and similar implications. Split candidates are triggered when counterevidence clusters around a coherent condition or when application outcomes differ significantly by context.</p>
 <p>Both operations require a lineage record. A merge creates a new concept that references all parents. A split creates child concepts whose evidence partitions are explicit. Automated operations above a risk threshold can require human approval.</p>

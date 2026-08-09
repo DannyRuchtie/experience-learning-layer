@@ -52,8 +52,7 @@ figcaption { padding: .8rem .4rem .2rem; color: var(--muted); font-size: .88rem;
 .next { margin-left: auto; }
 @media (max-width: 850px) {
   .reading-layout { display: block; padding-top: 2rem; }
-  .contents { position: static; max-height: none; margin-bottom: 3rem; }
-  .contents ol { columns: 2; }
+  .contents { display: none; }
   .section-index ol { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {

@@ -54,8 +54,9 @@
 <li>revised: a new immutable version has been created in response to changed evidence and is awaiting or recording validation;</li>
 <li>superseded: replaced by a newer or more precise concept;</li>
 <li>retired: no longer eligible for ordinary retrieval;</li>
-<li>deleted: content removed under deletion policy, with only non-sensitive structural audit metadata retained where legally permitted. A revision never overwrites its parent. A revised version can later become corroborated, contested, superseded, retired, or deleted while its lineage remains traceable.</li>
+<li>deleted: content removed under deletion policy, with only non-sensitive structural audit metadata retained where legally permitted.</li>
 </ul>
+<p>A revision never overwrites its parent. A revised version can later become corroborated, contested, superseded, retired, or deleted while its lineage remains traceable.</p>
 <h2>6.3 API contract</h2>
 <p>The reference implementation exposes the following model-independent operations: record_episode(episode) -&gt; EpisodeID associate(episode_id, policy) -&gt; list[Association] run_reflection(scope, trigger) -&gt; list[Reflection] reconcile_concepts(reflection_ids) -&gt; list[ConceptVersion] retrieve_learning(query, context, budget) -&gt; LearningPacket record_application(packet, decision) -&gt; ApplicationID record_outcome(application_id, outcome) -&gt; list[ConceptUpdate] propose_skill(experience_ids, policy) -&gt; list[SkillVersion] record_skill_application(skill_version_id, receipt) -&gt; ApplicationID explain_concept(concept_id, version=None) -&gt; EvidenceReport delete_subject_data(subject_id, policy) -&gt; DeletionReport</p>
 <p>LearningPacket is the central read object. It contains concepts, relevant evidence, conflicts, and budget accounting. It never contains only a naked concept statement.</p>
