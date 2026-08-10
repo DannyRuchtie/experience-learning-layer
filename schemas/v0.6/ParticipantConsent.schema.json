@@ -1,0 +1,72 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/ParticipantConsent.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "consent_id": {
+      "title": "Consent Id",
+      "type": "string"
+    },
+    "consented_at": {
+      "format": "date-time",
+      "title": "Consented At",
+      "type": "string"
+    },
+    "consented_purposes": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Consented Purposes",
+      "type": "array"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "participant_pseudonym": {
+      "minLength": 1,
+      "title": "Participant Pseudonym",
+      "type": "string"
+    },
+    "protocol_id": {
+      "minLength": 1,
+      "title": "Protocol Id",
+      "type": "string"
+    },
+    "provider_egress_allowed": {
+      "default": false,
+      "title": "Provider Egress Allowed",
+      "type": "boolean"
+    },
+    "signed_attestation": {
+      "title": "Signed Attestation",
+      "type": "boolean"
+    },
+    "withdrawn_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Withdrawn At"
+    }
+  },
+  "required": [
+    "consent_id",
+    "participant_pseudonym",
+    "protocol_id",
+    "consented_purposes",
+    "consented_at",
+    "expires_at",
+    "signed_attestation"
+  ],
+  "title": "ParticipantConsent",
+  "type": "object"
+}

@@ -4,6 +4,8 @@ A language agent can remember an earlier event without learning anything general
 
 The intended user experience is stronger than factual continuity. An AI should understand conversational shorthand, surface relevant context just in time, generalise usefully across related situations, notice when a previous pattern has changed, correct itself rapidly, and express calibrated uncertainty. Explanations should be available when requested without forcing provenance detail into every interaction. These behaviours constitute the proposed operational meaning of an evolving intuition; they do not imply consciousness, personhood, or a simulation of human cognition.
 
+![**Remembering is not yet learning.** Memory access can improve continuity, but ELL is justified only if evidence and outcomes produce scoped concepts that measurably improve future behaviour.](assets/visuals/memory-vs-learning.png){#fig-memory-vs-learning fig-alt="Memory access retrieves relevant past episodes, while experience learning forms scoped revisable concepts and measures their future outcomes." width="100%"}
+
 The first generation of agent-memory systems established that external memory could improve continuity beyond a model’s context window. Generative Agents stored observations, ranked them for retrieval, and periodically synthesised higher-level reflections that influenced later plans (Park et al. 2023). Reflexion used textual feedback about prior attempts as a non-parametric learning signal (Shinn et al. 2023). ExpeL extracted natural-language insights from collections of task experiences and reused both insights and successful trajectories at inference time (Zhao et al. 2024). MemGPT approached the problem as virtual context management, allowing an agent to move information between limited working context and external storage (Packer et al. 2023). CoALA organised these developments within a broader cognitive architecture containing working, episodic, semantic, and procedural memory (Sumers et al. 2024).
 
 Subsequent systems have increasingly abstracted experience rather than merely retrieving it. Voyager accumulated reusable executable skills (G. Wang et al. 2023). Agent Workflow Memory induced recurring action routines from prior trajectories (Z. Z. Wang et al. 2025). A-MEM dynamically linked and revised memory notes as new information arrived (Xu et al. 2025). Reflective Memory Management used prospective and retrospective reflection to improve memory granularity and retrieval (Z. Tan et al. 2025). Hindsight separates world, experience, observation, and opinion networks and allows opinions to evolve with confidence (Latimer et al. 2026). More recent architectures explicitly construct schemas, concepts, semantic knowledge, or procedural knowledge from episodes, including DCPM, GAAMA, and PlugMem (Fei et al. 2026; Paul, Sharma, and Sareen 2026; Yang et al. 2026). A recent survey describes this field-wide progression as storage, reflection, and experience abstraction (Luo et al. 2026).
@@ -36,11 +38,13 @@ The confirmatory research scope is deliberately narrower than a complete persona
 - revision after new evidence and outcomes;
 - direct evaluation of concept quality and transfer.
 
-Perception, multimodal capture, large-scale identity resolution, autonomous skill evolution, learned memory-operation policies, neural memory, production provider integrations, and parametric fine-tuning are outside the first confirmatory study. They remain possible follow-on experiments only after ELL-Core clears its success gates.
+![**The intended delivery object.** ELL supplies a compact intuition packet containing scoped concepts, selected episodes, counterevidence, uncertainty, selection reasons, and stable links for deeper inspection.](assets/visuals/intuition-packet.png){#fig-intuition-packet fig-alt="A current situation enters an intuition packet with concepts, episodes, counterevidence, uncertainty, selection reasons, and evidence links before an application records outcome feedback." width="100%"}
+
+Perception, multimodal capture, large-scale identity resolution, autonomous skill evolution, learned memory-operation policies, neural memory, production provider integrations, and parametric fine-tuning are outside the first confirmatory study. Governed self-scaffolding is nevertheless specified as a first-class follow-on programme: ELL may eventually learn versioned strategies for reflection, consolidation, retrieval, and error recovery, but only after ELL-Core clears its success gates and without granting a learned strategy authority over evidence, consent, permissions, deletion, or canonical commits.
 
 ## Contributions
 
-This working paper specifies five intended contributions.
+This working paper specifies six intended contributions.
 
 A minimal experience-to-concept contract. It defines distinct schemas and operations for evidence, episodes, reflections, concepts, applications, and outcomes without requiring a graph, vector database, or hosted memory provider.
 
@@ -51,3 +55,5 @@ A separation between confidence and eloquence. Concept confidence is computed fr
 A confirmatory evaluation protocol. One primary transfer outcome is paired with preregistered epistemic, adaptation, governance, and cost guardrails. Component metrics diagnose why the result occurred; they do not substitute for behavioural improvement.
 
 An evaluation-first open implementation plan. The benchmark and simple baselines are built before the concept engine. Versioned releases will include schemas, prompts, configurations, generators, evaluation scripts, raw receipts, and paper sources under permissive licences, with reproducibility runs using open-weight models.
+
+A governed self-scaffolding research programme. A slower meta-learning loop treats the strategy used to learn and apply concepts as a typed, versioned, replayable object. Candidate strategies must beat a frozen policy under matched conditions, pass immutable governance gates, survive shadow and canary evaluation, and retain a complete rollback path before promotion.

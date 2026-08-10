@@ -369,6 +369,7 @@ def run_baseline(dataset: BenchmarkDataset, partition_name: str, baseline_id: st
                     item.scope.endswith(":exception") for item in selected
                 ),
                 cited_support_ids=sorted(selected_gold),
+                material_counterevidence_ids=sorted(task.gold_counterevidence_ids),
                 missed_counterevidence_ids=sorted(
                     set(task.gold_counterevidence_ids) - set(selected_ids)
                 ),

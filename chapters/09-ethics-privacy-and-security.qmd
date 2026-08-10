@@ -12,6 +12,8 @@ Correction. A user correction is stored as high-priority evidence and can trigge
 
 Deletion. Source deletion propagates to derived concepts. Derived content must not survive simply because it was transformed.
 
+![**Forgetting is a cascade.** A deletion request immediately excludes canonical evidence, writes a tombstone, closes dependent validity, removes projections, and prevents reconstruction through indexes, caches, exports, adapters, or sync.](assets/visuals/privacy-cascade.png){#fig-privacy-cascade fig-alt="A user deletion triggers a canonical tombstone and invalidation across embeddings, indexes, caches, exports, and adapters." width="100%"}
+
 Least access. Retrieval enforces source-level permissions and subject namespaces before semantic relevance is considered.
 
 No hidden certainty. Contested or weak concepts are labelled. Confidence and evidence counts are not replaced by persuasive prose.
@@ -19,5 +21,9 @@ No hidden certainty. Contested or weak concepts are labelled. Confidence and evi
 Poisoning resistance. New memories do not automatically become trusted rules. Promotion requires independent evidence and validators, and sensitive actions can require human approval.
 
 Purpose limitation. Concepts formed for one domain are not automatically reused in another. Cross-domain transfer is an explicit, auditable operation.
+
+Constitutional separation. A learned scaffold may propose bounded changes to reflection, consolidation, retrieval, budgets, retries, or abstention. It cannot change consent, permissions, workspace isolation, sensitivity rules, deletion, provider egress, evaluator isolation, canonical commit authority, or the evidence required to justify a memory. Governance failures disqualify a scaffold regardless of downstream reward.
+
+![**Security controls recur along the learning path.** Imported prompt injection, sensitive inference, cross-workspace leakage, provider egress, and deletion bypass each require a specific control before persistent concepts may influence later decisions.](assets/visuals/threat-controls.png){#fig-threat-controls fig-alt="Five security threats map to controls for imported content, sensitive traits, workspace authorization, provider egress, and deletion invalidation." width="100%"}
 
 The system may still infer sensitive traits that were never stated directly. The research implementation therefore defaults to local processing, excludes sensitive-trait inference from public examples, and treats inferred personal concepts as user-governed data. Future work must test whether users can understand and meaningfully control these abstractions.

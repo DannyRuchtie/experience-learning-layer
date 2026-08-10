@@ -15,6 +15,7 @@ dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.10"]
 [project.scripts]
 ell-benchmark = "ell.benchmark:main"
 ell-export-schemas = "ell.schema_export:main"
+ell-research-status = "ell.status:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -33,4 +34,3 @@ select = ["E", "F", "W", "I", "N", "B", "SIM", "C4"]
 python_version = "3.9"
 strict = true
 packages = ["ell"]
-

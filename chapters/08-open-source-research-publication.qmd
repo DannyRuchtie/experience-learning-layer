@@ -1,5 +1,7 @@
 # Open-Source Research Publication
 
+![**A research claim should reproduce from source to verdict.** Canonical sources, frozen inputs, run receipts, generated editions, and independent runs form one inspectable publication chain.](assets/visuals/reproducibility-chain.png){#fig-reproducibility-chain fig-alt="A reproducibility chain links canonical source, frozen inputs, run receipts, generated artifacts, and independent replication." width="100%"}
+
 ## Licensing
 
 The repository is released under the permissive MIT License. It covers the paper source, diagrams, documentation, publication tools, and synthetic examples unless a file states otherwise. Third-party datasets retain their original licences and are downloaded separately. A future archival research release should additionally include machine-readable citation metadata and generated dependency attribution.
@@ -50,5 +52,7 @@ The project begins with a lightweight maintainer model and records its evolution
 Research claims are reviewed separately from software changes. A faster implementation is not accepted as scientifically equivalent unless its behaviour and evaluation remain comparable.
 
 ## Private data boundary
+
+![**Public method, private experience.** The paper, schemas, code, synthetic streams, prompts, configurations, and aggregate results remain inspectable without publishing raw conversations, personal documents, sensitive events, or consent and deletion records.](assets/visuals/private-boundary.png){#fig-private-boundary fig-alt="A boundary separates public research artifacts from private experience, with explicit consent and aggregate-only crossings." width="100%"}
 
 Private conversation exports can be used locally to test ingestion and qualitative usefulness, but they are not part of the public benchmark and must not be committed. Public experiments use synthetic or properly licensed data. This paper includes data-governance guidance; redaction hooks, local namespaces, and tested deletion cascades are required before any longitudinal pilot.

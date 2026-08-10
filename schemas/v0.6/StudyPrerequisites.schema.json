@@ -1,0 +1,39 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/StudyPrerequisites.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "phase0_immutable_release": {
+      "default": false,
+      "title": "Phase0 Immutable Release",
+      "type": "boolean"
+    },
+    "phase1_independent_reproduction": {
+      "default": false,
+      "title": "Phase1 Independent Reproduction",
+      "type": "boolean"
+    },
+    "phase2_invariant_exit": {
+      "default": false,
+      "title": "Phase2 Invariant Exit",
+      "type": "boolean"
+    },
+    "phase3_two_open_model_families": {
+      "default": false,
+      "title": "Phase3 Two Open Model Families",
+      "type": "boolean"
+    },
+    "prompts_and_policies_frozen": {
+      "default": false,
+      "title": "Prompts And Policies Frozen",
+      "type": "boolean"
+    },
+    "sealed_partition_opened_once": {
+      "default": false,
+      "title": "Sealed Partition Opened Once",
+      "type": "boolean"
+    }
+  },
+  "title": "StudyPrerequisites",
+  "type": "object"
+}

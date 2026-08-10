@@ -56,9 +56,11 @@ McClelland, James L., Bruce L. McNaughton, and Randall C. O’Reilly. 1995. ‘W
 
 Psychological Review 102 (3): 419–57. https://doi.org/10.1037/0033-295X.102.3.419.
 
-Packer, Charles, Sarah Wooders, Kevin Lin, Vivian Fang, Shishir G. Patil, Ion Stoica, and Joseph E. Gonzalez. 2023. ‘MemGPT: Towards LLMs as Operating Systems’. https://arxiv.org/abs/2310.08560.
+Ornith Team. 2026. ‘Ornith-1.0: Self-Scaffolding LLMs for Agentic Coding’. Technical release note, June 2026. https://ornith.ai/ornith_1_0.html.
 
 Ouyang, Siru, Jun Yan, I-Hung Hsu, Yanfei Chen, Ke Jiang, Zifeng Wang, Rujun Han, et al. 2026. ‘ReasoningBank: Scaling Agent Self-Evolving with Reasoning Memory’. In International Conference on Learning Representations. https://arxiv.org/abs/2509.25140.
+
+Packer, Charles, Sarah Wooders, Kevin Lin, Vivian Fang, Shishir G. Patil, Ion Stoica, and Joseph E. Gonzalez. 2023. ‘MemGPT: Towards LLMs as Operating Systems’. https://arxiv.org/abs/2310.08560.
 
 Park, Joon Sung, Joseph C. O’Brien, Carrie J. Cai, Meredith Ringel Morris, Percy Liang, and Michael S. Bernstein. 2023. ‘Generative Agents: Interactive Simulacra of Human Behavior’. In Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology, 1–22. https://doi.org/10.1145/3586183.3606763.
 

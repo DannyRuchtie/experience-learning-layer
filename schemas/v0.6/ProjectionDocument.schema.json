@@ -1,0 +1,35 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/ProjectionDocument.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "document_id": {
+      "title": "Document Id",
+      "type": "string"
+    },
+    "source_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Source Ids",
+      "type": "array"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "workspace_id": {
+      "title": "Workspace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "document_id",
+    "workspace_id",
+    "text",
+    "source_ids"
+  ],
+  "title": "ProjectionDocument",
+  "type": "object"
+}

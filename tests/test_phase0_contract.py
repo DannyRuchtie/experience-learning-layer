@@ -24,7 +24,7 @@ def test_all_paper_entities_have_machine_readable_schemas() -> None:
         "InvalidationReport",
         "EvaluatorJudgment",
     }
-    assert len(all_schema_models()) == 18
+    assert len(all_schema_models()) == 33
 
 
 def test_committed_schemas_reproduce_exactly(tmp_path: Path) -> None:

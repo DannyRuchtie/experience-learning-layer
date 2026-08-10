@@ -1,0 +1,48 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/PilotEventReceipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "consent_id": {
+      "title": "Consent Id",
+      "type": "string"
+    },
+    "content_hash": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "participant_pseudonym": {
+      "title": "Participant Pseudonym",
+      "type": "string"
+    },
+    "provider_egress": {
+      "title": "Provider Egress",
+      "type": "boolean"
+    },
+    "purpose": {
+      "title": "Purpose",
+      "type": "string"
+    },
+    "recorded_at": {
+      "format": "date-time",
+      "title": "Recorded At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "consent_id",
+    "participant_pseudonym",
+    "purpose",
+    "content_hash",
+    "provider_egress",
+    "recorded_at"
+  ],
+  "title": "PilotEventReceipt",
+  "type": "object"
+}

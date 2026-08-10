@@ -187,15 +187,20 @@ count as validation.
 | **4 — Run the confirmatory study** | Compare frozen ELL-Core against the strongest eligible baseline | Publish a supported, partial, unsupported, or unsafe verdict |
 | **5 — Test replaceable substrates** | Compare SQLite, lexical search, vectors, TurboVec, and external-memory adapters | Changing infrastructure does not change canonical semantics |
 | **6 — Test external validity and a pilot** | Evaluate external benchmarks and a small consented product experience | Benefits transfer without safety regressions and users retain control |
+| **7 — Test governed self-scaffolding** | Compare frozen learning strategies with versioned, bounded scaffold mutations | A better scaffold wins time-forward at equal cost with no governance regression and reproducible rollback |
 
-The repository now contains a **Phase 0 freeze candidate plus executable Phase 1
-and Phase 2 reference slices**. The machine-readable contract, deterministic
+The repository now contains a **Phase 0 freeze candidate, executable Phase 1–2
+reference slices, and evidence-gated Phase 4–6 research tooling**. The machine-readable contract, deterministic
 stream generator, seven simple baselines, immutable receipts, and in-memory
-ELL-Core are implemented and covered by contract tests. This is implementation
-evidence, not a benchmark result: Phase 0 still needs an immutable release,
+ELL-Core are implemented and covered by contract tests. The confirmatory runner,
+substrate conformance suite, external-package validators, and pilot consent gates
+are also executable. This is implementation evidence, not a benchmark result:
+Phase 0 still needs an immutable release,
 Phase 1 still needs independent clean-machine reproduction, and Phase 2 still
-needs broader property/adversarial coverage before their exit signals are
-claimed.
+needs broader property/adversarial coverage. Phase 4 is blocked by the missing
+Phase 3 evidence, Phase 5 is not yet contractually eligible, and Phase 6 has run
+no external package or human pilot. Phase 7 is a research specification only; no
+self-scaffolding controller or result exists.
 
 ## Deliberately outside the first study
 
@@ -207,7 +212,8 @@ so the core claim can be attributed and falsified cleanly:
 - multimodal ingestion and large-scale identity resolution;
 - graph databases and graph visualisation as a product surface;
 - approximate vector infrastructure and hosted memory providers;
-- learned memory-operation policies and autonomous skill evolution;
+- governed self-scaffolding, other learned memory-operation policies, and
+  autonomous skill evolution;
 - neural or parametric memory and model fine-tuning;
 - cross-device sync and production deployment;
 - a polished end-user client.
@@ -216,6 +222,11 @@ These are not rejected ideas. They are later experiments. Graphs in particular
 may become useful association or inspection projections, but ELL does not require
 a graph database and a graph must never become the only place where evidence,
 identity, permissions, or deletion state exists.
+
+Self-scaffolding is now an explicit Phase 7 research track rather than an
+unspecified aspiration. It may learn bounded reflection, consolidation,
+retrieval, budget, retry, and abstention strategies, while deterministic ELL
+governance remains the sole authority over evidence and canonical state.
 
 ## How to use this repository today
 
@@ -248,7 +259,7 @@ python3 -m pip install -e '.[dev]'
 make verify
 ```
 
-`make verify` regenerates all 18 Draft 2020-12 JSON Schemas, checks lint and
+`make verify` regenerates all 33 Draft 2020-12 JSON Schemas, checks lint and
 strict typing, and runs deterministic contract and adversarial tests. To produce
 development benchmark artifacts without opening the sealed partition:
 
@@ -300,7 +311,10 @@ chapter navigation, and Quarto navigation asset, then uploads only `_book/` as
 the Vercel deployment root. It never publishes the Quarto sources, TeX
 intermediates, or local logs. `ELL_QUARTO_BIN`, `ELL_VERCEL_BIN`,
 `ELL_VERCEL_PROJECT`, and `ELL_VERCEL_SCOPE` can override local tool paths or
-the target project when needed.
+the target project when needed. Automatic Vercel Git deployments are disabled
+in [`vercel.json`](vercel.json): Vercel does not provide this publication's
+Quarto and TinyTeX build environment, and serving the repository root would
+publish `.qmd` sources as downloads instead of the rendered book.
 
 ## Repository map
 
@@ -320,6 +334,13 @@ the target project when needed.
 | [`src/ell/benchmark.py`](src/ell/benchmark.py) | Deterministic 50/200/1,000-event streams, sealed split handling, baselines, receipts, and manifests |
 | [`src/ell/core.py`](src/ell/core.py) | In-memory deterministic ELL-Core lifecycle and governance authority |
 | [`tests/`](tests/) | Reproducibility, contract, lifecycle, and adversarial evidence |
+| [`src/ell/study.py`](src/ell/study.py) | Frozen Phase 4 gates, comparator selection, and verdict logic |
+| [`src/ell/substrates.py`](src/ell/substrates.py) | SQLite/in-memory canonical conformance and rebuildable projections |
+| [`src/ell/external.py`](src/ell/external.py) | Hash- and licence-declared external benchmark package adapters |
+| [`src/ell/pilot.py`](src/ell/pilot.py) | Consent, egress, withdrawal, and pilot-readiness authority |
+| [`research/PHASE4_STATUS.md`](research/PHASE4_STATUS.md) | Confirmatory readiness and blockers |
+| [`research/PHASE5_STATUS.md`](research/PHASE5_STATUS.md) | Substrate conformance scope and remaining adapters |
+| [`research/PHASE6_STATUS.md`](research/PHASE6_STATUS.md) | External benchmark and consented-pilot boundary |
 | [`_quarto.yml`](_quarto.yml) | Publication metadata and build configuration |
 | [`.github/workflows/publish.yml`](.github/workflows/publish.yml) | GitHub Pages publication workflow |
 

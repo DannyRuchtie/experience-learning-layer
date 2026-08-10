@@ -1,0 +1,52 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/ExternalBenchmarkManifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "benchmark_id": {
+      "minLength": 1,
+      "title": "Benchmark Id",
+      "type": "string"
+    },
+    "citation": {
+      "minLength": 1,
+      "title": "Citation",
+      "type": "string"
+    },
+    "dataset_hash": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Dataset Hash",
+      "type": "string"
+    },
+    "license_spdx": {
+      "minLength": 1,
+      "title": "License Spdx",
+      "type": "string"
+    },
+    "locally_verified": {
+      "default": false,
+      "title": "Locally Verified",
+      "type": "boolean"
+    },
+    "source_url": {
+      "pattern": "^https://",
+      "title": "Source Url",
+      "type": "string"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "benchmark_id",
+    "version",
+    "source_url",
+    "citation",
+    "license_spdx",
+    "dataset_hash"
+  ],
+  "title": "ExternalBenchmarkManifest",
+  "type": "object"
+}

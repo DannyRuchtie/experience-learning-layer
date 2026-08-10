@@ -264,6 +264,7 @@ class EvaluatorJudgment(Contract):
     success: bool
     unsupported_generalization: bool
     cited_support_ids: List[str]
+    material_counterevidence_ids: List[str]
     missed_counterevidence_ids: List[str]
     notes: str = ""
 

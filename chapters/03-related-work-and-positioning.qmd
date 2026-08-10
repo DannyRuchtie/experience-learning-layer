@@ -1,5 +1,7 @@
 # Related Work and Positioning
 
+![**ELL's position in the research landscape.** Existing work spans context management, hybrid retrieval, reflection, temporal graphs, schemas, skills, and workflows. ELL's narrower claim sits where cross-episode abstraction meets strong evidence and lifecycle control.](assets/visuals/research-landscape.png){#fig-research-landscape fig-alt="A landscape places ELL-Core at the high-abstraction, high-evidence-control end of a progression from context management through retrieval, reflection, schemas, and skills." width="100%"}
+
 ## Production memory and context infrastructure
 
 Production-oriented systems establish useful implementation patterns without settling ELL's epistemic model.
@@ -16,7 +18,11 @@ These projects are comparatively mature as deployable software, but their public
 
 ## Empirical cautions for ELL
 
+![**Complexity is not evidence of learning.** Prior work motivates matched comparisons because richer architecture can add retrieval competition, negative transfer, and cross-domain fragility.](assets/visuals/empirical-cautions.png){#fig-empirical-cautions fig-alt="Three cautions show that more architecture, structure, or memory may not improve learning, followed by a requirement for matched comparisons." width="100%"}
+
 Recent evidence argues against assuming that more elaborate memory architecture implies better learning. A 2026 survey places cross-trajectory abstraction at the frontier of a broader storage–reflection–experience progression, making abstraction a field direction rather than an ELL-specific novelty (Luo et al. 2026). Sequential-task experiments further show that external memory relocates rather than removes the continual-learning problem: abstract procedures can improve forward transfer while retrieval competition and negative transfer harm hard cases (Hu, Long, and Wang 2026).
+
+![**The field-wide progression.** Storage, reflection, and abstraction are established directions. ELL's contribution claim begins only with governed evidence, scope, revision, outcomes, and a successful behavioural comparison.](assets/visuals/learning-spectrum.png){#fig-learning-spectrum fig-alt="A four-step spectrum progresses from storage to reflection to abstraction to governed learning." width="100%"}
 
 Cross-scenario comparisons report that a self-managed flat-file agent harness can rank above more specialised memory systems, which challenges the assumption that a fixed structured store will generalise across dialogue, code, search, and long-horizon tasks (Chen et al. 2026). Controlled analysis of graph and non-graph dialogue memory likewise finds that implementation details and strong simple baselines can matter as much as the graph abstraction itself (S. Hu et al. 2026). These findings require ELL to earn every layer through ablation. Graph association, learned memory operations, and specialised indexes remain optional conditions until they beat a simple baseline under the same evidence and cost budget.
 
@@ -54,6 +60,18 @@ AgeMem exposes store, retrieve, update, summarise, and discard as tool actions a
 ELL adopts the separation between atomic operations and policy, adaptive operation selection, and explicit learning from policy failures. These map to versioned MemoryOperationPolicy, ExtractionPolicy, ConsolidationPolicy, RetrievalPolicy, and ForgettingPolicy ports. A fixed heuristic and a learned policy should be interchangeable under the same typed inputs, outputs, budgets, and audit traces.
 
 The rejected assumption is that task reward alone grants authority to mutate durable memory. Reward design can favour short-term benchmark success, opaque policies can make a write difficult to explain, and update or delete actions can destroy evidence needed for correction and scientific audit. ELL therefore permits learned policies to propose operations, but deterministic services enforce append-only provenance, authorization, idempotency, workspace isolation, tombstones, and canonical commit. These methods are recent research systems evaluated on bounded benchmark suites; their transfer, reward robustness, and deletion safety remain experimental questions.
+
+## Self-scaffolding and learned orchestration
+
+![**Learning strategy remains inside an immutable constitution.** Segmentation, reflection, ranking, consolidation, and budgets may be learned; provenance, consent, permissions, deletion, canonical commits, evaluation, and rollback may not.](assets/visuals/policy-boundary.png){#fig-policy-boundary fig-alt="A nested boundary places learnable strategies inside immutable provenance, consent, permission, deletion, commit, evaluation, and rollback controls." width="100%"}
+
+Ornith-1.0 extends policy learning from task solutions to the harness that produces them. At each reinforcement-learning step, the model first refines a task-specific scaffold from the task and its previous scaffold, then generates solution rollouts conditioned on that scaffold. Rollout reward is propagated to both stages, allowing per-category orchestration strategies to mutate and be selected together with the solutions they induce (Ornith Team 2026).
+
+Its trust design is as relevant to ELL as its optimisation objective. Ornith keeps the environment, tool surface, and test isolation outside the learned scaffold; a deterministic monitor assigns zero reward to specified boundary violations, while a frozen language-model judge serves as a veto for intent-level gaming rather than as the primary reward. Its asynchronous training also discounts stale off-policy tokens so that old trajectories have diminishing influence on a newer policy.
+
+ELL adopts the scaffold as a learnable object but changes its authority and deployment setting. Ornith describes self-scaffolding during model post-training for agentic coding; it does not by itself establish safe longitudinal self-modification over private personal experience. ELL therefore externalises the scaffold as a typed, versioned policy object and learns it in a slower governed loop. Candidate scaffolds may alter reflection scheduling, evidence selection, consolidation, retrieval, budgets, retries, and abstention. They may not alter canonical evidence, consent, permissions, deletion, provider-egress rules, evaluator isolation, or commit authority. Their outcomes are tested through replay, time-forward evaluation, shadow mode, canaries, and rollback before promotion.
+
+The cited Ornith source is a technical release note rather than a peer-reviewed methods paper. ELL therefore treats its self-scaffolding mechanism and reported safeguards as design hypotheses to reproduce and ablate, not as established evidence that the approach will transfer to experience learning.
 
 ## Experience graphs and evolving skills
 

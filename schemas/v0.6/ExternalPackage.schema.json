@@ -1,0 +1,126 @@
+{
+  "$defs": {
+    "ExternalBenchmarkManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_id": {
+          "minLength": 1,
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "citation": {
+          "minLength": 1,
+          "title": "Citation",
+          "type": "string"
+        },
+        "dataset_hash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Dataset Hash",
+          "type": "string"
+        },
+        "license_spdx": {
+          "minLength": 1,
+          "title": "License Spdx",
+          "type": "string"
+        },
+        "locally_verified": {
+          "default": false,
+          "title": "Locally Verified",
+          "type": "boolean"
+        },
+        "source_url": {
+          "pattern": "^https://",
+          "title": "Source Url",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "benchmark_id",
+        "version",
+        "source_url",
+        "citation",
+        "license_spdx",
+        "dataset_hash"
+      ],
+      "title": "ExternalBenchmarkManifest",
+      "type": "object"
+    },
+    "ExternalTask": {
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_id": {
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "expected": {
+          "additionalProperties": true,
+          "title": "Expected",
+          "type": "object"
+        },
+        "history": {
+          "items": {
+            "type": "string"
+          },
+          "title": "History",
+          "type": "array"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "query": {
+          "title": "Query",
+          "type": "string"
+        },
+        "session_index": {
+          "minimum": 0,
+          "title": "Session Index",
+          "type": "integer"
+        },
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "benchmark_id",
+        "task_id",
+        "session_index",
+        "history",
+        "query",
+        "expected",
+        "metadata"
+      ],
+      "title": "ExternalTask",
+      "type": "object"
+    }
+  },
+  "$id": "https://ell.dev/schemas/v0.6/ExternalPackage.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "manifest": {
+      "$ref": "#/$defs/ExternalBenchmarkManifest"
+    },
+    "tasks": {
+      "items": {
+        "$ref": "#/$defs/ExternalTask"
+      },
+      "minItems": 1,
+      "title": "Tasks",
+      "type": "array"
+    }
+  },
+  "required": [
+    "manifest",
+    "tasks"
+  ],
+  "title": "ExternalPackage",
+  "type": "object"
+}

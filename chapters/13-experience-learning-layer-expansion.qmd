@@ -22,6 +22,8 @@ The proposed direction is immutable evidence plus dynamic, temporal, probabilist
 
 ## Plural memory semantics
 
+![**Memory is plural, not one untyped table.** Source, working, episodic, semantic, preference, procedural, prospective, relational, reflective, and policy memory require different authority, lifetime, and retrieval rules.](assets/visuals/memory-semantics.png){#fig-memory-semantics fig-alt="Ten cards distinguish source, working, episodic, semantic, preference, procedural, prospective, relational, reflective, and policy memory." width="100%"}
+
 The v0.1 paper distinguishes episodes, reflections, concepts, applications, and outcomes. The broader ELL architecture retains these objects while distinguishing additional memory semantics that have different authority, lifetime, and retrieval rules:
 
 - source memory preserves immutable artifacts and exact addressable spans;
@@ -38,6 +40,8 @@ The v0.1 paper distinguishes episodes, reflections, concepts, applications, and 
 These forms may share infrastructure, but they must not be flattened into one untyped table with identical lifecycle semantics. The useful layer is the explainable connection between evidence and future behaviour, not a decorative node cloud.
 
 ## Source, event, and episode boundary
+
+![**Provider connectors end at a stable normalisation boundary.** Chats, tool traces, documents, and calendars become immutable source artifacts, typed experience events, and time-bounded episodes with deterministic identifiers.](assets/visuals/source-event-episode.png){#fig-source-event-episode fig-alt="Four connector sources converge on a source artifact, then experience events, then a bounded episode." width="100%"}
 
 All provider connectors terminate at a common normalization boundary. An immutable SourceArtifact preserves source identity, checksums, timestamps, sensitivity, consent, and stable spans. Normalized ExperienceEvents represent user messages, assistant messages, tool calls and results, file changes, decisions, feedback, and external events. One or more events form a bounded Episode containing inputs, responses, actions, observations, and outcomes.
 

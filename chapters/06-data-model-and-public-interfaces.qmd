@@ -10,6 +10,8 @@
 
 ## Core entities
 
+![**Six canonical objects carry the learning claim.** Source artifacts ground bounded episodes; reflections remain provisional; concepts are versioned; applications record use; outcomes independently record what happened next.](assets/visuals/entity-ledger.png){#fig-entity-ledger fig-alt="A six-step flow connects source artifacts, episodes, reflections, concept versions, application receipts, and outcomes." width="100%"}
+
 | Entity | Purpose | Required fields |
 |---|---|---|
 | `SourceArtifact` | Immutable addressable evidence | ID, content hash, source type, stable spans, event and observed time, consent, sensitivity, workspace |
@@ -25,6 +27,8 @@
 
 ## Concept states
 
+![**The concept lifecycle is explicit.** Proposed concepts may become corroborated, contested, revised, superseded, or retired while immutable lineage preserves how the state changed.](assets/visuals/concept-states.png){#fig-concept-states fig-alt="A state machine moves concepts through proposed, corroborated, contested, revised, superseded, and retired states." width="100%"}
+
 - proposed: generated and valid enough to test, but not yet strongly supported;
 - corroborated: meets evidence and validation thresholds;
 - contested: important unresolved counterevidence exists;
@@ -36,6 +40,8 @@
 A revision never overwrites its parent. A revised version can later become corroborated, contested, superseded, retired, or deleted while its lineage remains traceable.
 
 ## API contract
+
+![**A narrow API preserves replaceability.** Models, applications, stores, and retrieval systems use typed ports around ELL-Core while canonical identity, policy, lifecycle, and evidence stay inside the boundary.](assets/visuals/api-boundary.png){#fig-api-boundary fig-alt="ELL-Core is surrounded by record source, record episode, propose concept, retrieve packet, record outcome, and validate source ports." width="100%"}
 
 A reference implementation should expose the following model-independent minimum operations:
 

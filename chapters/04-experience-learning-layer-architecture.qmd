@@ -22,11 +22,15 @@ This boundary is methodological, not only architectural. If a concept layer cann
 
 ## Canonical episode store
 
+![**A concept is a versioned ledger rather than a timeless fact.** Supporting episodes, counterevidence, revisions, and observed utility remain connected across valid and transaction time.](assets/visuals/evidence-ledger.png){#fig-evidence-ledger fig-alt="A timeline links supporting evidence, a first concept version, counterevidence, a narrowed second version, and a later outcome." width="100%"}
+
 The input is a canonical episode rather than an application-specific chat message. An episode is represented as e_i=(id_i,t_event_i,t_observed_i,x_i,o_i,a_i,y_i,s_i,p_i), where id_i is the episode identifier, t_event_i and t_observed_i are event and observation time, x_i is context, o_i is an observation, a_i is an action, yi is an outcome, si is source metadata, and pi contains privacy and access-control metadata. The two timestamps allow delayed reports and later corrections to be represented.
 
 The raw episode store is append-only. Corrections create new records linked by relations such as corrects, supersedes, or retracts. This preserves an audit trail and prevents an abstraction process from silently rewriting its own evidence.
 
 ## Association layer
+
+![**Association and reflection have different authority.** Links and clusters help select context; a bounded reflection proposes meaning; critique checks support, contradiction, scope, and novelty before consolidation.](assets/visuals/association-reflection.png){#fig-association-reflection fig-alt="Connected episode nodes feed a reflection proposal and then a critique stage that checks corroboration, contradiction, scope, and novelty." width="100%"}
 
 The optional association layer creates typed links between episodes. Initial relation types are:
 
@@ -81,6 +85,8 @@ Promotion requires evidence from more than one episode unless a domain-specific 
 
 ## Concept registry and evidence ledger
 
+![**Anatomy of a revisable concept.** Scope, supporting evidence, counterevidence, temporal validity, confidence, lineage, and utility remain first-class fields around the versioned claim or strategy.](assets/visuals/concept-anatomy.png){#fig-concept-anatomy fig-alt="A versioned concept is surrounded by scope, supporting evidence, counterevidence, temporal validity, confidence, lineage, and utility." width="100%"}
+
 The concept registry contains the current active version of each concept and its full version chain. The evidence ledger is append-only and records:
 
 - which episodes supported or contradicted a reflection;
@@ -107,6 +113,24 @@ Formally, an intuition packet for query q, time t, policy context p, and budget 
 Every use of a concept creates an application record: am=( xm,Cm,Em,dm,ym,um) .
 
 Here xm is the task context, Cm and Em are the concepts and episodes used, dm is the decision, ym is the observed outcome, and um is utility. Outcome feedback can come from task reward, user correction, validator output, or later observed consequences. The system must not automatically treat every positive result as proof of causality; outcomes are recorded as validation signals with their own reliability. Repeated success can strengthen a concept, while failure can add counterevidence, narrow scope, or trigger revision.
+
+## Slow self-scaffolding loop
+
+![**Two loops, two speeds, two authorities.** The fast loop retrieves and revises concepts after applications. The slow loop evaluates learning strategies through replay, time-forward tests, shadow mode, canaries, promotion, and rollback.](assets/visuals/fast-slow-loops.png){#fig-fast-slow-loops fig-alt="A fast application loop is shown above a slower preregistered strategy-trial loop." width="100%"}
+
+ELL separates learning about the world from learning how to perform that learning. The fast experience loop remains:
+
+`episode → reflection → concept → application → outcome → revision`
+
+The slower meta-learning loop is:
+
+`receipts and outcomes → scaffold proposal → replay → shadow trial → canary → governed promotion or rollback`
+
+A `LearningScaffold` is a proposed extension object with an immutable identifier, version, parent, task category, model and prompt identifiers, available operation schemas, reflection triggers, evidence-selection policy, consolidation and retrieval parameters, resource budgets, error-recovery rules, abstention policy, validity interval, and lifecycle state. Each `ApplicationReceipt` in a self-scaffolding experiment records the exact scaffold version, selected evidence and concepts, model and tool versions, action, independent outcome, and total cost. This creates an auditable credit-assignment path from a strategy to the behaviour it induced.
+
+The self-scaffolding controller is never a canonical writer. It proposes bounded changes to the inner learning strategy. The outer constitution remains deterministic and immutable to the controller: source provenance, consent, workspace isolation, purpose and sensitivity checks, schema validation, temporal consistency, deletion cascades, canonical commit rules, audit retention, tool permissions, provider egress, sealed evaluation, and rollback authority. A scaffold that violates any of these constraints is ineligible regardless of task reward.
+
+This loop is a deferred extension rather than part of ELL-Core. Recording scaffold identity in experimental receipts can begin earlier, but automated proposal, selection, and promotion do not enter the first confirmatory study.
 
 ## Lifecycle
 

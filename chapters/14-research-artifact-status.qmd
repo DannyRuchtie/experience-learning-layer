@@ -1,6 +1,8 @@
 # Research Artifact Status
 
-The repository contains the publication plus a deterministic Phase 0–2 reference artifact. It does not yet contain model-assisted learning or confirmatory results. The implementation makes the proposed contracts executable without presenting passing unit tests as evidence for H1-H6.
+The repository contains the publication plus a deterministic Phase 0–2 reference artifact. It does not yet contain model-assisted learning, governed self-scaffolding, or confirmatory results. The implementation makes the proposed contracts executable without presenting passing unit tests as evidence for H1–H7.
+
+![**Implemented slices are not empirical support.** The repository currently demonstrates contracts, streams, baselines, and deterministic ELL-Core behaviour. Later-phase support code does not establish a confirmatory verdict, external validity, or self-scaffolding.](assets/visuals/artifact-status.png){#fig-artifact-status fig-alt="A status board marks phases zero to two implemented, phase three not yet implemented, phase four blocked, phases five and six support-only, phase seven specification-only, and all hypotheses without empirical results." width="100%"}
 
 ## Canonical and generated editions
 
@@ -20,8 +22,14 @@ The Phase 2 slice provides an in-memory deterministic ELL-Core. It validates exa
 
 ## Remaining gates
 
+![**The next evidence must arrive in order.** Reproducible releases and broader adversarial tests precede model-assisted generation; frozen model conditions precede the sealed study; persistence, external pilots, and self-scaffolding remain downstream.](assets/visuals/remaining-gates.png){#fig-remaining-gates fig-alt="A five-stage gate sequence moves from reproduction to broader tests, model assistance, sealed study, and only then expansion." width="100%"}
+
 Phase 0 still requires an immutable v0.6 tag or archival release. Phase 1 requires two independent clean-machine reproductions and stochastic model conditions within declared intervals; the current deterministic tests are necessary but not that independent evidence. Phase 2 requires broader generated/property testing and an exit report showing every derived object resolves to permitted source evidence across the full adversarial suite. Persistent-store rebuilds, provider egress enforcement, job recovery, and substrate crash recovery remain Phase 5 concerns rather than prerequisites for the in-memory Phase 2 slice.
 
 Phase 3 is the next implementation step only after those exits are independently reviewed. It adds structured generation from two open model families, keeps every output quarantined until deterministic validation, and freezes prompts and policies on development data before any sealed run.
+
+Phase 4–6 support code is present without bypassing that sequence. The confirmatory runner returns a blocked report until the frozen prerequisites and matched sealed receipts exist. The substrate suite currently compares in-memory and SQLite canonical semantics plus lexical and exact-vector projection behavior; optional TurboVec and external-memory adapters are unavailable and barred from canonical writes. External benchmark adapters require local licence-declared, hash-matched packages, while the pilot authority requires a ready protocol and active purpose-specific consent. No Phase 4 verdict, Phase 5 performance comparison, external benchmark result, or human-pilot claim exists.
+
+Phase 7 is a research specification only. The paper defines the proposed scaffold objects, immutable outer boundary, replay and time-forward comparison, shadow and canary sequence, promotion and rollback rules, and mandatory failure gates. No scaffold schema, proposal controller, trial runner, adaptive policy, or deployment authority has been implemented.
 
 The project does not advance merely because an implementation exists. It advances when the primary transfer result and every mandatory guardrail in Section 11 pass. If a simpler approach matches ELL at lower cost, the research plan explicitly adopts that simpler method and records the concept-layer hypothesis as unsupported for the tested conditions.

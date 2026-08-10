@@ -2,6 +2,8 @@
 
 ## Minimum algorithm and comparison discipline
 
+![**The minimum learning loop.** Scheduling, bounded reflection, critique, consolidation, application, and outcome feedback remain transparent and interruptible.](assets/visuals/algorithm-loop.png){#fig-algorithm-loop fig-alt="A five-stage algorithm moves from scheduling through reflection, critique, consolidation, and application with outcomes." width="100%"}
+
 The first implementation favours transparent rules over an optimised end-to-end pipeline. Each stage must expose its candidate inputs, accepted outputs, rejected outputs, cost, and reason code. A more complex policy is added only after the simpler condition has a frozen baseline result. This ordering separates the value of the concept contract from the value of a particular embedding model, graph, reranker, or learned controller.
 
 ## Reflection scheduling
@@ -49,6 +51,8 @@ A simplified proposal procedure is: for each reflection cluster R: evidence = un
 
 ## Evidence-weighted confidence
 
+![**Confidence comes from the ledger.** Independent support, diversity, outcomes, and scope fit raise a bounded score; counterevidence, correlation, staleness, and failed outcomes reduce it.](assets/visuals/confidence-evidence.png){#fig-confidence-evidence fig-alt="Positive and negative evidence factors feed a bounded confidence score with an evidence receipt." width="100%"}
+
 LLMs are not assumed to be calibrated judges of their own abstractions. ELL computes an operational confidence score from external features:
 
 confidence(c)=1/(1+exp(-z_c)) , where zc is a weighted score that increases with supporting evidence, evidence diversity, and observed application utility, and decreases with counterevidence, age without revalidation, and validator disagreement.
@@ -68,6 +72,8 @@ Revision produces a new immutable version linked by revises or supersedes. The o
 
 ## Merge and split
 
+![**Revision is branching, not overwriting.** New evidence may produce a new version, merge overlapping concepts, split context-dependent rules, or retire an unreliable concept.](assets/visuals/revision-paths.png){#fig-revision-paths fig-alt="A first concept and new evidence branch into revise, merge, split, and retire paths." width="100%"}
+
 Duplicate concepts increase retrieval noise, while over-broad concepts hide meaningful exceptions. Merge candidates are identified using proposition similarity, overlapping evidence, compatible scope, and similar implications. Split candidates are triggered when counterevidence clusters around a coherent condition or when application outcomes differ significantly by context.
 
 Both operations require a lineage record. A merge creates a new concept that references all parents. A split creates child concepts whose evidence partitions are explicit. Automated operations above a risk threshold can require human approval.
@@ -82,6 +88,8 @@ This avoids rewarding a method merely for retrieving far more text. Results repo
 
 ## Deletion and invalidation
 
+![**Retrieval and deletion both enforce policy.** Authorization and lifecycle filtering precede ranking; deletion excludes immediately, writes a tombstone, closes dependent claims, removes projections, and blocks resurrection.](assets/visuals/retrieval-invalidation.png){#fig-retrieval-invalidation fig-alt="Two process lanes show policy-bound retrieval and deletion-driven invalidation." width="100%"}
+
 A user must be able to delete source data. Deletion cannot stop at the episode store because derived concepts may still encode the removed information. ELL maintains derivation links so a deletion request can:
 
 1. remove or tombstone the source episode according to policy;
@@ -91,3 +99,24 @@ A user must be able to delete source data. Deletion cannot stop at the episode s
 5. record the deletion cascade without retaining prohibited content.
 
 This is both a privacy requirement and a scientific requirement: provenance is incomplete if derived claims cannot be invalidated when their evidence disappears.
+
+## Governed self-scaffolding extension
+
+Ornith-1.0 suggests that the scaffold which elicits an agent's behaviour can itself be optimised jointly with task solutions (Ornith Team 2026). ELL adopts this as a second-order learning problem after the fixed-policy ELL-Core study. The initial implementation does not update model parameters. It searches over external, declarative `LearningScaffold` versions whose mutable fields are explicitly enumerated and schema-validated.
+
+An initial scaffold trial proceeds as follows:
+
+1. Select a task category and the current approved scaffold without exposing sealed outcomes.
+2. Generate a small bounded set of typed mutations from the current scaffold and recorded development failures.
+3. Reject candidates that change fields outside the sanctioned learning-policy surface.
+4. Run multiple paired replays for each eligible candidate under identical sources, base model, tool surface, context budget, random seeds, and outcome opportunities.
+5. Disqualify any trajectory that violates provenance, permission, deletion, evidence, tool, or evaluator-isolation invariants.
+6. Compare the remaining candidates with the current scaffold on chronological development and out-of-time cases.
+7. Run a selected candidate in shadow mode, then a category-limited canary with an explicit rollback target.
+8. Promote it by creating a new immutable scaffold version, or retire it while preserving its proposal, trials, vetoes, costs, and rejection reasons.
+
+The initial selection method is governed evolutionary search, not reinforcement learning: a model proposes several bounded mutations and deterministic experiment code selects among candidates after fixed gates. Contextual bandits or reinforcement learning become eligible only after application receipts provide sufficient independent, non-duplicated outcome evidence and a preregistered comparison justifies the additional opacity and cost.
+
+Reward is evaluated only after hard governance gates. Eligible candidates are compared on time-forward task utility, structurally distant transfer, calibration, counterevidence and exception recall, correction latency, negative transfer, information density, and total write- plus read-path cost. Privacy leakage, cross-workspace access, unsupported sensitive inference, provenance loss, evaluator tampering, or incomplete deletion makes a trial ineligible rather than merely lowering a scalar score. A language-model judge may veto suspicious intent that deterministic rules cannot express, but it is frozen before evaluation and is never the sole reward source.
+
+Policy staleness and evidence validity are kept separate. Outcomes collected under obsolete scaffold, model, prompt, or tool versions may be downweighted or excluded when estimating the value of a current scaffold. The underlying episodes are not weakened merely because they are old; their applicability is governed by valid time, observed time, correction, and explicit user evidence.

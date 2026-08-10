@@ -18,7 +18,11 @@ A concept is useful only if it satisfies several properties:
 - Actionable: it can affect a later response, plan, or decision.
 - Measurable: its correctness and utility can be evaluated independently.
 
+![**Six tests for a useful concept.** Grounding and generality are necessary but insufficient: a durable concept must also declare scope, remain revisable, affect action, and support independent measurement.](assets/visuals/useful-concept.png){#fig-useful-concept fig-alt="Six concept tests: grounded, general, scoped, revisable, actionable, and measurable." width="100%"}
+
 ## Failure modes addressed
+
+![**Memory can appear capable without learning.** These failure modes motivate the separation of episodes, reflections, concepts, evidence, and outcomes.](assets/visuals/failure-modes.png){#fig-failure-modes fig-alt="Seven failure modes include replay without abstraction, overgeneralisation, self-confirmation, context loss, staleness, provenance loss, and unmeasured learning claims." width="100%"}
 
 ELL is designed around seven common failure modes.
 
@@ -38,7 +42,9 @@ Behavioural ambiguity. A system claims to have learned because it stored a summa
 
 ## Research questions and claim hierarchy
 
-The first empirical study will answer five questions, but they do not have equal confirmatory status.
+![**The claim hierarchy prevents scope drift.** Transfer is primary, unsupported generalisation is a mandatory guardrail, revision and efficiency are mechanisms, intuition quality is exploratory, and self-scaffolding is a separate follow-on claim.](assets/visuals/claim-hierarchy.png){#fig-claim-hierarchy fig-alt="A tiered hierarchy places transfer at the top, followed by safety, mechanisms, exploratory product outcomes, and separate self-scaffolding research." width="100%"}
+
+The confirmatory ELL-Core study will answer five questions, but they do not have equal confirmatory status. A sixth question defines a separate follow-on study rather than enlarging the first comparison.
 
 RQ1 — Separation. Does representing reflections as provisional objects before concept consolidation reduce unsupported generalisation compared with direct episode-to-rule summarisation?
 
@@ -50,7 +56,9 @@ RQ4 — Efficiency. Can compact concepts plus selected source episodes match or 
 
 RQ5 — Intuition quality. Can a compact, uncertainty-aware intuition packet improve shorthand understanding, just-in-time relevance, change detection, and rapid correction compared with no-memory, raw-history, and ordinary retrieval-augmented generation baselines?
 
-RQ3 is the primary confirmatory question. RQ1 is its epistemic safety guardrail: a transfer gain does not count if it is purchased through materially greater unsupported generalisation. RQ2 and RQ4 are secondary mechanism and efficiency questions. RQ5 is an exploratory product-facing question and cannot establish the core claim by itself.
+RQ6 — Governed meta-learning. After ELL-Core has been validated, can a versioned self-scaffolding controller improve time-forward task utility, adaptation, or efficiency over the strongest frozen learning scaffold without increasing unsupported generalisation, negative transfer, privacy failure, or governance violations?
+
+RQ3 is the primary confirmatory question. RQ1 is its epistemic safety guardrail: a transfer gain does not count if it is purchased through materially greater unsupported generalisation. RQ2 and RQ4 are secondary mechanism and efficiency questions. RQ5 is an exploratory product-facing question and cannot establish the core claim by itself. RQ6 is activated only in the separately preregistered self-scaffolding phase; it cannot improve, reinterpret, or rescue the ELL-Core verdict.
 
 ## Hypotheses
 
@@ -65,6 +73,8 @@ H4. Retrieving concepts together with a small number of supporting episodes will
 H5. Compact intuition packets will improve shorthand resolution, just-in-time context precision, change detection, and calibrated correction over no-memory, raw-history, and ordinary RAG baselines at an equal retrieval budget.
 
 H6. ELL will reduce end-to-end decision tokens, latency, and measured hardware-time or energy proxies while preserving or improving task utility; this hypothesis includes the cost of background association, reflection, and consolidation rather than treating those operations as free.
+
+H7. Among scaffold candidates that satisfy every immutable governance gate, a governed self-scaffolding controller will improve time-forward utility per total cost over the strongest frozen scaffold while preserving calibration, counterevidence recall, correction performance, and rollback reliability. This is a follow-on hypothesis and is not tested in the first confirmatory study.
 
 ## Primary estimand
 

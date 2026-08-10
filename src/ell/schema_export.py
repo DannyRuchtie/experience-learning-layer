@@ -17,6 +17,17 @@ from ell.benchmark import (
     TaskCase,
 )
 from ell.contracts import SCHEMA_MODELS
+from ell.external import ExternalBenchmarkManifest, ExternalPackage, ExternalTask
+from ell.pilot import ParticipantConsent, PilotEventReceipt, PilotProtocol
+from ell.study import (
+    AdaptationEvidence,
+    GateResult,
+    GovernanceEvidence,
+    ReplicationEvidence,
+    StudyPrerequisites,
+    StudyReport,
+)
+from ell.substrates import AdapterCapability, ConformanceReport, ProjectionDocument
 
 
 def all_schema_models() -> Dict[str, Type[BaseModel]]:
@@ -28,6 +39,21 @@ def all_schema_models() -> Dict[str, Type[BaseModel]]:
         "BenchmarkPartition": BenchmarkPartition,
         "BenchmarkDataset": BenchmarkDataset,
         "BaselineRun": BaselineRun,
+        "StudyPrerequisites": StudyPrerequisites,
+        "GovernanceEvidence": GovernanceEvidence,
+        "AdaptationEvidence": AdaptationEvidence,
+        "ReplicationEvidence": ReplicationEvidence,
+        "GateResult": GateResult,
+        "StudyReport": StudyReport,
+        "ProjectionDocument": ProjectionDocument,
+        "AdapterCapability": AdapterCapability,
+        "ConformanceReport": ConformanceReport,
+        "ExternalBenchmarkManifest": ExternalBenchmarkManifest,
+        "ExternalTask": ExternalTask,
+        "ExternalPackage": ExternalPackage,
+        "PilotProtocol": PilotProtocol,
+        "ParticipantConsent": ParticipantConsent,
+        "PilotEventReceipt": PilotEventReceipt,
     }
 
 

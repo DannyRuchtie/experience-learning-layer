@@ -28,6 +28,8 @@ The frozen v0.6 contract uses 640 paired sealed tasks per confirmatory condition
 
 ## Outcome labels
 
+![**The verdict reports both benefit and safety.** Supported requires every gate; partially supported names the failed gate; not supported redirects work to the stronger or simpler method; unsafe disqualifies deployment.](assets/visuals/outcome-labels.png){#fig-outcome-labels fig-alt="Four verdict cards define supported, partially supported, not supported, and unsafe outcomes." width="100%"}
+
 **Supported.** Every gate passes, including the external replication gate. The paper may conclude that ELL-Core provides evidence for a useful governed concept layer under the tested conditions. A positive Phase 4 result before external replication is labelled *provisionally supported*, not supported.
 
 **Partially supported.** Transfer improves, but one or more safety, adaptation, efficiency, governance, or replication gates fail. The paper must name the failed gate and cannot recommend the full architecture for deployment.

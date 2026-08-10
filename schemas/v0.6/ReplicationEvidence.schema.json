@@ -1,0 +1,20 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/ReplicationEvidence.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "external_benchmark_positive": {
+      "default": false,
+      "title": "External Benchmark Positive",
+      "type": "boolean"
+    },
+    "open_model_families_passing": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Open Model Families Passing",
+      "type": "integer"
+    }
+  },
+  "title": "ReplicationEvidence",
+  "type": "object"
+}

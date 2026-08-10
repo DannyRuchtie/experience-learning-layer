@@ -1,0 +1,53 @@
+{
+  "$defs": {
+    "GateState": {
+      "enum": [
+        "pass",
+        "fail",
+        "not_evaluated"
+      ],
+      "title": "GateState",
+      "type": "string"
+    }
+  },
+  "$id": "https://ell.dev/schemas/v0.6/GateResult.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "gate": {
+      "title": "Gate",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "state": {
+      "$ref": "#/$defs/GateState"
+    },
+    "threshold": {
+      "title": "Threshold",
+      "type": "string"
+    },
+    "value": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Value"
+    }
+  },
+  "required": [
+    "gate",
+    "state",
+    "threshold",
+    "reason"
+  ],
+  "title": "GateResult",
+  "type": "object"
+}

@@ -8,6 +8,8 @@ Any later changes will be reported as deviations rather than silently folded int
 
 ## Evaluation stages
 
+![**Evaluation widens only after controlled evidence is earned.** Stage A carries the confirmatory transfer claim; Stages B-D broaden the task setting; Stage E is a separately gated self-scaffolding study.](assets/visuals/evaluation-stages.png){#fig-evaluation-stages fig-alt="A staircase moves from controlled latent-pattern streams through conversations, action, intuition, and finally self-scaffolding." width="100%"}
+
 ### Stage A: controlled latent-pattern streams
 
 The project will release a synthetic benchmark in which each experience stream is generated from known latent concepts. A stream contains:
@@ -47,7 +49,17 @@ MemoryArena will test whether information learned in earlier sessions improves l
 
 The ELL-specific benchmark combines controlled organisational and personal-work streams with later tasks that require conversational shorthand, proactive but non-intrusive context, structurally distant transfer, adaptation at known change points, and explicit correction. Each decision records an ApplicationReceipt and an independently scored outcome. Gold data identifies required context, irrelevant private context, support, counterevidence, validity intervals, and deletion cascades. The benchmark therefore measures not only whether information was recalled, but whether a compact intuition packet selected the right evidence, improved behaviour, remained calibrated, and changed or forgot appropriately.
 
+### Stage E: governed self-scaffolding
+
+After the ELL-Core verdict and external-validity gates are complete, a separate study tests whether ELL can improve the strategy by which it learns. Inspired by Ornith-1.0's joint optimisation of scaffolds and solution rollouts, this stage compares a frozen hand-specified scaffold, development-tuned fixed scaffolds, governed model-proposed scaffold mutations, and—only if receipts are sufficiently numerous—an adaptive controller (Ornith Team 2026). It does not modify the primary confirmatory result.
+
+Every condition uses the same chronological sources, task-category labels, base model, tool surface, operation schemas, outcome opportunities, and total resource budget. Each scaffold receives multiple paired rollouts or deterministic replays. Development, out-of-time, shadow, and canary intervals are distinct; future outcomes, sealed labels, evaluators, and governance configuration are unavailable to the proposal policy. The experiment reports scaffold transfer across categories, improvement over the strongest frozen scaffold, promotion error, rollback success, policy stability, negative transfer, calibration, safety-veto rate, and total cost.
+
+A deterministic monitor disqualifies specified violations. A separately frozen language-model judge may veto intent-level gaming but cannot grant reward or override a deterministic failure. Promotion requires improvement on the preregistered objective vector with no regression on consent, permission, provenance, deletion, evidence restoration, sensitive inference, cross-workspace isolation, or evaluator integrity.
+
 ## Memory Dynamics and Intuition Simulation Lab
+
+![**The simulation lab makes hidden choices visible.** Stream size, noise, change points, permissions, and delayed outcomes feed paired baseline and ELL conditions with matched budgets and complete transfer, safety, adaptation, evidence, and cost readouts.](assets/visuals/simulation-lab.png){#fig-simulation-lab fig-alt="Visible simulation controls feed paired baseline and ELL conditions and produce transfer, safety, adaptation, evidence, and cost readouts." width="100%"}
 
 The evaluation will include a reproducible simulation laboratory for studying memory dynamics before any policy is considered for deployment. The laboratory replays deterministic, timestamped scenario streams through the same typed ports used by the reference architecture. It supports parameter sweeps and side-by-side policy comparisons for extraction, association, consolidation, retrieval, revision, and forgetting without granting an experimental policy authority to mutate canonical evidence. Each run fixes the scenario version, configuration, model and prompt identifiers, random seed, permissions, and resource budget. It emits immutable decision and ApplicationReceipts that resolve every selected context item, candidate mutation, committed version, action, outcome, evaluator judgement, and cost to its permitted source evidence.
 
@@ -57,7 +69,15 @@ Preregistered primary measures cover retrieval precision and recall; faithfulnes
 
 Scoring is deterministic wherever gold state and event traces permit. Outcome and safety judgements are produced by evaluators independent of the policy under test; subjective conversational naturalness is assessed separately by blinded human reviewers. Stochastic conditions use multiple preregistered seeds and report confidence intervals and effect sizes. This laboratory is an evaluation proposal, not evidence that the present implementation already provides adaptive intuition or safe learned memory operations.
 
+For Stage E, the laboratory additionally stores `LearningScaffold`, `ScaffoldProposal`, `ScaffoldTrial`, and `ScaffoldDecision` artefacts. Each trial links its parent scaffold, bounded mutation, task category, policy and model versions, receipts, independent outcomes, resource use, hard-gate results, judge vetoes, and disposition. Old-policy outcomes may receive a preregistered staleness weight for policy credit assignment, but evidence validity continues to follow event and observation time rather than scaffold age.
+
+```{=latex}
+\newpage
+```
+
 ## Baselines
+
+![**Parallel baseline lanes.** No-memory, maximum-context, retrieval, summary, direct-insight, agent-controlled, and ELL-Core conditions receive the same chronological stream and model conditions before sealed evaluation.](assets/visuals/baseline-lanes.png){#fig-baseline-lanes fig-alt="Seven parallel baseline lanes receive the same inputs and end at sealed evaluation." width="100%"}
 
 At minimum, all experiments include:
 
@@ -92,6 +112,8 @@ The main reproducibility track uses at least two openly licensed instruction-tun
 A hosted-model comparison may be reported separately, but the paper’s core claims must remain reproducible without proprietary APIs.
 
 ## Metrics
+
+![**A transfer gain is only one tile in the decision dashboard.** Scope safety, evidence, adaptation, efficiency, governance, and replication remain mandatory rather than optional diagnostics.](assets/visuals/metrics-dashboard.png){#fig-metrics-dashboard fig-alt="Six metric cards show transfer, scope safety, evidence, adaptation, efficiency, and governance thresholds." width="100%"}
 
 Downstream metrics
 
@@ -151,6 +173,8 @@ LLM-based judges may scale evaluation, but they will be calibrated against the h
 
 ## Ablations
 
+![**Ablations diagnose which mechanism earned the result.** Removing critique, counterevidence, temporal validity, outcomes, or scope shows how each component affects transfer, overgeneralisation, adaptation, evidence quality, and cost.](assets/visuals/ablation-grid.png){#fig-ablation-grid fig-alt="A grid compares full ELL with component removals across transfer, overgeneralisation, adaptation, evidence, and cost." width="100%"}
+
 The following components are removed one at a time:
 
 - reflection–concept separation;
@@ -167,6 +191,8 @@ Additional sweeps vary reflection frequency, promotion thresholds, retrieval bud
 Safety ablations separately disable deterministic validation around learned write, update, and discard proposals; independent outcome validation around skill evolution; and canonical evidence restoration around neural or parametric adaptation. These conditions are diagnostic and are not deployment configurations.
 
 ## Statistical analysis
+
+![**The confirmatory analysis is a sealed, paired sequence.** Matched tasks produce an absolute effect estimate and uncertainty interval, followed by mandatory gate checks and a preregistered outcome label.](assets/visuals/analysis-plan.png){#fig-analysis-plan fig-alt="A five-stage analysis moves from paired tasks to effect estimate, uncertainty, gate checks, and outcome label." width="100%"}
 
 The primary binary task outcome uses a paired absolute difference with a paired bootstrap 95% confidence interval; McNemar's test is reported as a sensitivity analysis where appropriate. Continuous or ordinal metrics use paired bootstrap confidence intervals and report effect sizes. Multiple random seeds are used for synthetic generation and stochastic inference. The benchmark size is chosen before the sealed run to provide at least 80% power for the five-percentage-point minimum practically important transfer effect defined in Section 11.
 

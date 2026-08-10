@@ -1,0 +1,35 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/GovernanceEvidence.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "cross_workspace_retrievals": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Cross Workspace Retrievals",
+      "type": "integer"
+    },
+    "passed": {
+      "minimum": 0,
+      "title": "Passed",
+      "type": "integer"
+    },
+    "reachable_deleted_items": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Reachable Deleted Items",
+      "type": "integer"
+    },
+    "total": {
+      "exclusiveMinimum": 0,
+      "title": "Total",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "passed",
+    "total"
+  ],
+  "title": "GovernanceEvidence",
+  "type": "object"
+}

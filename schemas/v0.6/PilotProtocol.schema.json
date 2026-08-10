@@ -1,0 +1,71 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/PilotProtocol.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "allows_provider_egress": {
+      "default": false,
+      "title": "Allows Provider Egress",
+      "type": "boolean"
+    },
+    "correction_available": {
+      "title": "Correction Available",
+      "type": "boolean"
+    },
+    "data_retention_days": {
+      "exclusiveMinimum": 0,
+      "title": "Data Retention Days",
+      "type": "integer"
+    },
+    "ethics_review_reference": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ethics Review Reference"
+    },
+    "incident_response_documented": {
+      "title": "Incident Response Documented",
+      "type": "boolean"
+    },
+    "inspection_available": {
+      "title": "Inspection Available",
+      "type": "boolean"
+    },
+    "protocol_id": {
+      "minLength": 1,
+      "title": "Protocol Id",
+      "type": "string"
+    },
+    "scoped_deletion_available": {
+      "title": "Scoped Deletion Available",
+      "type": "boolean"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    },
+    "withdrawal_tested": {
+      "title": "Withdrawal Tested",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "protocol_id",
+    "version",
+    "data_retention_days",
+    "inspection_available",
+    "correction_available",
+    "scoped_deletion_available",
+    "incident_response_documented",
+    "withdrawal_tested"
+  ],
+  "title": "PilotProtocol",
+  "type": "object"
+}

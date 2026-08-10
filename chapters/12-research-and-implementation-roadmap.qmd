@@ -2,6 +2,8 @@
 
 ## Planning rule
 
+![**The roadmap is gated evidence, not a feature queue.** Phases 0-2 establish the contract, benchmark, and deterministic core; model-assisted learning comes next; the confirmatory study gates persistence, external validity, and any self-scaffolding authority.](assets/visuals/research-roadmap.png){#fig-research-roadmap fig-alt="An eight-phase roadmap marks phases zero to two as current, phase three as next, phase four as gated, phases five and six as later, and phase seven as conditional on core success." width="100%"}
+
 ELL is built in evidence-producing vertical slices. Each phase must leave a reproducible artefact, an exit report, and a go, revise, or stop decision. The paper repository remains publication-first; executable packages may be versioned separately and linked by immutable release identifiers so implementation churn does not obscure the manuscript.
 
 ## Phase 0 — Freeze the research contract
@@ -10,7 +12,7 @@ Current status: implementation-complete release candidate. Machine-readable cont
 
 Deliverables:
 
-- publish paper v0.6 with the narrowed ELL-Core boundary;
+- publish paper v0.6 with the narrowed ELL-Core boundary and separately gated self-scaffolding track;
 - freeze the primary estimand, success gates, baseline eligibility rules, and cost-accounting schema;
 - publish the source, episode, reflection, concept, evidence-link, application, outcome, and audit schemas as specifications;
 - publish worked examples for support, counterevidence, revision, deletion, and unsafe retrieval.
@@ -58,6 +60,8 @@ Exit criterion: the sealed ELL-Core comparison can run without manual interventi
 
 ## Phase 4 — Run the confirmatory study
 
+Current status: blocked, with the frozen runner implemented. Comparator selection, paired intervals, gate calculations, and verdict labels are executable, but the runner refuses evaluation until Phase 0–3 evidence, frozen prompts and policies, and a single authorized sealed run exist. No confirmatory verdict has been issued.
+
 Deliverables:
 
 - select the strongest eligible baseline using development data only;
@@ -71,6 +75,8 @@ Exit criterion: the result can be reproduced from a tagged benchmark, implementa
 
 This phase begins only if Phase 4 supports continued work.
 
+Current status: pre-confirmatory conformance tooling only. In-memory and SQLite canonical semantics plus lexical and exact-vector projection rebuild/deletion checks are implemented. TurboVec and external-memory adapters remain unavailable and cannot write canonical state. The phase is not formally eligible without a qualifying Phase 4 result.
+
 Deliverables:
 
 - add SQLite plus full-text search as the first durable local adapter;
@@ -82,6 +88,8 @@ Exit criterion: replacing a substrate does not change canonical identity, lifecy
 
 ## Phase 6 — External validity and product pilot
 
+Current status: package-validation adapters and a consent authority are implemented, but no external dataset or participant has entered a run. Local packages require exact hashes, citations, versions, and declared licences. A pilot requires protocol readiness plus signed, time-bounded, purpose-specific consent and tested withdrawal.
+
 Deliverables:
 
 - run LoCoMo-Plus and at least one memory-dependent action benchmark such as Mem2ActBench or MemoryArena;
@@ -91,6 +99,23 @@ Deliverables:
 
 Exit criterion: the transfer direction survives at least one external benchmark, no mandatory safety gate regresses, and users can inspect, correct, scope, and delete learned state. Only then should a product client or broader connector programme be planned.
 
+## Phase 7 — Evaluate governed self-scaffolding
+
+This phase begins only if the ELL-Core result supports continued work and Phase 6 finds no external-validity or user-control failure that would make adaptive policy learning premature.
+
+Current status: research specification only. No `LearningScaffold` schema, proposal controller, scaffold trial, shadow deployment, canary, or promotion authority is implemented, and no self-scaffolding result is claimed.
+
+Deliverables:
+
+- specify versioned `LearningScaffold`, `ScaffoldProposal`, `ScaffoldTrial`, and `ScaffoldDecision` contracts;
+- record the exact scaffold, model, prompt, tool, policy, evidence, action, outcome, and cost lineage for every eligible application;
+- compare frozen, development-tuned, governed model-mutated, and—if justified by outcome volume—adaptive controller conditions under equal budgets;
+- implement immutable outer-boundary checks, deterministic disqualification, a separately frozen judge veto, chronological replay, out-of-time evaluation, shadow mode, category-limited canaries, and rollback;
+- evaluate task utility, transfer, adaptation, calibration, negative transfer, policy stability, safety-veto rate, deletion behaviour, promotion error, rollback reliability, and total cost;
+- publish all candidate mutations, hard-gate results, exclusions, failures, and scaffold-version decisions.
+
+Exit criterion: a self-scaffolding condition reproducibly improves the preregistered objective over the strongest frozen scaffold on time-forward and external tasks without regressing any mandatory governance or user-control gate. Promotion and rollback must both reproduce from immutable receipts. If no adaptive condition clears that standard, ELL retains frozen task-category scaffolds.
+
 ## Deferred research tracks
 
-Learned memory-operation policies, autonomous skill evolution, experience graphs, neural or parametric memory, multimodal capture, sync, and hosted memory services remain separate experiments. They are not bundled into ELL-Core and must each justify themselves through a preregistered incremental comparison.
+Governed self-scaffolding is the explicit Phase 7 follow-on rather than part of ELL-Core. Autonomous skill evolution, experience graphs, neural or parametric memory, multimodal capture, sync, and hosted memory services remain separate experiments. Each must justify itself through a preregistered incremental comparison; none inherits support merely because ELL-Core or self-scaffolding succeeds.

@@ -1,0 +1,118 @@
+{
+  "$defs": {
+    "GateResult": {
+      "additionalProperties": false,
+      "properties": {
+        "gate": {
+          "title": "Gate",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/GateState"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "gate",
+        "state",
+        "threshold",
+        "reason"
+      ],
+      "title": "GateResult",
+      "type": "object"
+    },
+    "GateState": {
+      "enum": [
+        "pass",
+        "fail",
+        "not_evaluated"
+      ],
+      "title": "GateState",
+      "type": "string"
+    },
+    "Verdict": {
+      "enum": [
+        "blocked",
+        "provisionally_supported",
+        "partially_supported",
+        "not_supported",
+        "unsafe",
+        "supported"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    }
+  },
+  "$id": "https://ell.dev/schemas/v0.6/StudyReport.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "blockers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Blockers",
+      "type": "array"
+    },
+    "comparator_run_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Comparator Run Id"
+    },
+    "ell_run_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Ell Run Id"
+    },
+    "gates": {
+      "items": {
+        "$ref": "#/$defs/GateResult"
+      },
+      "title": "Gates",
+      "type": "array"
+    },
+    "verdict": {
+      "$ref": "#/$defs/Verdict"
+    }
+  },
+  "required": [
+    "verdict",
+    "ell_run_id",
+    "comparator_run_id",
+    "gates",
+    "blockers"
+  ],
+  "title": "StudyReport",
+  "type": "object"
+}

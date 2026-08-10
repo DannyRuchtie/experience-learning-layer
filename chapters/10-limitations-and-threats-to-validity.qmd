@@ -2,6 +2,8 @@
 
 ## Critical appraisal of the approach
 
+![**Four validity questions constrain interpretation.** Construct validity asks whether the benchmark measures learning; internal validity asks whether the concept layer caused the effect; statistical validity asks whether the estimate is stable; external validity asks where it generalises.](assets/visuals/validity-map.png){#fig-validity-map fig-alt="Four cards describe construct, internal, statistical, and external validity questions." width="100%"}
+
 The strongest criticism of ELL is that it may be an over-engineered combination of ideas that already exist in agent memory, truth maintenance, belief revision, temporal databases, and provenance systems. Reflection, experience abstraction, confidence-bearing opinions, temporal graphs, versioned skills, and evidence tracing all have close precedents. A paper that presents their combination as self-evidently better would be a systems manifesto rather than a research contribution.
 
 The second criticism is attribution. If the first implementation simultaneously adds a graph, vector search, reflection, a concept registry, learned policies, provider adapters, and outcome feedback, an improvement cannot be assigned to the concept lifecycle. The same complexity also creates many tuning degrees of freedom and a large risk of test-set adaptation.
@@ -37,6 +39,10 @@ Ninth, reduced prompt tokens do not necessarily reduce total energy or latency. 
 Efficiency claims therefore require end-to-end accounting over both write-time and read-time work.
 
 Tenth, learned memory operations introduce reward misspecification and policy-opacity risks. A policy may improve benchmark reward by discarding inconvenient counterevidence, overfitting retrieval to the judge, or retaining sensitive information. Immutable sources and deterministic commit constraints reduce but do not eliminate this risk.
+
+Self-scaffolding adds a second optimisation surface: a model may learn to change the harness so that tasks become easier to score without becoming more useful. It may expose evaluator artefacts, narrow the attempted task distribution, inflate context or tool use, suppress abstention, or route around evidence checks. ELL therefore fixes the outer environment, tool permissions, governance configuration, sealed data, and evaluator boundary. Deterministic violations make a trajectory ineligible, while a separately frozen language-model judge may veto suspicious intent but never supplies the primary reward. These controls are adapted from Ornith-1.0's self-scaffolding trust boundary, but their effectiveness for longitudinal personal learning remains unproven (Ornith Team 2026).
+
+Personal and organisational outcome streams also create a difficult credit-assignment problem. Rewards may be delayed, sparse, socially biased, or confounded by changes in the user, task, model, or environment. A globally improving scaffold may harm a minority task category, while rapid adaptation may chase noise. Time-forward evaluation, task-category reporting, minimum evidence requirements, staleness-aware policy credit, shadow mode, canaries, and rollback reduce these risks but cannot turn observational feedback into causal proof.
 
 Eleventh, neural and parametric memory may improve adaptation while weakening inspectability and selective deletion. An external provenance ledger can record how an update was produced, but it cannot by itself prove which parameter encodes a fact or that a deletion has removed all influence. Such methods cannot satisfy ELL's canonical governance requirements without new verification techniques.
 

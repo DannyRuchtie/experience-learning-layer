@@ -1,0 +1,35 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/AdaptationEvidence.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "affected_concepts": {
+      "exclusiveMinimum": 0,
+      "title": "Affected Concepts",
+      "type": "integer"
+    },
+    "post_change_opportunities": {
+      "exclusiveMinimum": 0,
+      "title": "Post Change Opportunities",
+      "type": "integer"
+    },
+    "revised_within_two_episodes": {
+      "minimum": 0,
+      "title": "Revised Within Two Episodes",
+      "type": "integer"
+    },
+    "stale_guidance_events": {
+      "minimum": 0,
+      "title": "Stale Guidance Events",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "affected_concepts",
+    "revised_within_two_episodes",
+    "stale_guidance_events",
+    "post_change_opportunities"
+  ],
+  "title": "AdaptationEvidence",
+  "type": "object"
+}

@@ -1,0 +1,36 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/AdapterCapability.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "adapter_id": {
+      "title": "Adapter Id",
+      "type": "string"
+    },
+    "available": {
+      "title": "Available",
+      "type": "boolean"
+    },
+    "canonical_writes_allowed": {
+      "default": false,
+      "title": "Canonical Writes Allowed",
+      "type": "boolean"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "role": {
+      "default": "candidate_retrieval_only",
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "adapter_id",
+    "available",
+    "reason"
+  ],
+  "title": "AdapterCapability",
+  "type": "object"
+}
