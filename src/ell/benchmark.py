@@ -34,6 +34,7 @@ class BenchmarkModel(BaseModel):
 class ExperienceRecord(BenchmarkModel):
     record_id: str
     workspace_id: str
+    rule_id: str
     sequence: int = Field(ge=0)
     observed_time: datetime
     text: str
@@ -52,14 +53,27 @@ class ExperienceRecord(BenchmarkModel):
 class TaskCase(BenchmarkModel):
     task_id: str
     workspace_id: str
+    rule_id: str
+    """Latent-rule identity. This is the cluster label for the primary interval."""
+
     sequence: int = Field(ge=0)
     observed_time: datetime
     query: str
     scope: str
+    transfer: str = Field(pattern=r"^(near|far)$")
+    """Lexical distance stratum. The primary transfer gate reads only ``far`` tasks."""
     allowed_actions: List[str]
     gold_action: str
     gold_evidence_ids: List[str]
     gold_counterevidence_ids: List[str]
+    regime: int = Field(default=0, ge=0)
+    """Which governing regime was active when the task was posed."""
+    episodes_since_change: Optional[int] = None
+    """Contradictory episodes observed since the change point, or None if pre-change.
+
+    The change-adaptation gate is measured against this field: it is what makes
+    "revised within two relevant contradictory episodes" a computable quantity.
+    """
 
 
 class BenchmarkPartition(BenchmarkModel):
@@ -104,73 +118,244 @@ class BaselineRun(BenchmarkModel):
         return sha256_digest(self)
 
 
-RULES: Tuple[Tuple[str, str, str, Tuple[str, ...], Tuple[str, ...]], ...] = (
+# ---------------------------------------------------------------------------
+# Latent rule construction
+# ---------------------------------------------------------------------------
+#
+# The unit of generalisation in this benchmark is the *latent rule*, not the task
+# instance. Tasks generated from one rule share a gold action, an evidence set,
+# and a surface template, so they are not independent observations. The primary
+# interval is therefore a cluster bootstrap over rule identity (see
+# ell.statistics.paired_cluster_bootstrap_interval), and the number of distinct
+# rules governs the effective sample size of the design.
+#
+# Because of that, rule count is a declared design parameter rather than a
+# hand-written list. Rules are composed deterministically from orthogonal domain
+# vocabularies so that each rule has its own scope, action pair, evidence
+# phrasing, and query phrasing. Query wording deliberately shares little surface
+# vocabulary with the supporting evidence: structurally related, lexically
+# distant retrieval is the behaviour under test.
+
+MINIMUM_SEALED_RULES = 32
+"""Phase 1 exit requirement.
+
+Below roughly this many rules the cluster bootstrap is untrustworthy and the
+task-level interval overstates precision by a factor large enough to reverse a
+verdict. Measured design effects: 1.67x at 3 rules, 1.62x at 12, 1.11x at 32.
+"""
+
+
+class LatentRule(BenchmarkModel):
+    rule_id: str
+    scope: str
+    preferred_action: str
+    rejected_action: str
+    support_phrases: List[str]
+    exception_phrases: List[str]
+    near_query_templates: List[str]
+    """Queries that reuse the evidence vocabulary. Lexical retrieval can serve these."""
+    far_query_templates: List[str]
+    """Queries with zero content-word overlap with the evidence. The transfer test."""
+
+
+# Each domain supplies two disjoint noun vocabularies: one used only when writing
+# evidence, one used only when writing queries. Nothing lexical bridges them. A
+# system can only connect a query to its supporting episodes through the latent
+# structure, which is precisely the capability the primary transfer gate tests.
+#
+# (domain token, evidence subject, query subject, preferred action, rejected action)
+_DOMAINS: Tuple[Tuple[str, str, str, str, str], ...] = (
     (
-        "cross-functional-launch",
+        "launch",
+        "interdependent delivery",
+        "programme spanning several groups",
         "start_review_early",
         "wait_until_locked",
-        (
-            "External dependencies improved when stakeholder input began before commitment.",
-            "A multi-team delivery succeeded after reviewers joined during planning.",
-            "Late stakeholder involvement preceded another delayed launch.",
-        ),
-        (
-            "An independently executable task finished without early stakeholder review.",
-            "A cosmetic-only change did not need cross-team review.",
-        ),
     ),
     (
-        "sensitive-export",
+        "export",
+        "protected material",
+        "records carrying a confidentiality label",
         "keep_local",
         "send_remote",
-        (
-            "Restricted material stayed controlled when processing remained on the device.",
-            "A confidential workspace avoided egress by choosing the local path.",
-            "Remote processing caused a policy failure for protected records.",
-        ),
-        (
-            "Public demo data was permitted to use a remote service.",
-            "An explicitly consented open corpus could leave the device.",
-        ),
     ),
     (
-        "owner-handoff",
+        "handoff",
+        "transferred obligation",
+        "duty passing from one person to another",
         "confirm_owner",
         "assume_owner",
-        (
-            "Delivery recovered after a named owner accepted the handoff.",
-            "Explicit ownership confirmation prevented a task from being dropped.",
-            "An assumed handoff failed because nobody accepted responsibility.",
-        ),
-        (
-            "A solo task had no ownership boundary to confirm.",
-            "An automated atomic job completed without a human handoff.",
-        ),
+    ),
+    (
+        "estimate",
+        "sizing commitment",
+        "figure quoted to a customer",
+        "widen_range",
+        "quote_single_point",
+    ),
+    (
+        "vendor",
+        "third-party engagement",
+        "agreement with an outside supplier",
+        "require_exit_clause",
+        "accept_default_terms",
+    ),
+    (
+        "migration",
+        "schema change",
+        "alteration to a live data structure",
+        "stage_behind_flag",
+        "cut_over_directly",
+    ),
+    (
+        "hiring",
+        "panel decision",
+        "group verdict on a candidate",
+        "collect_written_scores",
+        "decide_in_room",
+    ),
+    (
+        "incident",
+        "degraded service",
+        "customer-visible malfunction",
+        "declare_early",
+        "wait_for_certainty",
+    ),
+    (
+        "pricing",
+        "contract exception",
+        "discount outside the published rate",
+        "escalate_to_finance",
+        "approve_locally",
     ),
 )
 
-TASK_QUERIES = {
-    "cross-functional-launch": (
-        "How should we prepare an interdependent programme before the plan becomes fixed?",
-        "A new initiative crosses organisational boundaries; what is the safer next step?",
+# Mechanism templates are likewise split. The evidence template names the
+# mechanism directly; the query template gestures at it without reusing the word.
+#
+# (mechanism, evidence template, exception template, near question, far question)
+_MECHANISMS: Tuple[Tuple[str, str, str, str, str], ...] = (
+    (
+        "sequence",
+        "{subject} held together because the ordering constraint was respected before commitment",
+        "an isolated {subject} carried no ordering constraint at all",
+        "What ordering constraint should {subject} respect before commitment?",
+        "Which steps of {subject} have to happen while the plan can still move?",
     ),
-    "sensitive-export": (
-        "Choose the processing route for protected material with no egress consent.",
-        "What execution location respects this private-data constraint?",
+    (
+        "authority",
+        "{subject} was resolved once a named decision-maker accepted responsibility",
+        "a fully delegated {subject} had its authority settled already",
+        "Which named decision-maker must accept responsibility for {subject}?",
+        "Whose sign-off does {subject} depend on to avoid stalling?",
     ),
-    "owner-handoff": (
-        "A responsibility is moving between people. What must happen next?",
-        "How do we stop this transferred obligation from falling between roles?",
+    (
+        "reversibility",
+        "{subject} recovered because the chosen step could still be undone",
+        "a trivially repeatable {subject} raised no reversibility concern",
+        "Can the step chosen for {subject} still be undone?",
+        "How much of {subject} should we be able to walk back later?",
     ),
-}
+    (
+        "disclosure",
+        "{subject} avoided harm when the constraint was stated in writing up front",
+        "a {subject} with no external readers needed nothing written down",
+        "Which constraint should {subject} state in writing up front?",
+        "What must be put on record before {subject} goes ahead?",
+    ),
+    (
+        "verification",
+        "{subject} succeeded because an independent check ran before the result was trusted",
+        "a self-evidently checkable {subject} required no independent check",
+        "Which independent check should {subject} run before the result is trusted?",
+        "Who else needs to look at {subject} before we rely on the answer?",
+    ),
+    (
+        "budget",
+        "{subject} stayed viable because the spending ceiling was agreed in advance",
+        "a zero-cost {subject} had no ceiling to agree",
+        "Which spending ceiling should {subject} agree in advance?",
+        "What limit keeps {subject} from quietly growing past what we can afford?",
+    ),
+)
+
+
+def build_latent_rules(count: int) -> Tuple[LatentRule, ...]:
+    """Compose ``count`` deterministic latent rules from orthogonal vocabularies."""
+    if count < 1:
+        raise ValueError("count must be positive")
+    available = len(_DOMAINS) * len(_MECHANISMS)
+    if count > available:
+        raise ValueError(f"cannot compose {count} distinct rules from {available} combinations")
+    rules: List[LatentRule] = []
+    for index in range(count):
+        domain_token, evidence_subject, query_subject, preferred, rejected = _DOMAINS[
+            index % len(_DOMAINS)
+        ]
+        mechanism, support, exception, near_question, far_question = _MECHANISMS[
+            index // len(_DOMAINS)
+        ]
+        rule_id = f"{domain_token}-{mechanism}"
+        rules.append(
+            LatentRule(
+                rule_id=rule_id,
+                scope=rule_id,
+                preferred_action=f"{preferred}__{mechanism}",
+                rejected_action=f"{rejected}__{mechanism}",
+                support_phrases=[
+                    support.format(subject=f"A {evidence_subject}").rstrip(".") + ".",
+                    support.format(subject=f"A second {evidence_subject}").rstrip(".") + ".",
+                    f"An equivalent {evidence_subject} broke down when that "
+                    "condition was skipped.",
+                ],
+                exception_phrases=[
+                    exception.format(subject=f"By contrast, {evidence_subject}").rstrip(".") + ".",
+                    f"A purely cosmetic {evidence_subject} carried none of that risk.",
+                ],
+                near_query_templates=[
+                    near_question.format(subject=f"a further {evidence_subject}"),
+                    near_question.format(subject=f"another {evidence_subject}"),
+                ],
+                far_query_templates=[
+                    far_question.format(subject=f"a {query_subject}"),
+                    far_question.format(subject=f"this new {query_subject}"),
+                    f"Something unfamiliar has come up. "
+                    f"{far_question.format(subject=f'a {query_subject}')}",
+                    f"Advise on an unplanned case involving a {query_subject}.",
+                ],
+            )
+        )
+    return tuple(rules)
+
+
+# (rules, records, paired tasks) per chronological partition.
+#
+# Sealed sizing is derived, not chosen. 54 latent rules x 56 paired tasks = 3,024.
+#
+#   rules      54  >= MINIMUM_SEALED_RULES (32), so the cluster bootstrap is sound
+#   far tasks 1512 >= 1,294 required for 0.95 power at a five-point effect and a
+#                    0.25 discordant-pair rate. The primary gate reads only the far
+#                    stratum, so far-task count is the binding constraint, not N.
+#   all tasks 3024 >= 1,625 required for the unsupported-generalisation gate to reach
+#                    0.95 power against a two-point margin at 0.05 discordance. That
+#                    gate is measured on both strata, since applying a concept outside
+#                    its scope is observable regardless of lexical distance.
+#
+# Rule count was raised in preference to tasks per rule. Adding tasks to an existing
+# rule mostly duplicates query templates and buys little precision once tasks are
+# clustered; adding rules buys precision and external validity together.
+# See research/research-contract-v0.7.json and ell.statistics.
+TRAIN_TIER = (12, 420, 240)
+DEVELOPMENT_TIER = (24, 840, 1_008)
+SEALED_TIER = (54, 1_890, 3_024)
 
 
 def generate_dataset(seed: int, sealed_seed: int) -> BenchmarkDataset:
     """Generate chronological streams; the sealed seed is committed, not serialized."""
     partitions = [
-        _generate_partition("train", seed, 0, 50, 30),
-        _generate_partition("development", seed + 1, 100, 200, 120),
-        _generate_partition("sealed", sealed_seed, 200, 1_000, 640),
+        _generate_partition("train", seed, 0, *TRAIN_TIER),
+        _generate_partition("development", seed + 1, 400, *DEVELOPMENT_TIER),
+        _generate_partition("sealed", sealed_seed, 1_600, *SEALED_TIER),
     ]
     return BenchmarkDataset(
         generator_id="ell.deterministic-latent-stream.v1",
@@ -185,31 +370,67 @@ def generate_development_dataset(seed: int, sealed_seed_commitment: str) -> Benc
         generator_id="ell.deterministic-latent-stream.v1",
         seed_commitment=sealed_seed_commitment,
         partitions=[
-            _generate_partition("train", seed, 0, 50, 30),
-            _generate_partition("development", seed + 1, 100, 200, 120),
+            _generate_partition("train", seed, 0, *TRAIN_TIER),
+            _generate_partition("development", seed + 1, 400, *DEVELOPMENT_TIER),
         ],
     )
 
 
 def _generate_partition(
-    name: str, seed: int, sequence_offset: int, target_records: int, target_tasks: int
+    name: str,
+    seed: int,
+    sequence_offset: int,
+    rule_count: int,
+    target_records: int,
+    target_tasks: int,
 ) -> BenchmarkPartition:
     rng = random.Random(seed)
     base = datetime(2026, 1, 1, tzinfo=timezone.utc) + timedelta(days=sequence_offset)
     records: List[ExperienceRecord] = []
     tasks: List[TaskCase] = []
     sequence = sequence_offset
-    per_rule = [target_records // len(RULES)] * len(RULES)
-    for index in range(target_records % len(RULES)):
+    rules = build_latent_rules(rule_count)
+    per_rule = [target_records // len(rules)] * len(rules)
+    for index in range(target_records % len(rules)):
         per_rule[index] += 1
-    tasks_per_rule = [target_tasks // len(RULES)] * len(RULES)
-    for index in range(target_tasks % len(RULES)):
+    tasks_per_rule = [target_tasks // len(rules)] * len(rules)
+    for index in range(target_tasks % len(rules)):
         tasks_per_rule[index] += 1
-    for rule_index, (rule_id, preferred, rejected, support_phrases, exceptions) in enumerate(RULES):
+    for rule_index, rule in enumerate(rules):
+        rule_id = rule.rule_id
+        preferred = rule.preferred_action
+        rejected = rule.rejected_action
+        support_phrases = rule.support_phrases
+        exceptions = rule.exception_phrases
+        rule_records = per_rule[rule_index] - 1
+        change_index = max(3, int(rule_records * 0.6))
+
+        # Tasks are interleaved into the stream rather than appended after it.
+        #
+        # Appending every task after the whole rule stream gave all tasks of a rule
+        # the same gold action, which made them near-perfectly correlated: the
+        # effective sample size collapsed to the rule count regardless of how many
+        # tasks were generated, and no policy could be credited for tracking the
+        # change point because there was nothing to track by the time it was asked.
+        # Interleaving means a task posed before the change point has the earlier
+        # gold action and a task posed after it has the later one, so within-rule
+        # tasks carry independent information and temporal adaptation is measurable.
+        task_count = tasks_per_rule[rule_index]
+        # Spread task positions across the rule's stream. Positions may repeat when a
+        # rule carries more tasks than stream slots; they must not be forced distinct,
+        # because requiring distinct slots cannot terminate in that case.
+        first_slot, last_slot = 2, max(2, rule_records - 1)
+        span = last_slot - first_slot
+        task_positions = [
+            first_slot + (round(index * span / max(task_count - 1, 1)) if span else 0)
+            for index in range(task_count)
+        ]
+        pending: Dict[int, List[int]] = {}
+        for task_index, position in enumerate(task_positions[:task_count]):
+            pending.setdefault(position, []).append(task_index)
+
         evidence_ids: List[str] = []
         counter_ids: List[str] = []
-        rule_records = per_rule[rule_index] - 1
-        change_index = max(3, int(rule_records * 0.75))
         active_action = preferred
         for index in range(rule_records):
             at_change = index == change_index
@@ -245,6 +466,7 @@ def _generate_partition(
             record = ExperienceRecord(
                 record_id=record_id,
                 workspace_id="workspace-alpha",
+                rule_id=rule_id,
                 sequence=sequence,
                 observed_time=observed_time,
                 text=text,
@@ -263,9 +485,39 @@ def _generate_partition(
             if permission == "benchmark" and not deleted:
                 (counter_ids if is_exception or outcome == 0.0 else evidence_ids).append(record_id)
             sequence += 1
+
+            # Emit any task scheduled at this point in the stream. Gold state is
+            # whatever the stream has established so far, never what comes later.
+            for task_index in pending.get(index, []):
+                is_far = task_index % 2 == 1
+                templates = rule.far_query_templates if is_far else rule.near_query_templates
+                query = templates[(task_index // 2) % len(templates)]
+                query = f"Scenario {task_index + 1}. {query}"
+                episodes_since_change = index - change_index if index >= change_index else None
+                tasks.append(
+                    TaskCase(
+                        task_id=stable_id("task", name, rule_id, task_index),
+                        workspace_id="workspace-alpha",
+                        rule_id=rule_id,
+                        sequence=sequence,
+                        observed_time=base + timedelta(hours=sequence - sequence_offset),
+                        query=query,
+                        scope=rule_id,
+                        transfer="far" if is_far else "near",
+                        allowed_actions=[preferred, rejected, "abstain"],
+                        gold_action=active_action,
+                        gold_evidence_ids=list(evidence_ids),
+                        gold_counterevidence_ids=list(counter_ids),
+                        regime=1 if index >= change_index else 0,
+                        episodes_since_change=episodes_since_change,
+                    )
+                )
+                sequence += 1
+
         distractor = ExperienceRecord(
             record_id=stable_id("record", name, rule_id, "distractor"),
             workspace_id="workspace-alpha",
+            rule_id=rule_id,
             sequence=sequence,
             observed_time=base + timedelta(hours=sequence - sequence_offset),
             text="The team selected a blue cover for the internal report.",
@@ -277,25 +529,8 @@ def _generate_partition(
         )
         records.append(distractor)
         sequence += 1
-        for task_index in range(tasks_per_rule[rule_index]):
-            query = TASK_QUERIES[rule_id][task_index % len(TASK_QUERIES[rule_id])]
-            query = f"Scenario {task_index + 1}. {query}"
-            task_id = stable_id("task", name, rule_id, task_index)
-            tasks.append(
-                TaskCase(
-                    task_id=task_id,
-                    workspace_id="workspace-alpha",
-                    sequence=sequence,
-                    observed_time=base + timedelta(hours=sequence - sequence_offset),
-                    query=query,
-                    scope=rule_id,
-                    allowed_actions=[preferred, rejected, "abstain"],
-                    gold_action=active_action,
-                    gold_evidence_ids=evidence_ids,
-                    gold_counterevidence_ids=counter_ids,
-                )
-            )
-            sequence += 1
+    records.sort(key=lambda item: item.sequence)
+    tasks.sort(key=lambda item: item.sequence)
     return BenchmarkPartition(name=name, records=records, tasks=tasks)
 
 
@@ -494,28 +729,81 @@ def _fused(
 def _rolling_summary(
     task: TaskCase, records: Sequence[ExperienceRecord]
 ) -> Tuple[List[ExperienceRecord], List[float]]:
-    relevant = [
-        item
-        for item in records
-        if item.scope == task.scope and not item.deleted and item.permission == "benchmark"
-    ]
-    selected = relevant[-5:]
+    """Recency window only.
+
+    Earlier revisions filtered on ``record.scope == task.scope``. That is a gold
+    generator label, not something a rolling summary could know, and it handed two
+    baselines an oracle shortcut. A rolling summary sees the tail of the stream and
+    nothing else.
+    """
+    eligible = [item for item in records if not item.deleted and item.permission == "benchmark"]
+    selected = eligible[-5:]
     return selected, [float(item.sequence) for item in selected]
 
 
 def _direct_insight(
     task: TaskCase, records: Sequence[ExperienceRecord]
 ) -> Tuple[List[ExperienceRecord], List[float]]:
-    relevant = [
+    """Insight extraction over lexically retrieved outcome-bearing episodes.
+
+    Groups by surface similarity to the query rather than by the generator's scope
+    label, then prefers episodes whose outcome was observed. This is the strongest
+    non-oracle deterministic baseline and the most likely confirmatory comparator.
+    """
+    query_vector = _trigram_vector(task.query)
+    scored = [
+        (_cosine(query_vector, _trigram_vector(item.text)), item)
+        for item in records
+        if not item.deleted and item.permission == "benchmark"
+    ]
+    eligible = [(score, item) for score, item in scored if score > 0]
+    eligible.sort(key=lambda pair: (-pair[0], pair[1].record_id))
+    pool = [item for _, item in eligible[:12]]
+    selected = sorted(pool, key=lambda item: (-item.outcome, -item.sequence))[:5]
+    return selected, [item.outcome for item in selected]
+
+
+def _oracle_retrieval(
+    task: TaskCase, records: Sequence[ExperienceRecord]
+) -> Tuple[List[ExperienceRecord], List[float]]:
+    """Upper bound on retrieval with no abstraction.
+
+    Receives exactly the gold supporting and counter-evidence episodes. Separates
+    "retrieval found the right episodes" from "abstraction added something". If
+    ELL-Core does not beat this, the concept layer is doing no work beyond
+    retrieval.
+    """
+    gold = set(task.gold_evidence_ids) | set(task.gold_counterevidence_ids)
+    selected = [
         item
         for item in records
-        if item.scope == task.scope
-        and item.relation in {"supports", "contradicts"}
-        and not item.deleted
-        and item.permission == "benchmark"
+        if item.record_id in gold and not item.deleted and item.permission == "benchmark"
     ]
-    selected = sorted(relevant, key=lambda item: (-item.outcome, -item.sequence))[:5]
-    return selected, [item.outcome for item in selected]
+    return selected, [1.0] * len(selected)
+
+
+def _oracle_concept(
+    task: TaskCase, records: Sequence[ExperienceRecord]
+) -> Tuple[List[ExperienceRecord], List[float]]:
+    """Ceiling condition: the gold latent rule is supplied directly.
+
+    Without this condition a null primary result is uninterpretable, because
+    "concepts do not help this answer model" and "induction quality was too low"
+    are indistinguishable. The ratio of full ELL-Core to this ceiling is the
+    induction-quality estimate; the gap between this ceiling and the strongest
+    simple baseline is the headroom the concept layer is competing for.
+    """
+    gold = set(task.gold_evidence_ids)
+    selected = [
+        item
+        for item in records
+        if item.record_id in gold and not item.deleted and item.permission == "benchmark"
+    ]
+    # Keep only episodes consistent with the currently governing regime, which is
+    # what a correctly scoped and temporally valid concept would express.
+    latest_regime = max((item.regime for item in selected), default=0)
+    scoped = [item for item in selected if item.regime == latest_regime]
+    return scoped or selected, [1.0] * len(scoped or selected)
 
 
 def _top(
@@ -570,7 +858,23 @@ BASELINES: Dict[
     "fused-retrieval": _fused,
     "rolling-summary": _rolling_summary,
     "direct-insight": _direct_insight,
+    # Oracle ceilings. Not eligible as the confirmatory comparator: they consume
+    # gold generator labels. Reported to bound and interpret the primary result.
+    "oracle-retrieval": _oracle_retrieval,
+    "oracle-concept": _oracle_concept,
 }
+
+ELIGIBLE_COMPARATORS: Tuple[str, ...] = (
+    "bm25",
+    "exact-vector",
+    "fused-retrieval",
+    "rolling-summary",
+    "direct-insight",
+)
+"""Conditions from which the confirmatory comparator may be selected on development data."""
+
+ORACLE_CONDITIONS: Tuple[str, ...] = ("oracle-retrieval", "oracle-concept")
+"""Ceiling conditions. Excluded from comparator selection by contract."""
 
 
 def write_artifacts(output: Path, dataset: BenchmarkDataset, partition: str) -> None:

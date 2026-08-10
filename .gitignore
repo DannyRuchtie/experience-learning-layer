@@ -25,3 +25,12 @@
 
 **/*.quarto_ipynb
 .vercel
+
+# Generated publication and working artifacts.
+# Chapter 8 states that generated output is ignored and rebuilt locally or in CI.
+# These were committed in 19ab5ae (37 MB); untracked here to honour that policy.
+/output/
+/tmp/
+/artifacts/
+__pycache__/
+*.pyc

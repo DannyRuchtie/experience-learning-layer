@@ -1,0 +1,258 @@
+{
+  "benchmark": {
+    "chronology": [
+      "train",
+      "development",
+      "sealed"
+    ],
+    "failed_provider_runs": "score_as_task_failure_and_retain_trace",
+    "sealed_seed": "commit_hash_before_development_then_reveal_with_results",
+    "tasks_interleaved_into_stream": true,
+    "test_opening": "once_per_frozen_model_seed_configuration",
+    "tiers": {
+      "development": {
+        "paired_tasks": 480,
+        "records": 640,
+        "rules": 16
+      },
+      "sealed": {
+        "paired_tasks": 2160,
+        "records": 1800,
+        "rules": 36
+      },
+      "train": {
+        "paired_tasks": 96,
+        "records": 240,
+        "rules": 8
+      }
+    },
+    "transfer_strata": {
+      "far": "zero content-word overlap with supporting evidence",
+      "far_share": 0.5,
+      "near": "query reuses evidence vocabulary; lexical retrieval is viable",
+      "primary_gate_reads": "far",
+      "rationale": "A benchmark with only far tasks cannot distinguish a working policy from a broken one, because every lexical baseline collapses to abstention. The near stratum supplies that discrimination check."
+    }
+  },
+  "causal_attribution": {
+    "applies_to": "eligible_sealed_tasks",
+    "randomised_packet_inclusion": true,
+    "rationale": "An ApplicationReceipt shows a concept was present, not that it caused the outcome. Randomising delivery of the retrieved packet converts concept utility from observational to experimental and provides a manipulation check that the answer model reads the packet at all.",
+    "seed_committed_before_sealed_run": true
+  },
+  "change_note": "v0.6 declared itself frozen while powering only the primary gate, sizing the study from an unjustified discordance default, and analysing clustered tasks as independent. It was not in fact a usable preregistration. v0.7 powers every confirmatory gate, separates confirmatory from release-blocking gates so the conjunction does not defeat the study, and makes the latent rule the unit of analysis. v0.6 must not be cited as a frozen contract.",
+  "conditions": {
+    "baseline_selection": {
+      "leakage_note": "rolling-summary and direct-insight previously filtered on record.scope, a gold generator label. Both were rewritten to recency and lexical grouping.",
+      "must_not_read_generator_labels": true,
+      "partition": "development",
+      "tie_breakers": [
+        "higher_far_task_success",
+        "lower_unsupported_generalization",
+        "higher_utility_per_1000_total_tokens",
+        "lexicographically_smaller_baseline_id"
+      ],
+      "tie_window": "one_development_standard_error"
+    },
+    "eligible_comparators": [
+      "bm25",
+      "exact-vector",
+      "fused-retrieval",
+      "rolling-summary",
+      "direct-insight"
+    ],
+    "ell_conditions": [
+      "ell-core-no-consolidation",
+      "ell-core-full"
+    ],
+    "oracle_ceilings": {
+      "conditions": [
+        "oracle-retrieval",
+        "oracle-concept"
+      ],
+      "excluded_from_comparator_selection": true,
+      "purpose": "Without a ceiling a null primary result cannot separate 'concepts do not help this answer model' from 'induction quality was too low'. The two have opposite implications. ELL-Core over oracle-concept estimates induction quality; oracle-concept over the strongest comparator is the available headroom."
+    },
+    "reference_conditions": [
+      "no-memory",
+      "maximum-context"
+    ]
+  },
+  "cost_accounting": {
+    "included": [
+      "ingestion",
+      "embedding",
+      "reflection",
+      "validation",
+      "consolidation",
+      "retrieval",
+      "generation",
+      "retries",
+      "cache_warmup",
+      "index_maintenance"
+    ],
+    "primary_efficiency_unit": "task_utility_per_1000_total_tokens",
+    "secondary_units": [
+      "latency_ms",
+      "hardware_seconds",
+      "storage_bytes",
+      "model_calls"
+    ]
+  },
+  "decision_gates": {
+    "change_adaptation": {
+      "affected_concepts_revised_within_two_episodes": 0.9,
+      "class": "release_blocking",
+      "comparative": false,
+      "comparative_proxy": "post_change_stale_guidance_rate_is_computable_for_baselines",
+      "maximum_stale_guidance_rate": 0.05,
+      "measured_via": "task.episodes_since_change"
+    },
+    "cost_efficiency": {
+      "class": "release_blocking",
+      "comparative": true,
+      "minimum_relative_improvement": 0.1,
+      "unit": "task_utility_per_1000_total_tokens"
+    },
+    "evidence": {
+      "applies_to": "lower_bound_of_95pct_interval_not_point_estimate",
+      "class": "release_blocking",
+      "comparative": false,
+      "counterevidence_recall": 0.9,
+      "derivation": {
+        "counterevidence_required_at_assumed_0_95": 150,
+        "note": "Rounded up substantially for headroom against a worse true value.",
+        "support_links_required_at_assumed_0_98": 171
+      },
+      "minimum_adjudicated_counterevidence_items": 400,
+      "minimum_adjudicated_support_links": 400,
+      "support_precision": 0.95
+    },
+    "governance": {
+      "class": "release_blocking",
+      "comparative": false,
+      "contract_test_pass_rate": 1.0,
+      "overrides_all_other_verdicts_on_failure": true
+    },
+    "primary_transfer": {
+      "class": "confirmatory",
+      "comparative": true,
+      "confidence_interval": "paired_cluster_bootstrap_10000_over_latent_rule",
+      "measured_on": "far_transfer_tasks",
+      "minimum_absolute_improvement": 0.05,
+      "require_lower_bound_above": 0.0,
+      "sensitivity_interval": "paired_percentile_bootstrap_10000_over_task"
+    },
+    "replication": {
+      "class": "release_blocking",
+      "comparative": true,
+      "external_benchmark_direction_positive": 1,
+      "open_model_families": 2
+    },
+    "unsupported_generalization": {
+      "class": "confirmatory",
+      "comparative": true,
+      "confidence_interval": "paired_bca_bootstrap_10000",
+      "indeterminate_handling": "Reported as indeterminate rather than passed or failed, with the observed discordance. Preregistered so it cannot become a post-hoc escape.",
+      "indeterminate_if_observed_discordance_above": 0.05,
+      "interval_rationale": "The decision statistic is an upper bound, and the percentile interval undercovers for differences of proportions at low discordance.",
+      "noninferiority_margin": 0.02
+    }
+  },
+  "estimand": "paired_absolute_task_success_difference_full_ell_core_minus_strongest_eligible_baseline_on_far_transfer_tasks",
+  "exclusions": {
+    "allowed": [
+      "predeclared_corrupt_source_artifact",
+      "duplicate_task_identifier"
+    ],
+    "inflation_for_exclusions": "N=2160 exceeds the largest required n across confirmatory gates, leaving margin for permitted exclusions without dropping below power.",
+    "manual_posthoc_exclusions": false
+  },
+  "gate_classes": {
+    "absolute_not_comparative": {
+      "gates": [
+        "evidence",
+        "change_adaptation",
+        "governance"
+      ],
+      "note": "These are self-consistency floors on ELL, not differences against a comparator. Support precision and counterevidence recall are computable for retrieval baselines and must be reported for them, but the threshold is absolute. Change adaptation and governance presuppose ConceptVersion and EvidenceLink objects that baselines do not have."
+    },
+    "confirmatory": {
+      "conjunctive_power": 0.9025,
+      "gates": [
+        "primary_transfer",
+        "unsupported_generalization"
+      ],
+      "per_gate_power": 0.95,
+      "verdict_authority": "determines supported / partially supported / not supported"
+    },
+    "release_blocking": {
+      "gates": [
+        "evidence",
+        "change_adaptation",
+        "cost_efficiency",
+        "governance",
+        "replication"
+      ],
+      "rationale": "v0.6 required all seven gates conjunctively. At 0.80 power each that gives a correct system roughly a 0.21 chance of certification, so the design would have recorded its own hypothesis as unsupported about four times in five.",
+      "verdict_authority": "blocks a deployment recommendation and blocks the unqualified supported label; does not by itself negate the confirmatory result"
+    }
+  },
+  "power": {
+    "alpha_two_sided": 0.05,
+    "cluster_power": {
+      "note": "Task count is not the binding constraint once tasks are nested in rules. Phase 1 must estimate the between-rule standard deviation of the paired difference on development data and confirm 36 rules suffices via ell.statistics.clusters_for_power.",
+      "rules_required_at_sd_0_15": 117,
+      "rules_required_at_sd_0_20": 208
+    },
+    "far_transfer_tasks_per_condition": 1080,
+    "paired_tasks_per_confirmatory_condition": 2160,
+    "primary_transfer": {
+      "achieved_power_at_n": 0.9087,
+      "assumed_discordant_pair_rate": 0.25,
+      "assumption_status": "Conservative placeholder. Phase 1 must estimate it from the development partition between the two strongest eligible comparators and report the observed sealed value as a deviation if it differs materially.",
+      "required_n": 1294,
+      "sensitivity": {
+        "0.15": 774,
+        "0.2": 1034,
+        "0.25": 1294,
+        "0.3": 1554
+      }
+    },
+    "target_absolute_effect": 0.05,
+    "unsupported_generalization": {
+      "assumed_discordant_pair_rate": 0.05,
+      "margin": 0.02,
+      "note": "v0.6 powered no gate but this one. At a 0.02 margin and 0.20 discordance the gate needs about 6,500 pairs for 0.95 power; 640 pairs could not have cleared it even with a true difference of exactly zero.",
+      "required_n": 1625,
+      "sensitivity": {
+        "0.05": 1625,
+        "0.1": 3249,
+        "0.2": 6498
+      }
+    }
+  },
+  "replication_sequence": {
+    "phase_4_verdict": "provisional_supported_partial_unsupported_unsafe_or_blocked",
+    "phase_6_external_gate": "required_before_final_supported_label"
+  },
+  "schema_version": "ell.research-contract.v0.7",
+  "statistics": {
+    "bootstrap_iterations": 10000,
+    "bootstrap_seed": 260809,
+    "confidence_level": 0.95,
+    "multiplicity": "Gates are conjunctive, so no familywise alpha adjustment is required; the cost is Type II error, addressed by gate classification and per-gate power.",
+    "percentile_index_convention": "floor_lower_ceil_upper_over_b_minus_one",
+    "primary_analysis": "paired_by_task_clustered_by_latent_rule",
+    "report_effect_sizes": true,
+    "report_observed_discordance": true
+  },
+  "supersedes": "ell.research-contract.v0.6",
+  "unit_of_analysis": {
+    "cluster": "latent_rule_id",
+    "minimum_sealed_rules": 32,
+    "rationale": "Tasks generated from one latent rule share a gold action, an evidence set and a surface template, so they are not independent. Measured design effects for the task-level interval: 1.67x at 3 rules, 1.62x at 12, 1.11x at 32. At 12 rules a task-level interval excluding zero became a cluster interval including zero.",
+    "report_design_effect": true,
+    "sealed_rules": 36
+  }
+}
