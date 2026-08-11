@@ -63,6 +63,18 @@ Each condition writes one explicit machine-readable failure report per condition
 Three of five have no implementation. This is the single largest recovered gap, and it is why
 this document had to be written before the line was closed.
 
+### R4a — sixth condition: `positional-leakage` (added 2026-08-11)
+
+Not present in the recovered five. Stream position must carry no information about the latent
+rule. Found live at `6724949`: 98.6% of each task's five most recent visible records belonged to
+that task's own rule (4968/5037, against a 4.17% chance baseline on development), which made a
+recency window a covert rule oracle that never reads text.
+
+Notably the chronology filter did not cause this — it made it *exploitable*, because before the
+filter the recent tail was the end of the whole partition rather than the end of this rule's block.
+Fixing one leak exposed another, which is the argument for the A9 battery running continuously
+rather than per-review.
+
 ## R5 — Runner owns the invariants; policies only propose
 
 The runner owns chronology, permissions, budgets, canonical commits and receipts. Plugins and

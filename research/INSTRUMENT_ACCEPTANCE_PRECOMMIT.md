@@ -58,6 +58,46 @@ Measured on the **development** partition only. Sealed is not opened for any of 
 | A6 | Near stratum is not saturated: `oracle-retrieval` minus best eligible on near | `>= 0.10` |
 | A7 | Chronology violations across all conditions | exactly `0`, test-asserted |
 | A8 | Two full runs from the same seed | byte-identical artifacts |
+| A9 | **Null-policy leak battery** — every null policy, every stratum, every partition | at chance, `<= 2x 1/rule_count` |
+
+## A9 — the null-policy leak battery (amendment, 2026-08-11)
+
+Added on Reviewer's proposal, after the third distinct leak was found by measurement rather than
+by reading code. The gold-`scope` shortcut, future-peek, and positional leakage were all caught by
+someone happening to look. That is luck, and it does not scale to a sealed run.
+
+A **null policy** carries no legitimate signal by construction. Required set:
+
+- 5 uniformly random visible records;
+- recency only (the 5 highest-sequence visible records);
+- `record_id` sort order;
+- the 5 lowest-sequence visible records.
+
+**No null policy may exceed chance on any stratum, in any partition.** Any null policy that beats
+chance is a leak somewhere, by definition.
+
+Threshold is **parameterised by the tier's own rule count**, not a constant — chance differs per
+tier and a constant would pass falsely on sealed while failing spuriously on train:
+
+| partition | rules | chance | A9 bound (2x) |
+|---|---:|---:|---:|
+| train | 12 | 8.33% | 16.7% |
+| development | 24 | 4.17% | 8.3% |
+| sealed | 54 | 1.85% | 3.7% |
+
+Runs on every CI invocation, so the fourth leak is caught by the harness rather than by a reviewer
+who happens to look. Note the generator's rule counts (12/24/54) also differ from v0.7's declared
+8/16/36 — another instance of the generator matching neither contract.
+
+### Related: positional leakage is a sixth adversarial condition
+
+The five recovered detectors (R4) do not cover it. Recorded as a required condition:
+**`positional-leakage`** — stream position must carry no information about the latent rule.
+Regression: recent-tail rule concentration at or near `1 / rule_count`, asserted per partition.
+
+Measured before the fix, on `6724949`: **4968/5037 (98.6%)** of each task's five most recent
+visible records belonged to that task's own rule, against a 4.17% chance baseline on development.
+Independently reproduced by Darwin and Reviewer.
 
 Rationale for A1: a comparator floored near `0.004` makes a +5-point win recoverable by
 identifying ~6% of latent rules, which would make a "supported" verdict close to uninformative. A
