@@ -14,7 +14,6 @@ from typing import Callable, Sequence
 
 from PIL import Image, ImageDraw, ImageFont
 
-
 SCALE = 2
 WIDTH = 1200
 HEIGHT = 600

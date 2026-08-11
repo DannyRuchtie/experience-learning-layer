@@ -1,0 +1,23 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/PolicySelection.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A policy's scored reference to a runner-issued record.",
+  "properties": {
+    "record_id": {
+      "title": "Record Id",
+      "type": "string"
+    },
+    "score": {
+      "minimum": 0.0,
+      "title": "Score",
+      "type": "number"
+    }
+  },
+  "required": [
+    "record_id",
+    "score"
+  ],
+  "title": "PolicySelection",
+  "type": "object"
+}

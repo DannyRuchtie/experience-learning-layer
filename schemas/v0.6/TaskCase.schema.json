@@ -10,6 +10,18 @@
       "title": "Allowed Actions",
       "type": "array"
     },
+    "episodes_since_change": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Episodes Since Change"
+    },
     "gold_action": {
       "title": "Gold Action",
       "type": "string"
@@ -37,6 +49,16 @@
       "title": "Query",
       "type": "string"
     },
+    "regime": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Regime",
+      "type": "integer"
+    },
+    "rule_id": {
+      "title": "Rule Id",
+      "type": "string"
+    },
     "scope": {
       "title": "Scope",
       "type": "string"
@@ -50,6 +72,11 @@
       "title": "Task Id",
       "type": "string"
     },
+    "transfer": {
+      "pattern": "^(near|intermediate|far)$",
+      "title": "Transfer",
+      "type": "string"
+    },
     "workspace_id": {
       "title": "Workspace Id",
       "type": "string"
@@ -58,10 +85,12 @@
   "required": [
     "task_id",
     "workspace_id",
+    "rule_id",
     "sequence",
     "observed_time",
     "query",
     "scope",
+    "transfer",
     "allowed_actions",
     "gold_action",
     "gold_evidence_ids",

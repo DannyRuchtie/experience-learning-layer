@@ -14,6 +14,9 @@ from ell.benchmark import (
     BenchmarkDataset,
     BenchmarkPartition,
     ExperienceRecord,
+    PolicyRecord,
+    PolicySelection,
+    PolicyTask,
     TaskCase,
 )
 from ell.contracts import SCHEMA_MODELS
@@ -36,6 +39,9 @@ def all_schema_models() -> Dict[str, Type[BaseModel]]:
         **SCHEMA_MODELS,
         "ExperienceRecord": ExperienceRecord,
         "TaskCase": TaskCase,
+        "PolicyTask": PolicyTask,
+        "PolicyRecord": PolicyRecord,
+        "PolicySelection": PolicySelection,
         "BenchmarkPartition": BenchmarkPartition,
         "BenchmarkDataset": BenchmarkDataset,
         "BaselineRun": BaselineRun,

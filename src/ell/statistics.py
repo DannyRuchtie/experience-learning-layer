@@ -325,7 +325,7 @@ def per_gate_power_for_target(*, gates: int, target: float) -> float:
         raise ValueError("gates must be at least 1")
     if not 0 < target < 1:
         raise ValueError("target must lie in (0, 1)")
-    return target ** (1.0 / gates)
+    return float(target ** (1.0 / gates))
 
 
 def discordance_sensitivity(

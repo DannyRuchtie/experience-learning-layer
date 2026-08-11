@@ -10,7 +10,7 @@ test:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m pytest -q
 
 lint:
-	$(PYTHON) -m ruff check src tests
+	$(PYTHON) -m ruff check src tests script
 
 typecheck:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m mypy src
