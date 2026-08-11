@@ -58,7 +58,7 @@ Measured on the **development** partition only. Sealed is not opened for any of 
 | A6 | Near stratum is not saturated: `oracle-retrieval` minus best eligible on near | `>= 0.10` |
 | A7 | Chronology violations across all conditions | exactly `0`, test-asserted |
 | A8 | Two full runs from the same seed | byte-identical artifacts |
-| A9 | **Null-policy leak battery** — every null policy, every stratum, every partition | at chance, `<= 2x 1/rule_count` |
+| A9 | **Null-policy leak battery** — every null policy, every stratum; **train + development** | at chance, `<= 2x 1/rule_count` |
 
 ## A9 — the null-policy leak battery (amendment, 2026-08-11)
 
@@ -73,8 +73,32 @@ A **null policy** carries no legitimate signal by construction. Required set:
 - `record_id` sort order;
 - the 5 lowest-sequence visible records.
 
-**No null policy may exceed chance on any stratum, in any partition.** Any null policy that beats
-chance is a leak somewhere, by definition.
+**No null policy may exceed chance on any stratum.** Any null policy that beats chance is a leak
+somewhere, by definition.
+
+### Sealed boundary — corrected 2026-08-11
+
+The first draft of A9 said "every partition" while this document's own scope line says sealed is
+never opened. That was a contradiction I introduced, caught by Forge before it reached CI. Scoring
+null-policy *accuracy* on sealed requires reading sealed `gold_action` and `transfer` on every CI
+run, which would have broken the seal continuously.
+
+The distinction that resolves it: the sealed boundary exists to stop policies seeing sealed answers,
+and to stop humans tuning against sealed performance. So:
+
+| check | reads | where it runs |
+|---|---|---|
+| **structural** — recent-tail rule concentration | `rule_id`, `sequence`; no gold answers, no scoring | train + development every CI run; sealed **once at generation**, asserted into the sealed manifest |
+| **null-policy accuracy** | `gold_action`, `transfer` | train + development only |
+| the same battery on sealed | gold | **exactly once**, inside the confirmatory study, after opening |
+
+A structural invariant about the generator's layout is a property of the data, reveals nothing a
+policy could exploit, and no tuning decision follows from it. A null-policy *score* is a performance
+signal that someone would act on — that is what must not be readable before opening.
+
+Because generation is deterministic from the seed, structural soundness demonstrated on train and
+development is evidence about the layout *algorithm*, which is the same algorithm that produces
+sealed. The one-time sealed assertion at generation closes the remaining gap without a repeated read.
 
 Threshold is **parameterised by the tier's own rule count**, not a constant — chance differs per
 tier and a constant would pass falsely on sealed while failing spuriously on train:
