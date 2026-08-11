@@ -442,3 +442,60 @@ def test_score_aware_decision_uses_pending_outcomes_only_as_tiebreaks() -> None:
         PolicySelection(record_id="strong", score=1.0),
     ]
     assert _predict(task, exception_first, records) == "other"
+
+
+def _same_rule_rate_among_actionable(dataset: BenchmarkDataset, partition_name: str) -> float:
+    """Share of actionable visible evidence that belongs to the task's own latent rule.
+
+    "Actionable" means the record's ``action`` appears in the task's ``allowed_actions``.
+    Under an opaque shared namespace this selects nothing about the rule, so the rate sits
+    at the base rate ``1 / rule_count``. Under a rule-specific namespace it goes to 1.0,
+    which is what the action-namespace leak was.
+    """
+    partition = next(item for item in dataset.partitions if item.name == partition_name)
+    actionable = 0
+    same_rule = 0
+    for task in partition.tasks:
+        allowed = set(task.allowed_actions)
+        for record in partition.records:
+            if record.sequence >= task.sequence or record.deleted:
+                continue
+            if record.workspace_id != task.workspace_id:
+                continue
+            if record.action not in allowed:
+                continue
+            actionable += 1
+            if record.rule_id == task.rule_id:
+                same_rule += 1
+    assert actionable > 0, "no actionable evidence; the namespace check would be vacuous"
+    return same_rule / actionable
+
+
+def test_action_namespace_carries_no_rule_information() -> None:
+    """Bind the opaque action namespace to the recorded oracle ceiling.
+
+    The ceiling that the instrument-acceptance bands are frozen against is produced by an
+    answer stage aggregating ``observed_action`` weighted by ``observed_outcome``. That is
+    the same field pair that carried the action-namespace leak, where ``allowed_actions``
+    fingerprinted the latent rule exactly and ``observed_action`` completed the join.
+
+    The ceiling is therefore valid *only while the namespace carries no rule-correlated
+    semantics*. If this test fails, the recorded ceiling and every band derived from it are
+    invalid and must be recomputed before any confirmatory run. See
+    ``research/research-contract-v0.8.json`` -> ``invariants.ceiling_namespace_binding``.
+    """
+    dataset = generate_dataset(1729, 481516)
+    for partition in dataset.partitions:
+        signatures = {tuple(sorted(task.allowed_actions)) for task in partition.tasks}
+        assert len(signatures) == 1, (
+            f"{partition.name}: allowed_actions must not distinguish rules; "
+            f"found {len(signatures)} distinct signatures"
+        )
+        rule_count = len({item.rule_id for item in partition.records})
+        base_rate = 1.0 / rule_count
+        rate = _same_rule_rate_among_actionable(dataset, partition.name)
+        assert rate == pytest.approx(base_rate, abs=0.02), (
+            f"{partition.name}: actionable evidence is {rate:.4f} same-rule against a "
+            f"base rate of {base_rate:.4f}; the action namespace has regained "
+            "rule-correlated semantics and the recorded ceiling is invalid"
+        )
