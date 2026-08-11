@@ -28,6 +28,22 @@ _NORMAL = NormalDist()
 BOOTSTRAP_INDEX_CONVENTION = "floor_lower_ceil_upper_over_b_minus_one"
 
 
+def empirical_quantile(values: Sequence[float], probability: float) -> float:
+    """Return the nearest-rank empirical quantile used by calibration.
+
+    The discrete permutation distribution is the estimand for the null-policy
+    acceptance gate. Centralising its quantile convention prevents measurement
+    scripts from silently choosing different interpolation rules.
+    """
+    if not values:
+        raise ValueError("empirical quantile requires at least one value")
+    if not 0 < probability <= 1:
+        raise ValueError("probability must lie in (0, 1]")
+    ordered = sorted(values)
+    index = max(0, math.ceil(probability * len(ordered)) - 1)
+    return ordered[index]
+
+
 # ---------------------------------------------------------------------------
 # Analysis
 # ---------------------------------------------------------------------------

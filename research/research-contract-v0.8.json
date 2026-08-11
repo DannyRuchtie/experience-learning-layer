@@ -35,12 +35,9 @@
       "quantile_source": "empirical_permutation_quantiles_via_ell_statistics",
       "no_closed_form": true,
       "gaussian_note": "Measured at 2000 permutations the null tail is slightly lighter than Gaussian (q99.9 at mean+2.92sd against 3.09), so a normal approximation would be mildly conservative rather than wrong. Quantiles are used regardless because the distribution is discrete and bounded and quantiles cost nothing.",
-      "x_robustness_terms": [
-        "monte_carlo_error_of_p95_at_1000_permutations",
-        "seed_to_seed_floor_spread"
-      ],
-      "x_must_not_be": "a multiple of the null standard deviation; the p95 already delivers alpha",
-      "upper_bound": "ceiling_minus_target_effect_minus_interval_half_width",
+      "x_status": "removed_as_a_free_parameter; the empirical q99.9 is the direct strict lower pass mark. This is the latest pre-measurement ruling and supersedes, rather than compounds with, the earlier p95-plus-X robustness wording.",
+      "x_must_not_be": "added again above q99.9 or defined from comparator performance",
+      "upper_bound": "effect-reserved feasibility ceiling equals oracle-retrieval minus the 0.05 target effect. The confirmatory ELL-minus-comparator interval is a separate gate and is not imported into instrument acceptance.",
       "per_seed": true,
       "per_stratum": true,
       "pooling_prohibited": "Floors and ceilings are not pooled or averaged across seeds. Worst-case across null policies within a seed.",
@@ -56,6 +53,22 @@
       "far_floor_worst_seed": 0.5476,
       "far_corridor_min": 0.2232,
       "provisional": "Superseded when the final scorer lands. Recorded to show the corridor is not empty, against a target effect of 0.05."
+    },
+    "frozen_scorer_measurement_2026_08_11": {
+      "source_commit": "12772c3a18c8de36473e1cdbcf2c747d73443e67",
+      "artifact": "research/FROZEN_BAND_MEASUREMENT_2026_08_11.json",
+      "artifact_sha256": "5bba9aea9f6cd5948072db58ad632942deb982355edb817d907987c5503e0637",
+      "seeds": 8,
+      "permutations_per_seed": 10000,
+      "eligible_conditions_executed": [],
+      "sealed_generated": false,
+      "far_q999_mean": 0.5710565476190476,
+      "far_q999_worst_seed": 0.5863095238095238,
+      "far_ceiling_mean": 0.8322172619047619,
+      "far_ceiling_sd": 0.04885708112508284,
+      "far_effect_reserved_corridor_min": 0.14047619047619042,
+      "all_seed_stratum_corridors_admissible": true,
+      "reproduction": "A complete second run was byte-identical."
     },
     "null_battery_reading": "1 breach in 120 tests, non-reproducible across seeds (1 of 8). Below the ~6 a p95 threshold produces by construction, which indicates the floor is slightly conservative. A conservative floor narrows the corridor and biases against ELL, which is the acceptable direction."
   },
@@ -195,7 +208,7 @@
   "freeze_prerequisites": [
     "DONE 2026-08-11: ceiling_namespace_binding_test_landed",
     "DONE 2026-08-11: final_scorer_frozen",
-    "floor_ceiling_and_x_recomputed_once_on_the_frozen_scorer",
+    "DONE 2026-08-11: floor_ceiling_and_q999_pass_marks_recomputed_once_on_the_frozen_scorer",
     "claim_scope_wording_landed_in_paper_and_readme",
     "sizing_derived_from_development_between_rule_sd",
     "committed_eligible_table_de1d0be9_revealed_after_bands_are_fixed",

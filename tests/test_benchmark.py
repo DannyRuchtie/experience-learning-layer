@@ -305,6 +305,7 @@ def test_null_policy_accuracy_uses_fixed_output_cluster_permutations() -> None:
     )
     assert first == repeated
     assert len(first) == len(NULL_POLICY_CONDITIONS) * 3
+    assert all(item.null_q999 >= item.null_p95 for item in first)
     assert not any(item.exceeds_null for item in first)
     with pytest.raises(ValueError, match="confirmatory opening"):
         calibrate_null_policy_accuracy(dataset, "sealed", permutations=1)
