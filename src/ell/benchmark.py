@@ -116,11 +116,24 @@ class BenchmarkPartition(BenchmarkModel):
     tasks: List[TaskCase]
 
 
+class PositionalLeakAssertion(BenchmarkModel):
+    """Generator-time structural assertion that does not inspect task outcomes."""
+
+    partition: str = Field(pattern=r"^(train|development|sealed)$")
+    rule_count: int = Field(gt=0)
+    same_rule_recent_records: int = Field(ge=0)
+    issued_recent_records: int = Field(gt=0)
+    observed_rate: float = Field(ge=0.0, le=1.0)
+    chance_rate: float = Field(gt=0.0, le=1.0)
+    passed: bool
+
+
 class BenchmarkDataset(BenchmarkModel):
     benchmark_version: str = BENCHMARK_VERSION
     generator_id: str
     seed_commitment: str
     partitions: List[BenchmarkPartition]
+    positional_leak_assertions: List[PositionalLeakAssertion]
 
     @property
     def dataset_hash(self) -> str:
@@ -150,6 +163,20 @@ class BaselineRun(BenchmarkModel):
     @property
     def result_hash(self) -> str:
         return sha256_digest(self)
+
+
+class NullPolicyCalibration(BenchmarkModel):
+    """Per-policy A9b accuracy bound from fixed outputs and permuted gold trajectories."""
+
+    policy_id: str
+    partition: str = Field(pattern=r"^(train|development)$")
+    stratum: str = Field(pattern=r"^(near|intermediate|far)$")
+    permutations: int = Field(gt=0)
+    permutation_seed: int
+    fixed_output_hash: str
+    observed_accuracy: float = Field(ge=0.0, le=1.0)
+    null_p95: float = Field(ge=0.0, le=1.0)
+    exceeds_null: bool
 
 
 # ---------------------------------------------------------------------------
@@ -199,70 +226,52 @@ class LatentRule(BenchmarkModel):
 # system can only connect a query to its supporting episodes through the latent
 # structure, which is precisely the capability the primary transfer gate tests.
 #
-# (domain token, evidence subject, query subject, preferred action, rejected action)
-_DOMAINS: Tuple[Tuple[str, str, str, str, str], ...] = (
+# (domain token, evidence subject, query subject)
+_DOMAINS: Tuple[Tuple[str, str, str], ...] = (
     (
         "launch",
         "interdependent delivery",
         "programme spanning several groups",
-        "start_review_early",
-        "wait_until_locked",
     ),
     (
         "export",
         "protected material",
         "records carrying a confidentiality label",
-        "keep_local",
-        "send_remote",
     ),
     (
         "handoff",
         "transferred obligation",
         "duty passing from one person to another",
-        "confirm_owner",
-        "assume_owner",
     ),
     (
         "estimate",
         "sizing commitment",
         "figure quoted to a customer",
-        "widen_range",
-        "quote_single_point",
     ),
     (
         "vendor",
         "third-party engagement",
         "agreement with an outside supplier",
-        "require_exit_clause",
-        "accept_default_terms",
     ),
     (
         "migration",
         "schema change",
         "alteration to a live data structure",
-        "stage_behind_flag",
-        "cut_over_directly",
     ),
     (
         "hiring",
         "panel decision",
         "group verdict on a candidate",
-        "collect_written_scores",
-        "decide_in_room",
     ),
     (
         "incident",
         "degraded service",
         "customer-visible malfunction",
-        "declare_early",
-        "wait_for_certainty",
     ),
     (
         "pricing",
         "contract exception",
         "discount outside the published rate",
-        "escalate_to_finance",
-        "approve_locally",
     ),
 )
 
@@ -316,28 +325,33 @@ _MECHANISMS: Tuple[Tuple[str, str, str, str, str], ...] = (
 )
 
 
-def build_latent_rules(count: int) -> Tuple[LatentRule, ...]:
+def build_latent_rules(count: int, action_seed: int) -> Tuple[LatentRule, ...]:
     """Compose ``count`` deterministic latent rules from orthogonal vocabularies."""
     if count < 1:
         raise ValueError("count must be positive")
     available = len(_DOMAINS) * len(_MECHANISMS)
     if count > available:
         raise ValueError(f"cannot compose {count} distinct rules from {available} combinations")
+    preferred_labels = ["option_a"] * (count // 2) + ["option_b"] * (count - count // 2)
+    action_rng = random.Random(action_seed ^ 0xAC710)
+    action_rng.shuffle(preferred_labels)
     rules: List[LatentRule] = []
     for index in range(count):
-        domain_token, evidence_subject, query_subject, preferred, rejected = _DOMAINS[
+        domain_token, evidence_subject, query_subject = _DOMAINS[
             index % len(_DOMAINS)
         ]
         mechanism, support, exception, near_question, far_question = _MECHANISMS[
             index // len(_DOMAINS)
         ]
         rule_id = f"{domain_token}-{mechanism}"
+        preferred = preferred_labels[index]
+        rejected = "option_b" if preferred == "option_a" else "option_a"
         rules.append(
             LatentRule(
                 rule_id=rule_id,
                 scope=rule_id,
-                preferred_action=f"{preferred}__{mechanism}",
-                rejected_action=f"{rejected}__{mechanism}",
+                preferred_action=preferred,
+                rejected_action=rejected,
                 support_phrases=[
                     support.format(subject=f"A {evidence_subject}").rstrip(".") + ".",
                     support.format(subject=f"A second {evidence_subject}").rstrip(".") + ".",
@@ -401,17 +415,24 @@ def generate_dataset(seed: int, sealed_seed: int) -> BenchmarkDataset:
         generator_id="ell.deterministic-latent-stream.v1",
         seed_commitment=sha256_digest({"sealed_seed": sealed_seed}),
         partitions=partitions,
+        positional_leak_assertions=[
+            _positional_leak_assertion(partition) for partition in partitions
+        ],
     )
 
 
 def generate_development_dataset(seed: int, sealed_seed_commitment: str) -> BenchmarkDataset:
     """Generate only open partitions so development cannot inspect sealed cases."""
+    partitions = [
+        _generate_partition("train", seed, 0, *TRAIN_TIER),
+        _generate_partition("development", seed + 1, 400, *DEVELOPMENT_TIER),
+    ]
     return BenchmarkDataset(
         generator_id="ell.deterministic-latent-stream.v1",
         seed_commitment=sealed_seed_commitment,
-        partitions=[
-            _generate_partition("train", seed, 0, *TRAIN_TIER),
-            _generate_partition("development", seed + 1, 400, *DEVELOPMENT_TIER),
+        partitions=partitions,
+        positional_leak_assertions=[
+            _positional_leak_assertion(partition) for partition in partitions
         ],
     )
 
@@ -425,17 +446,55 @@ def _generate_partition(
     target_tasks: int,
 ) -> BenchmarkPartition:
     rng = random.Random(seed)
+    structure_rng = random.Random(seed ^ 0x57A7C7)
     base = datetime(2026, 1, 1, tzinfo=timezone.utc) + timedelta(days=sequence_offset)
     records: List[ExperienceRecord] = []
     tasks: List[TaskCase] = []
     sequence = sequence_offset
-    rules = build_latent_rules(rule_count)
+    rules = build_latent_rules(rule_count, seed)
     per_rule = [target_records // len(rules)] * len(rules)
     for index in range(target_records % len(rules)):
         per_rule[index] += 1
     tasks_per_rule = [target_tasks // len(rules)] * len(rules)
     for index in range(target_tasks % len(rules)):
         tasks_per_rule[index] += 1
+
+    # Pair opposite action mappings onto the same sampled structural profile. This
+    # varies change points and outcome events across rules and seeds while preserving
+    # exact record-weighted A/B balance: every profile has a mirrored action twin.
+    preferred_a = [
+        index for index, rule in enumerate(rules) if rule.preferred_action == "option_a"
+    ]
+    preferred_b = [
+        index for index, rule in enumerate(rules) if rule.preferred_action == "option_b"
+    ]
+    structure_profiles: Dict[int, Tuple[int, List[bool], List[bool]]] = {}
+    for left, right in zip(preferred_a, preferred_b):
+        rule_records = per_rule[left] - 1
+        change_index = max(3, int(rule_records * structure_rng.uniform(0.5, 0.7)))
+        exception_probability = structure_rng.uniform(0.06, 0.12)
+        contradiction_probability = structure_rng.uniform(0.10, 0.18)
+        exception_pattern = [
+            structure_rng.random() < exception_probability
+            for _ in range(rule_records)
+        ]
+        contradiction_pattern = [
+            not exception and structure_rng.random() < contradiction_probability
+            for exception in exception_pattern
+        ]
+        profile = (change_index, exception_pattern, contradiction_pattern)
+        structure_profiles[left] = profile
+        structure_profiles[right] = profile
+
+    # Cluster permutations require trajectories to align by ordinal and stratum.
+    # Sample their shared order per partition so position/stratum structure changes
+    # across seeds without destroying that alignment.
+    max_task_count = max(tasks_per_rule)
+    shared_task_strata = [
+        ("near", "intermediate", "far")[index % 3]
+        for index in range(max_task_count)
+    ]
+    structure_rng.shuffle(shared_task_strata)
     for rule_index, rule in enumerate(rules):
         rule_id = rule.rule_id
         preferred = rule.preferred_action
@@ -443,7 +502,9 @@ def _generate_partition(
         support_phrases = rule.support_phrases
         exceptions = rule.exception_phrases
         rule_records = per_rule[rule_index] - 1
-        change_index = max(3, int(rule_records * 0.6))
+        change_index, exception_flags, contradiction_flags = structure_profiles[
+            rule_index
+        ]
 
         # Tasks are interleaved into the stream rather than appended after it.
         #
@@ -465,6 +526,7 @@ def _generate_partition(
             first_slot + (round(index * span / max(task_count - 1, 1)) if span else 0)
             for index in range(task_count)
         ]
+        task_strata = shared_task_strata[:task_count]
         pending: Dict[int, List[int]] = {}
         for task_index, position in enumerate(task_positions[:task_count]):
             pending.setdefault(position, []).append(task_index)
@@ -478,8 +540,8 @@ def _generate_partition(
                 active_action = rejected
                 counter_ids.extend(evidence_ids)
                 evidence_ids = []
-            is_exception = index % 11 == 10
-            is_contradiction = not is_exception and index % 7 == 6
+            is_exception = exception_flags[index]
+            is_contradiction = contradiction_flags[index]
             alternative = preferred if active_action == rejected else rejected
             if is_exception:
                 text = exceptions[index % len(exceptions)]
@@ -529,7 +591,7 @@ def _generate_partition(
             # Emit any task scheduled at this point in the stream. Gold state is
             # whatever the stream has established so far, never what comes later.
             for task_index in pending.get(index, []):
-                stratum = ("near", "intermediate", "far")[task_index % 3]
+                stratum = task_strata[task_index]
                 templates = {
                     "near": rule.near_query_templates,
                     "intermediate": rule.intermediate_query_templates,
@@ -573,9 +635,110 @@ def _generate_partition(
         )
         records.append(distractor)
         sequence += 1
-    records.sort(key=lambda item: item.sequence)
-    tasks.sort(key=lambda item: item.sequence)
+    records, tasks = _interleave_rule_streams(
+        records,
+        tasks,
+        [rule.rule_id for rule in rules],
+        seed,
+        sequence_offset,
+        base,
+    )
     return BenchmarkPartition(name=name, records=records, tasks=tasks)
+
+
+def _interleave_rule_streams(
+    records: Sequence[ExperienceRecord],
+    tasks: Sequence[TaskCase],
+    rule_ids: Sequence[str],
+    seed: int,
+    sequence_offset: int,
+    base: datetime,
+) -> Tuple[List[ExperienceRecord], List[TaskCase]]:
+    """Shuffle rule order per round while preserving every within-rule event order."""
+    record_by_id = {item.record_id: item for item in records}
+    task_by_id = {item.task_id: item for item in tasks}
+    streams: Dict[str, List[Tuple[int, str, str]]] = {
+        rule_id: [] for rule_id in rule_ids
+    }
+    for record in records:
+        streams[record.rule_id].append((record.sequence, "record", record.record_id))
+    for task in tasks:
+        streams[task.rule_id].append((task.sequence, "task", task.task_id))
+    for stream in streams.values():
+        stream.sort(key=lambda item: item[0])
+
+    schedule_rng = random.Random(seed ^ 0xE11A9E)
+    positions = dict.fromkeys(rule_ids, 0)
+    active = list(rule_ids)
+    ordered: List[Tuple[str, str]] = []
+    while active:
+        schedule_rng.shuffle(active)
+        remaining: List[str] = []
+        for rule_id in active:
+            position = positions[rule_id]
+            _, kind, identifier = streams[rule_id][position]
+            ordered.append((kind, identifier))
+            positions[rule_id] += 1
+            if positions[rule_id] < len(streams[rule_id]):
+                remaining.append(rule_id)
+        active = remaining
+
+    interleaved_records: List[ExperienceRecord] = []
+    interleaved_tasks: List[TaskCase] = []
+    for offset, (kind, identifier) in enumerate(ordered):
+        sequence = sequence_offset + offset
+        observed_time = base + timedelta(hours=offset)
+        if kind == "record":
+            record = record_by_id[identifier]
+            outcome_delay = record.outcome_observed_time - record.observed_time
+            interleaved_records.append(
+                record.model_copy(
+                    update={
+                        "sequence": sequence,
+                        "observed_time": observed_time,
+                        "outcome_observed_time": observed_time + outcome_delay,
+                    }
+                )
+            )
+        elif kind == "task":
+            task = task_by_id[identifier]
+            interleaved_tasks.append(
+                task.model_copy(
+                    update={"sequence": sequence, "observed_time": observed_time}
+                )
+            )
+        else:
+            raise ValueError(f"unknown stream event kind: {kind}")
+    return interleaved_records, interleaved_tasks
+
+
+def _positional_leak_assertion(
+    partition: BenchmarkPartition,
+) -> PositionalLeakAssertion:
+    """Measure rule identity in the recent visible tail without reading task gold."""
+    source_by_id = {item.record_id: item for item in partition.records}
+    matches = 0
+    issued = 0
+    for task in partition.tasks:
+        visible = project_policy_records(task, partition.records)
+        recent = sorted(visible, key=lambda item: item.sequence, reverse=True)[:5]
+        matches += sum(
+            source_by_id[item.record_id].rule_id == task.rule_id for item in recent
+        )
+        issued += len(recent)
+    rule_count = len({task.rule_id for task in partition.tasks})
+    chance = 1 / rule_count
+    observed = matches / issued
+    standard_error = math.sqrt(chance * (1 - chance) / issued)
+    return PositionalLeakAssertion(
+        partition=partition.name,
+        rule_count=rule_count,
+        same_rule_recent_records=matches,
+        issued_recent_records=issued,
+        observed_rate=observed,
+        chance_rate=chance,
+        passed=observed <= chance + 3 * standard_error,
+    )
 
 
 def _paraphrase(text: str, rng: random.Random) -> str:
@@ -881,6 +1044,44 @@ def _rolling_summary(
     ]
 
 
+def _uniform_random_visible(
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    """Deterministic uniform-like sample carrying no task or record-content signal."""
+    selected = sorted(
+        records,
+        key=lambda item: sha256_digest(
+            {"null_policy": "uniform-random", "task": task.task_id, "record": item.record_id}
+        ),
+    )[:5]
+    return [PolicySelection(record_id=item.record_id, score=1.0) for item in selected]
+
+
+def _record_id_order(
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    """Select the five lexicographically lowest opaque identifiers."""
+    selected = sorted(records, key=lambda item: item.record_id)[:5]
+    return [PolicySelection(record_id=item.record_id, score=1.0) for item in selected]
+
+
+def _oldest_context(
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    """Select the five lowest-sequence visible records."""
+    selected = sorted(records, key=lambda item: item.sequence)[:5]
+    return [PolicySelection(record_id=item.record_id, score=1.0) for item in selected]
+
+
+def _action_filter(
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    """Select by the allowed/observed-action join and read no text or position."""
+    allowed = set(task.allowed_actions) - {"abstain"}
+    selected = [item for item in records if item.observed_action in allowed][:5]
+    return [PolicySelection(record_id=item.record_id, score=1.0) for item in selected]
+
+
 def _direct_insight(
     task: PolicyTask, records: Sequence[PolicyRecord]
 ) -> List[PolicySelection]:
@@ -921,10 +1122,16 @@ def _oracle_select(
         gold = set(task.gold_evidence_ids)
     else:
         raise ValueError(f"unknown oracle condition: {baseline_id}")
+    # The oracle must rank perfect evidence using a policy-visible field. Generator
+    # emission order is not a retrieval ranking and materially changes the
+    # rank-aware answer stage. Recency is explicit in the issued record sequence.
+    selected = sorted(
+        (item for item in records if item.record_id in gold),
+        key=lambda item: (-item.sequence, item.record_id),
+    )
     return [
         PolicySelection(record_id=item.record_id, score=1.0)
-        for item in records
-        if item.record_id in gold
+        for item in selected
     ]
 
 
@@ -984,6 +1191,10 @@ BASELINES: Dict[str, Optional[PolicySelector]] = {
     "exact-vector": _exact_vector,
     "fused-retrieval": _fused,
     "rolling-summary": _rolling_summary,
+    "uniform-random-visible": _uniform_random_visible,
+    "record-id-order": _record_id_order,
+    "oldest-context": _oldest_context,
+    "action-filter": _action_filter,
     "direct-insight": _direct_insight,
     # Oracle ceilings. Not eligible as the confirmatory comparator: they consume
     # gold generator labels. Reported to bound and interpret the primary result.
@@ -1006,13 +1217,142 @@ executable as a diagnostic condition but cannot be selected as a comparator.
 ORACLE_CONDITIONS: Tuple[str, ...] = ("oracle-retrieval", "oracle-concept")
 """Ceiling conditions. Excluded from comparator selection by contract."""
 
+NULL_POLICY_CONDITIONS: Tuple[str, ...] = (
+    "uniform-random-visible",
+    "rolling-summary",
+    "record-id-order",
+    "oldest-context",
+    "action-filter",
+)
+"""Signal-free policies used by the A9 leakage battery."""
+
+
+def calibrate_null_policy_accuracy(
+    dataset: BenchmarkDataset,
+    partition_name: str,
+    *,
+    permutations: int = 1_000,
+    permutation_seed: int = 90_009,
+) -> List[NullPolicyCalibration]:
+    """Calibrate A9b per policy while holding every policy output fixed.
+
+    Complete gold-action trajectories are permuted between latent-rule clusters.
+    Queries, records, chronology, selections, and predictions never change.
+    """
+    if partition_name == "sealed":
+        raise ValueError("sealed null accuracy is calibrated only after confirmatory opening")
+    if permutations < 1:
+        raise ValueError("permutations must be positive")
+    partition = next(item for item in dataset.partitions if item.name == partition_name)
+    tasks_by_rule: Dict[str, List[TaskCase]] = {}
+    for task in partition.tasks:
+        tasks_by_rule.setdefault(task.rule_id, []).append(task)
+    for tasks in tasks_by_rule.values():
+        tasks.sort(key=lambda item: item.sequence)
+    rule_ids = sorted(tasks_by_rule)
+    reference_strata = [item.transfer for item in tasks_by_rule[rule_ids[0]]]
+    if any(
+        [item.transfer for item in tasks_by_rule[rule_id]] != reference_strata
+        for rule_id in rule_ids[1:]
+    ):
+        raise ValueError("rule trajectories must align by task ordinal and stratum")
+
+    runs = {
+        policy_id: run_baseline(dataset, partition_name, policy_id)
+        for policy_id in NULL_POLICY_CONDITIONS
+    }
+    fixed_output_hashes = {
+        policy_id: sha256_digest(
+            [
+                {"task_id": item.task_id, "prediction": item.prediction}
+                for item in run.task_results
+            ]
+        )
+        for policy_id, run in runs.items()
+    }
+    predictions = {
+        policy_id: {item.task_id: item.prediction for item in run.task_results}
+        for policy_id, run in runs.items()
+    }
+    task_by_id = {task.task_id: task for task in partition.tasks}
+    strata = ("near", "intermediate", "far")
+    task_ids_by_stratum = {
+        stratum: [task.task_id for task in partition.tasks if task.transfer == stratum]
+        for stratum in strata
+    }
+    null_values: Dict[str, Dict[str, List[float]]] = {
+        policy_id: {stratum: [] for stratum in strata}
+        for policy_id in NULL_POLICY_CONDITIONS
+    }
+    permutation_rng = random.Random(permutation_seed)
+    for _ in range(permutations):
+        donor_rules = list(rule_ids)
+        permutation_rng.shuffle(donor_rules)
+        permuted_gold: Dict[str, str] = {}
+        for target_rule, donor_rule in zip(rule_ids, donor_rules):
+            for target_task, donor_task in zip(
+                tasks_by_rule[target_rule], tasks_by_rule[donor_rule]
+            ):
+                permuted_gold[target_task.task_id] = donor_task.gold_action
+        for policy_id, policy_predictions in predictions.items():
+            for stratum in strata:
+                task_ids = task_ids_by_stratum[stratum]
+                accuracy = sum(
+                    policy_predictions[task_id] == permuted_gold[task_id]
+                    for task_id in task_ids
+                ) / len(task_ids)
+                null_values[policy_id][stratum].append(accuracy)
+
+    calibrations: List[NullPolicyCalibration] = []
+    for policy_id, run in runs.items():
+        current_hash = sha256_digest(
+            [
+                {"task_id": item.task_id, "prediction": item.prediction}
+                for item in run.task_results
+            ]
+        )
+        if current_hash != fixed_output_hashes[policy_id]:
+            raise AssertionError("policy outputs changed during null calibration")
+        for stratum in strata:
+            task_ids = task_ids_by_stratum[stratum]
+            observed = sum(
+                predictions[policy_id][task_id] == task_by_id[task_id].gold_action
+                for task_id in task_ids
+            ) / len(task_ids)
+            values = sorted(null_values[policy_id][stratum])
+            percentile_index = max(0, math.ceil(0.95 * len(values)) - 1)
+            null_p95 = values[percentile_index]
+            calibrations.append(
+                NullPolicyCalibration(
+                    policy_id=policy_id,
+                    partition=partition_name,
+                    stratum=stratum,
+                    permutations=permutations,
+                    permutation_seed=permutation_seed,
+                    fixed_output_hash=fixed_output_hashes[policy_id],
+                    observed_accuracy=observed,
+                    null_p95=null_p95,
+                    exceeds_null=observed > null_p95,
+                )
+            )
+    return calibrations
+
 
 def write_artifacts(output: Path, dataset: BenchmarkDataset, partition: str) -> None:
     """Write canonical dataset and all deterministic baseline traces."""
     output.mkdir(parents=True, exist_ok=True)
     if partition != "sealed" and any(item.name == "sealed" for item in dataset.partitions):
         dataset = dataset.model_copy(
-            update={"partitions": [item for item in dataset.partitions if item.name != "sealed"]}
+            update={
+                "partitions": [
+                    item for item in dataset.partitions if item.name != "sealed"
+                ],
+                "positional_leak_assertions": [
+                    item
+                    for item in dataset.positional_leak_assertions
+                    if item.partition != "sealed"
+                ],
+            }
         )
     (output / "dataset.json").write_text(canonical_json(dataset) + "\n", encoding="utf-8")
     for baseline_id in BASELINES:

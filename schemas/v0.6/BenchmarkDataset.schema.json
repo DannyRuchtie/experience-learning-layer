@@ -133,6 +133,59 @@
       "title": "ExperienceRecord",
       "type": "object"
     },
+    "PositionalLeakAssertion": {
+      "additionalProperties": false,
+      "description": "Generator-time structural assertion that does not inspect task outcomes.",
+      "properties": {
+        "chance_rate": {
+          "exclusiveMinimum": 0.0,
+          "maximum": 1.0,
+          "title": "Chance Rate",
+          "type": "number"
+        },
+        "issued_recent_records": {
+          "exclusiveMinimum": 0,
+          "title": "Issued Recent Records",
+          "type": "integer"
+        },
+        "observed_rate": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Observed Rate",
+          "type": "number"
+        },
+        "partition": {
+          "pattern": "^(train|development|sealed)$",
+          "title": "Partition",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "rule_count": {
+          "exclusiveMinimum": 0,
+          "title": "Rule Count",
+          "type": "integer"
+        },
+        "same_rule_recent_records": {
+          "minimum": 0,
+          "title": "Same Rule Recent Records",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "partition",
+        "rule_count",
+        "same_rule_recent_records",
+        "issued_recent_records",
+        "observed_rate",
+        "chance_rate",
+        "passed"
+      ],
+      "title": "PositionalLeakAssertion",
+      "type": "object"
+    },
     "TaskCase": {
       "additionalProperties": false,
       "properties": {
@@ -253,6 +306,13 @@
       "title": "Partitions",
       "type": "array"
     },
+    "positional_leak_assertions": {
+      "items": {
+        "$ref": "#/$defs/PositionalLeakAssertion"
+      },
+      "title": "Positional Leak Assertions",
+      "type": "array"
+    },
     "seed_commitment": {
       "title": "Seed Commitment",
       "type": "string"
@@ -261,7 +321,8 @@
   "required": [
     "generator_id",
     "seed_commitment",
-    "partitions"
+    "partitions",
+    "positional_leak_assertions"
   ],
   "title": "BenchmarkDataset",
   "type": "object"
