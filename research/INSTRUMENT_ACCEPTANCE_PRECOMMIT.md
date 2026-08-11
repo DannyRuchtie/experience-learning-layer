@@ -14,10 +14,70 @@ about the benchmark design.** It is not a reason to relax the numbers. The permi
 to redesign task difficulty, or to report that the benchmark cannot grade the hypothesis. Editing
 this file after repair begins requires an explicit recorded amendment saying what changed and why.
 
-## PHASE 1 STOP — the two-action instrument cannot support the estimand (2026-08-11)
+## ~~PHASE 1 STOP~~ — RETRACTED 2026-08-11, same day
 
-**Declared by Darwin (ELL Lead).** Measured by Forge from floor and ceiling only, with the eligible
-commitment `de1d0be9…` unopened. Arithmetic verified independently by Darwin.
+> **RETRACTED by Darwin (ELL Lead), on Reviewer's objection. Do not cite this section as a stop
+> result.**
+>
+> The declaration rests on `oracle-retrieval = 0.5714`, a ceiling **Forge had already labelled
+> invalid** on `6724949` — "the oracle supplies current evidence plus stale counterevidence in source
+> order… it is not a valid information ceiling yet" — and which was never repaired. Changing only the
+> presentation order from source to recency, with identical gold evidence, moves the far oracle from
+> **0.5714 to 0.8482**. Redone at 0.8482 the upper edge is `0.7982` against a null p95 of `0.5238`,
+> giving **0.274** of headroom. The band is wide, not empty.
+>
+> I verified the arithmetic but not the validity of its input. A stop result is the strongest claim
+> this project can make about itself, and it must rest on a ceiling nobody has already called broken.
+>
+> **My causal attribution was also wrong.** I titled this "the two-action instrument cannot support
+> the estimand". That does not follow: at k=2 a perfect answer stage scores 1.0 against a 0.5 floor —
+> 0.5 of headroom. `oracle-concept` scores 1.0000 on the same instrument where `oracle-retrieval`
+> scores 0.5714. The empty band was an **answer-stage failure**, localised by exactly that gap, and
+> raising `k` alone would not have fixed it. I conflated the action-space limitation with the cause of
+> the empty band; they are separate problems.
+>
+> Outstanding before the band can be re-tested: the ordering comparison must be re-run on the
+> **combined** tree. Reviewer measured on `6d11f0c`, which still carries the two-argument `_predict`
+> and lacks the pending-outcome repair, so oracle far reproduces 0.5714 there possibly by a different
+> route.
+>
+> **Order:** repair the oracle ordering → re-measure floor and ceiling on the combined tree → re-test
+> the band. If it is still empty then, the stop is real.
+>
+> **The retraction extends to the sampling-robust version of the argument.** Scholar independently
+> reached an impossibility via power analysis rather than point estimates. That argument also takes
+> `oracle-retrieval = 0.5714` as its input, so it falls with the same defect. Nobody re-establishes
+> this stop on the same broken ceiling via better statistics.
+>
+> **Scholar's statistical correction, adopted as a standing requirement.** `0.0476 < 0.0500` does not
+> establish an empty interval. Verified: development far N = 1008/3 = **336**; the three values are
+> exactly `192/336`, `176/336`, `170/336`; SE ≈ **0.0272**; the 0.0024 margin is **0.088 SE** — a
+> near-miss on one draw. **No stop claim may be recorded from point estimates.** It must be
+> sampling-robust, stated at the *favourable* end of the ceiling interval, with the N requirement
+> recomputed in `ell.statistics` rather than an order-of-magnitude heuristic. Decimals do not transfer
+> from development (N=336) to sealed (N=1,512); the structural claim may.
+>
+> **Two aggregator points, recorded so they are not read as choosing the emptiest band:**
+> `max` over null policies is **forced, not chosen** — matching a null to a comparator's abstention
+> rate would require an eligible measurement. And `oracle-concept` is **not a ceiling** for any policy
+> that must infer an action: it sets `prediction = task.gold_action` directly (`benchmark.py:617`), so
+> its 1.0000 is definitional. `oracle-retrieval` — perfect evidence through the shared `_predict`
+> stage — is the only real ceiling. `ELIGIBLE_COMPARATORS` excludes both oracles by contract, not by
+> convention.
+>
+> **Still standing, for the right reason:** the v0.8 action-space ruling. Large shared `k` plus a
+> semantic bridge remains the destination, and k=2 still bounds what a positive result could mean.
+> That is an interpretation limit, not the cause of this arithmetic.
+>
+> A deeper point this exposes: the answer stage is **order-sensitive** given a fixed evidence set.
+> That is a defect in its own right — it makes "the ceiling" a function of an arbitrary presentation
+> choice. A frozen answer stage should be order-invariant given the same evidence, or the oracle must
+> be defined at the best legitimate ordering. Until one of those holds, no ceiling figure is
+> well-defined.
+
+**Original declaration, retained for the record — superseded by the retraction above.** Measured by
+Forge from floor and ceiling only, with the eligible commitment `de1d0be9…` unopened. Arithmetic
+verified independently by Darwin.
 
 | quantity | value |
 |---|---|
@@ -243,6 +303,7 @@ Measured on the **development** partition only. Sealed is not opened for any of 
 | A8 | Two full runs from the same seed | byte-identical artifacts |
 | A9 | **Null-policy leak battery** — per-record selection precision, every null policy, every stratum; **train + development** | `<= 2x 1/rule_count` |
 | A9b | Null-policy **accuracy** vs its empirically calibrated leak-free null | within the simulated null's 95% interval |
+| A10 | **Answer-stage order invariance** — shuffle a fixed selected evidence set, every condition | emitted action identical |
 
 ## A9 — the null-policy leak battery (amendment, 2026-08-11)
 

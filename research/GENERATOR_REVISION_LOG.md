@@ -15,7 +15,30 @@ eventually look right for reasons nobody can reconstruct. This is the reconstruc
 | 4 | pending | PR #7 | leak repair | **Positional leakage.** Records laid out rule-block by rule-block, so 98.6% (4968/5037) of each task's five most recent visible records belonged to its own rule against a 4.17% chance baseline — a recency window was a covert rule oracle reading no text. Fix: round-robin interleaving across rules. | A1/A2/A5/A6 as measured at `6724949`; `rolling-summary` entirely (suspended from the eligible set) | Reviewer; reproduced independently by Darwin |
 | 5 | pending | PR #7 | leak repair | **Action-namespace join.** The action vocabulary *was* the rule namespace — 49 actions over 24 rules, 24 `allowed_actions` signatures with 0 ambiguous, and 0 of 382,536 off-rule visible records carrying an action in the task's allowed set. `allowed_actions x observed_action` was an exact rule oracle inside the certified boundary. Fix: shared opaque vocabulary, seed-committed randomised balanced assignment. | Every measurement taken with rule-specific actions. Moves the measurement floor from ≈0 to ≈1/3, which superseded A1–A6. | Reviewer; reproduced independently by Darwin |
 
-## Outcome: Phase 1 stop (2026-08-11)
+## Finding: the answer stage is order-sensitive — a construct threat to the primary estimand
+
+Recorded as a finding in its own right, separately from the withdrawn stop below, because it outlives
+that fix. Discovered while checking an unrelated claim.
+
+With **identical** gold evidence, changing only presentation order moves `oracle-retrieval` on far
+from **0.5714** (generator source order) to **0.8482** (recency order) — 28 points. `sequence` is
+policy-visible and any sane retriever ranks by recency, so source order understates the ceiling by
+construction.
+
+The consequence reaches past the oracle. If the answer stage is that order-sensitive, then "ELL minus
+strongest comparator" partly measures how each system happens to *order* its output rather than what
+it knows: two systems with identical retrieval and identical concepts could differ by tens of points
+on emission order alone. No leak repair touches this. `retrieval_weight = score / (rank + 1)` is
+therefore a substantive modelling decision, not a frozen implementation detail.
+
+**Rulings.** The oracle presents evidence in the best order derivable from policy-visible fields —
+descending `sequence`; generator emission order is not a ranking. Pinned *before* re-measurement so
+the ceiling is not chosen to fit the threshold. New criterion **A10**: the frozen answer stage must be
+order-invariant given a fixed evidence set. Recency enters as an **explicit feature** (record time
+relative to the task), never implicitly through list position — which preserves legitimate recency
+information while making the ceiling independent of presentation.
+
+## ~~Outcome: Phase 1 stop~~ — RETRACTED same day (2026-08-11)
 
 The revision sequence terminated in a stop rather than a green instrument. Measuring floor and
 ceiling only — eligible commitment `de1d0be9…` unopened — gave a far corridor of **0.0476**
@@ -24,7 +47,18 @@ of **0.0500**. The admissible band is empty before any separation margin, so A1�
 recalibrated on the current answer space. See the stop record in
 `INSTRUMENT_ACCEPTANCE_PRECOMMIT.md`.
 
-This is a finding about the instrument, not about ELL. H1–H7 remain untested.
+**Retracted the same day.** The ceiling input (0.5714) had already been labelled invalid by Forge on
+`6724949` and was never repaired; recency ordering moves it to 0.8482, which turns a −0.0024 shortfall
+into +0.2744 of admissible headroom. Scholar separately showed the 0.0024 margin is only **0.088 SE**
+at development-far N=336, so emptiness was never established even on the original number. The
+retraction covers both the point-estimate arithmetic and the sampling-robust power version, since both
+take the same defective ceiling as input.
+
+Standing requirement from this episode: a stop result is the strongest claim this project can make
+about itself, and it may not rest on an input anyone has already called broken, nor on point estimates
+inside their own sampling error.
+
+This was in any case a finding about the instrument, not about ELL. H1–H7 remain untested.
 
 ## Pattern
 
