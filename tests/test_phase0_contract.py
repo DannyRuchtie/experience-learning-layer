@@ -24,7 +24,7 @@ def test_all_paper_entities_have_machine_readable_schemas() -> None:
         "InvalidationReport",
         "EvaluatorJudgment",
     }
-    assert len(all_schema_models()) == 33
+    assert len(all_schema_models()) == 36
 
 
 def test_committed_schemas_reproduce_exactly(tmp_path: Path) -> None:
@@ -36,10 +36,15 @@ def test_committed_schemas_reproduce_exactly(tmp_path: Path) -> None:
 
 
 def test_frozen_power_contract_is_conservative() -> None:
-    calculated = minimum_paired_sample_size()
-    contract = json.loads(Path("research/research-contract-v0.6.json").read_text())
-    assert calculated <= contract["power"]["paired_tasks_per_confirmatory_condition"]
-    assert contract["power"]["paired_tasks_per_confirmatory_condition"] == 640
+    contract = json.loads(Path("research/research-contract-v0.7.json").read_text())
+    assumptions = contract["power"]["primary_transfer"]
+    calculated = minimum_paired_sample_size(
+        effect=contract["power"]["target_absolute_effect"],
+        discordance=assumptions["assumed_discordant_pair_rate"],
+        power=contract["gate_classes"]["confirmatory"]["per_gate_power"],
+    )
+    assert calculated == assumptions["required_n"]
+    assert contract["supersedes"] == "ell.research-contract.v0.6"
 
 
 def test_required_adversarial_examples_are_present() -> None:

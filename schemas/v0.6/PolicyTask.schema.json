@@ -1,0 +1,47 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/PolicyTask.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Task projection visible to an eligible policy.\n\nGenerator labels, evaluation strata, and gold answers remain on ``TaskCase``\nand never cross this boundary.",
+  "properties": {
+    "allowed_actions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Allowed Actions",
+      "type": "array"
+    },
+    "observed_time": {
+      "format": "date-time",
+      "title": "Observed Time",
+      "type": "string"
+    },
+    "query": {
+      "title": "Query",
+      "type": "string"
+    },
+    "sequence": {
+      "minimum": 0,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "task_id": {
+      "title": "Task Id",
+      "type": "string"
+    },
+    "workspace_id": {
+      "title": "Workspace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "workspace_id",
+    "sequence",
+    "observed_time",
+    "query",
+    "allowed_actions"
+  ],
+  "title": "PolicyTask",
+  "type": "object"
+}

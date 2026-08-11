@@ -60,7 +60,7 @@ class TaskCase(BenchmarkModel):
     observed_time: datetime
     query: str
     scope: str
-    transfer: str = Field(pattern=r"^(near|far)$")
+    transfer: str = Field(pattern=r"^(near|intermediate|far)$")
     """Lexical distance stratum. The primary transfer gate reads only ``far`` tasks."""
     allowed_actions: List[str]
     gold_action: str
@@ -74,6 +74,40 @@ class TaskCase(BenchmarkModel):
     The change-adaptation gate is measured against this field: it is what makes
     "revised within two relevant contradictory episodes" a computable quantity.
     """
+
+
+class PolicyTask(BenchmarkModel):
+    """Task projection visible to an eligible policy.
+
+    Generator labels, evaluation strata, and gold answers remain on ``TaskCase``
+    and never cross this boundary.
+    """
+
+    task_id: str
+    workspace_id: str
+    sequence: int = Field(ge=0)
+    observed_time: datetime
+    query: str
+    allowed_actions: List[str]
+
+
+class PolicyRecord(BenchmarkModel):
+    """Chronology- and permission-filtered experience visible to a policy."""
+
+    record_id: str
+    workspace_id: str
+    sequence: int = Field(ge=0)
+    observed_time: datetime
+    text: str
+    observed_action: str
+    observed_outcome: Optional[float] = None
+
+
+class PolicySelection(BenchmarkModel):
+    """A policy's scored reference to a runner-issued record."""
+
+    record_id: str
+    score: float = Field(ge=0.0)
 
 
 class BenchmarkPartition(BenchmarkModel):
@@ -154,6 +188,8 @@ class LatentRule(BenchmarkModel):
     exception_phrases: List[str]
     near_query_templates: List[str]
     """Queries that reuse the evidence vocabulary. Lexical retrieval can serve these."""
+    intermediate_query_templates: List[str]
+    """Queries retaining the domain vocabulary but paraphrasing the mechanism."""
     far_query_templates: List[str]
     """Queries with zero content-word overlap with the evidence. The transfer test."""
 
@@ -315,6 +351,10 @@ def build_latent_rules(count: int) -> Tuple[LatentRule, ...]:
                 near_query_templates=[
                     near_question.format(subject=f"a further {evidence_subject}"),
                     near_question.format(subject=f"another {evidence_subject}"),
+                ],
+                intermediate_query_templates=[
+                    far_question.format(subject=f"a further {evidence_subject}"),
+                    far_question.format(subject=f"another {evidence_subject}"),
                 ],
                 far_query_templates=[
                     far_question.format(subject=f"a {query_subject}"),
@@ -489,9 +529,13 @@ def _generate_partition(
             # Emit any task scheduled at this point in the stream. Gold state is
             # whatever the stream has established so far, never what comes later.
             for task_index in pending.get(index, []):
-                is_far = task_index % 2 == 1
-                templates = rule.far_query_templates if is_far else rule.near_query_templates
-                query = templates[(task_index // 2) % len(templates)]
+                stratum = ("near", "intermediate", "far")[task_index % 3]
+                templates = {
+                    "near": rule.near_query_templates,
+                    "intermediate": rule.intermediate_query_templates,
+                    "far": rule.far_query_templates,
+                }[stratum]
+                query = templates[(task_index // 3) % len(templates)]
                 query = f"Scenario {task_index + 1}. {query}"
                 episodes_since_change = index - change_index if index >= change_index else None
                 tasks.append(
@@ -503,7 +547,7 @@ def _generate_partition(
                         observed_time=base + timedelta(hours=sequence - sequence_offset),
                         query=query,
                         scope=rule_id,
-                        transfer="far" if is_far else "near",
+                        transfer=stratum,
                         allowed_actions=[preferred, rejected, "abstain"],
                         gold_action=active_action,
                         gold_evidence_ids=list(evidence_ids),
@@ -516,7 +560,7 @@ def _generate_partition(
 
         distractor = ExperienceRecord(
             record_id=stable_id("record", name, rule_id, "distractor"),
-            workspace_id="workspace-alpha",
+            workspace_id="workspace-beta",
             rule_id=rule_id,
             sequence=sequence,
             observed_time=base + timedelta(hours=sequence - sequence_offset),
@@ -558,11 +602,26 @@ def run_baseline(dataset: BenchmarkDataset, partition_name: str, baseline_id: st
     judgments: List[EvaluatorJudgment] = []
     run_id = stable_id("run", dataset.dataset_hash, partition_name, baseline_id)
     total_cost = CostTrace()
+    source_records = {item.record_id: item for item in partition.records}
     for task in partition.tasks:
-        selected, scores = selector(task, partition.records)
-        prediction = _predict(selected)
+        policy_task = project_policy_task(task)
+        policy_records = project_policy_records(task, partition.records)
+        records_by_id = {item.record_id: item for item in policy_records}
+        if baseline_id in ORACLE_CONDITIONS:
+            selections = _oracle_select(task, policy_records, baseline_id)
+        else:
+            assert selector is not None
+            selections = selector(policy_task, policy_records)
+        _validate_selections(selections, records_by_id)
+        prediction = (
+            task.gold_action
+            if baseline_id == "oracle-concept"
+            else _predict(selections, records_by_id)
+        )
         correct = prediction == task.gold_action
-        selected_ids = [item.record_id for item in selected]
+        selected_ids = [item.record_id for item in selections]
+        selected = [records_by_id[item_id] for item_id in selected_ids]
+        evaluator_selected = [source_records[item_id] for item_id in selected_ids]
         input_tokens = sum(len(_tokens(item.text)) for item in selected) + len(_tokens(task.query))
         cost = CostTrace(input_tokens=input_tokens, output_tokens=1)
         total_cost = _add_cost(total_cost, cost)
@@ -571,7 +630,7 @@ def run_baseline(dataset: BenchmarkDataset, partition_name: str, baseline_id: st
                 task_id=task.task_id,
                 prediction=prediction,
                 selected_record_ids=selected_ids,
-                scores=scores,
+                scores=[item.score for item in selections],
                 correct=correct,
                 cost=cost,
             )
@@ -601,7 +660,7 @@ def run_baseline(dataset: BenchmarkDataset, partition_name: str, baseline_id: st
                 system_blinded=True,
                 success=correct,
                 unsupported_generalization=any(
-                    item.scope.endswith(":exception") for item in selected
+                    item.scope.endswith(":exception") for item in evaluator_selected
                 ),
                 cited_support_ids=sorted(selected_gold),
                 material_counterevidence_ids=sorted(task.gold_counterevidence_ids),
@@ -653,31 +712,95 @@ def run_baseline(dataset: BenchmarkDataset, partition_name: str, baseline_id: st
     )
 
 
-def _predict(records: Sequence[ExperienceRecord]) -> str:
-    weighted: Counter[str] = Counter()
+def project_policy_task(task: TaskCase) -> PolicyTask:
+    """Remove evaluator-only fields before invoking an eligible policy."""
+    return PolicyTask(
+        task_id=task.task_id,
+        workspace_id=task.workspace_id,
+        sequence=task.sequence,
+        observed_time=task.observed_time,
+        query=task.query,
+        allowed_actions=task.allowed_actions,
+    )
+
+
+def project_policy_records(
+    task: TaskCase, records: Sequence[ExperienceRecord]
+) -> List[PolicyRecord]:
+    """Issue only records available and authorized at the task's decision time."""
+    visible: List[PolicyRecord] = []
     for record in records:
-        if record.relation == "exception":
+        if record.workspace_id != task.workspace_id:
             continue
-        weighted[record.action] += 2 if record.outcome > 0 else -1
-    return weighted.most_common(1)[0][0] if weighted else "abstain"
+        if record.sequence >= task.sequence or record.observed_time > task.observed_time:
+            continue
+        if record.permission != "benchmark" or record.deleted:
+            continue
+        visible.append(
+            PolicyRecord(
+                record_id=record.record_id,
+                workspace_id=record.workspace_id,
+                sequence=record.sequence,
+                observed_time=record.observed_time,
+                text=record.text,
+                observed_action=record.action,
+                observed_outcome=(
+                    record.outcome
+                    if record.outcome_observed_time <= task.observed_time
+                    else None
+                ),
+            )
+        )
+    return visible
+
+
+def _validate_selections(
+    selections: Sequence[PolicySelection], records_by_id: Dict[str, PolicyRecord]
+) -> None:
+    identifiers = [item.record_id for item in selections]
+    if len(identifiers) != len(set(identifiers)):
+        raise ValueError("policy returned duplicate record identifiers")
+    unavailable = sorted(set(identifiers) - set(records_by_id))
+    if unavailable:
+        raise ValueError(f"policy selected records outside runner context: {unavailable}")
+
+
+def _predict(
+    selections: Sequence[PolicySelection], records_by_id: Dict[str, PolicyRecord]
+) -> str:
+    """Apply a frozen score-aware decision rule to observed outcomes only."""
+    weighted: Dict[str, float] = {}
+    for rank, selection in enumerate(selections):
+        record = records_by_id[selection.record_id]
+        if record.observed_outcome is None:
+            continue
+        retrieval_weight = selection.score / (rank + 1)
+        outcome_direction = 1.0 if record.observed_outcome > 0 else -1.0
+        weighted[record.observed_action] = (
+            weighted.get(record.observed_action, 0.0)
+            + retrieval_weight * outcome_direction
+        )
+    if not weighted:
+        return "abstain"
+    action, score = sorted(weighted.items(), key=lambda item: (-item[1], item[0]))[0]
+    return action if score > 0 else "abstain"
 
 
 def _no_memory(
-    task: TaskCase, records: Sequence[ExperienceRecord]
-) -> Tuple[List[ExperienceRecord], List[float]]:
-    return [], []
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    return []
 
 
 def _maximum_context(
-    task: TaskCase, records: Sequence[ExperienceRecord]
-) -> Tuple[List[ExperienceRecord], List[float]]:
-    selected = [item for item in records if not item.deleted and item.permission == "benchmark"]
-    return selected, [1.0] * len(selected)
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    return [PolicySelection(record_id=item.record_id, score=1.0) for item in records]
 
 
 def _bm25(
-    task: TaskCase, records: Sequence[ExperienceRecord]
-) -> Tuple[List[ExperienceRecord], List[float]]:
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
     documents = [_tokens(item.text) for item in records]
     query = _tokens(task.query)
     average_length = sum(map(len, documents)) / max(len(documents), 1)
@@ -705,30 +828,29 @@ def _bm25(
 
 
 def _exact_vector(
-    task: TaskCase, records: Sequence[ExperienceRecord]
-) -> Tuple[List[ExperienceRecord], List[float]]:
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
     query_vector = _trigram_vector(task.query)
     ranked = [(_cosine(query_vector, _trigram_vector(item.text)), item) for item in records]
     return _top(ranked)
 
 
 def _fused(
-    task: TaskCase, records: Sequence[ExperienceRecord]
-) -> Tuple[List[ExperienceRecord], List[float]]:
-    bm_records, _ = _bm25(task, records)
-    vector_records, _ = _exact_vector(task, records)
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    bm_records = _bm25(task, records)
+    vector_records = _exact_vector(task, records)
     ranks: Dict[str, float] = {}
-    by_id = {item.record_id: item for item in records}
     for selected in (bm_records, vector_records):
         for rank, item in enumerate(selected):
             ranks[item.record_id] = ranks.get(item.record_id, 0.0) + 1.0 / (60 + rank)
-    ranked = [(score, by_id[record_id]) for record_id, score in ranks.items()]
-    return _top(ranked)
+    ranked = [(score, record_id) for record_id, score in ranks.items()]
+    return _top_ids(ranked)
 
 
 def _rolling_summary(
-    task: TaskCase, records: Sequence[ExperienceRecord]
-) -> Tuple[List[ExperienceRecord], List[float]]:
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
     """Recency window only.
 
     Earlier revisions filtered on ``record.scope == task.scope``. That is a gold
@@ -736,14 +858,16 @@ def _rolling_summary(
     baselines an oracle shortcut. A rolling summary sees the tail of the stream and
     nothing else.
     """
-    eligible = [item for item in records if not item.deleted and item.permission == "benchmark"]
-    selected = eligible[-5:]
-    return selected, [float(item.sequence) for item in selected]
+    selected = sorted(records, key=lambda item: item.sequence, reverse=True)[:5]
+    return [
+        PolicySelection(record_id=item.record_id, score=1.0)
+        for item in selected
+    ]
 
 
 def _direct_insight(
-    task: TaskCase, records: Sequence[ExperienceRecord]
-) -> Tuple[List[ExperienceRecord], List[float]]:
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
     """Insight extraction over lexically retrieved outcome-bearing episodes.
 
     Groups by surface similarity to the query rather than by the generator's scope
@@ -754,69 +878,56 @@ def _direct_insight(
     scored = [
         (_cosine(query_vector, _trigram_vector(item.text)), item)
         for item in records
-        if not item.deleted and item.permission == "benchmark"
     ]
     eligible = [(score, item) for score, item in scored if score > 0]
     eligible.sort(key=lambda pair: (-pair[0], pair[1].record_id))
-    pool = [item for _, item in eligible[:12]]
-    selected = sorted(pool, key=lambda item: (-item.outcome, -item.sequence))[:5]
-    return selected, [item.outcome for item in selected]
+    pool = eligible[:12]
+    selected = sorted(
+        pool,
+        key=lambda pair: (
+            -(pair[1].observed_outcome if pair[1].observed_outcome is not None else -1.0),
+            -pair[0],
+            -pair[1].sequence,
+        ),
+    )[:5]
+    return [PolicySelection(record_id=item.record_id, score=score) for score, item in selected]
 
 
-def _oracle_retrieval(
-    task: TaskCase, records: Sequence[ExperienceRecord]
-) -> Tuple[List[ExperienceRecord], List[float]]:
-    """Upper bound on retrieval with no abstraction.
-
-    Receives exactly the gold supporting and counter-evidence episodes. Separates
-    "retrieval found the right episodes" from "abstraction added something". If
-    ELL-Core does not beat this, the concept layer is doing no work beyond
-    retrieval.
-    """
-    gold = set(task.gold_evidence_ids) | set(task.gold_counterevidence_ids)
-    selected = [
-        item
+def _oracle_select(
+    task: TaskCase,
+    records: Sequence[PolicyRecord],
+    baseline_id: str,
+) -> List[PolicySelection]:
+    """Run an evaluation-only ceiling outside the eligible policy interface."""
+    if baseline_id == "oracle-retrieval":
+        gold = set(task.gold_evidence_ids) | set(task.gold_counterevidence_ids)
+    elif baseline_id == "oracle-concept":
+        gold = set(task.gold_evidence_ids)
+    else:
+        raise ValueError(f"unknown oracle condition: {baseline_id}")
+    return [
+        PolicySelection(record_id=item.record_id, score=1.0)
         for item in records
-        if item.record_id in gold and not item.deleted and item.permission == "benchmark"
+        if item.record_id in gold
     ]
-    return selected, [1.0] * len(selected)
-
-
-def _oracle_concept(
-    task: TaskCase, records: Sequence[ExperienceRecord]
-) -> Tuple[List[ExperienceRecord], List[float]]:
-    """Ceiling condition: the gold latent rule is supplied directly.
-
-    Without this condition a null primary result is uninterpretable, because
-    "concepts do not help this answer model" and "induction quality was too low"
-    are indistinguishable. The ratio of full ELL-Core to this ceiling is the
-    induction-quality estimate; the gap between this ceiling and the strongest
-    simple baseline is the headroom the concept layer is competing for.
-    """
-    gold = set(task.gold_evidence_ids)
-    selected = [
-        item
-        for item in records
-        if item.record_id in gold and not item.deleted and item.permission == "benchmark"
-    ]
-    # Keep only episodes consistent with the currently governing regime, which is
-    # what a correctly scoped and temporally valid concept would express.
-    latest_regime = max((item.regime for item in selected), default=0)
-    scoped = [item for item in selected if item.regime == latest_regime]
-    return scoped or selected, [1.0] * len(scoped or selected)
 
 
 def _top(
-    ranked: Iterable[Tuple[float, ExperienceRecord]],
-) -> Tuple[List[ExperienceRecord], List[float]]:
-    eligible = [
-        (score, record)
-        for score, record in ranked
-        if score > 0 and not record.deleted and record.permission == "benchmark"
-    ]
+    ranked: Iterable[Tuple[float, PolicyRecord]],
+) -> List[PolicySelection]:
+    eligible = [(score, record) for score, record in ranked if score > 0]
     eligible.sort(key=lambda item: (-item[0], item[1].record_id))
     chosen = eligible[:5]
-    return [record for _, record in chosen], [score for score, _ in chosen]
+    return [PolicySelection(record_id=record.record_id, score=score) for score, record in chosen]
+
+
+def _top_ids(ranked: Iterable[Tuple[float, str]]) -> List[PolicySelection]:
+    eligible = [(score, record_id) for score, record_id in ranked if score > 0]
+    eligible.sort(key=lambda item: (-item[0], item[1]))
+    return [
+        PolicySelection(record_id=record_id, score=score)
+        for score, record_id in eligible[:5]
+    ]
 
 
 def _tokens(text: str) -> List[str]:
@@ -847,10 +958,10 @@ def _add_cost(left: CostTrace, right: CostTrace) -> CostTrace:
     )
 
 
-BASELINES: Dict[
-    str,
-    Callable[[TaskCase, Sequence[ExperienceRecord]], Tuple[List[ExperienceRecord], List[float]]],
-] = {
+PolicySelector = Callable[[PolicyTask, Sequence[PolicyRecord]], List[PolicySelection]]
+
+
+BASELINES: Dict[str, Optional[PolicySelector]] = {
     "no-memory": _no_memory,
     "maximum-context": _maximum_context,
     "bm25": _bm25,
@@ -860,8 +971,8 @@ BASELINES: Dict[
     "direct-insight": _direct_insight,
     # Oracle ceilings. Not eligible as the confirmatory comparator: they consume
     # gold generator labels. Reported to bound and interpret the primary result.
-    "oracle-retrieval": _oracle_retrieval,
-    "oracle-concept": _oracle_concept,
+    "oracle-retrieval": None,
+    "oracle-concept": None,
 }
 
 ELIGIBLE_COMPARATORS: Tuple[str, ...] = (

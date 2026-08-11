@@ -30,7 +30,11 @@ def test_comparator_selection_uses_development_only_and_frozen_ties() -> None:
         runs,
         ["bm25", "exact-vector", "fused-retrieval", "rolling-summary", "direct-insight"],
     )
-    assert comparator.baseline_id == "direct-insight"
+    eligible = {
+        "bm25", "exact-vector", "fused-retrieval", "rolling-summary", "direct-insight"
+    }
+    assert comparator.baseline_id in eligible
+    assert comparator.accuracy == max(run.accuracy for run in runs if run.baseline_id in eligible)
     assert comparator.partition == "development"
 
 

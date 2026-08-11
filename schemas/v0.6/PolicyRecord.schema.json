@@ -1,0 +1,56 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/PolicyRecord.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Chronology- and permission-filtered experience visible to a policy.",
+  "properties": {
+    "observed_action": {
+      "title": "Observed Action",
+      "type": "string"
+    },
+    "observed_outcome": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Observed Outcome"
+    },
+    "observed_time": {
+      "format": "date-time",
+      "title": "Observed Time",
+      "type": "string"
+    },
+    "record_id": {
+      "title": "Record Id",
+      "type": "string"
+    },
+    "sequence": {
+      "minimum": 0,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "workspace_id": {
+      "title": "Workspace Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "record_id",
+    "workspace_id",
+    "sequence",
+    "observed_time",
+    "text",
+    "observed_action"
+  ],
+  "title": "PolicyRecord",
+  "type": "object"
+}

@@ -64,6 +64,10 @@
       "title": "Relation",
       "type": "string"
     },
+    "rule_id": {
+      "title": "Rule Id",
+      "type": "string"
+    },
     "scope": {
       "title": "Scope",
       "type": "string"
@@ -85,6 +89,7 @@
   "required": [
     "record_id",
     "workspace_id",
+    "rule_id",
     "sequence",
     "observed_time",
     "text",
