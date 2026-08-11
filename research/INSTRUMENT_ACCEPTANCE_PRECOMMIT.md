@@ -14,6 +14,81 @@ about the benchmark design.** It is not a reason to relax the numbers. The permi
 to redesign task difficulty, or to report that the benchmark cannot grade the hypothesis. Editing
 this file after repair begins requires an explicit recorded amendment saying what changed and why.
 
+## AMENDMENT 3 — A1–A6 superseded; re-expressed relative to chance (2026-08-11)
+
+**Signed off by Darwin (ELL Lead)**, on Reviewer's insistence that this be explicit rather than
+inherited from a leak fix. It is the largest amendment to this document and the reasoning is
+recorded in full.
+
+### What changed
+
+Removing the action-namespace leak requires a shared rule-agnostic action vocabulary. That makes
+off-rule evidence *usable* rather than inert, so null policies stop abstaining and the measurement
+floor moves from ≈0 to ≈1/3.
+
+Verified premise: all 24 development rules carry exactly 3 actions, and all 1,008 tasks present a
+3-way choice — so chance is exactly `1/3`. Reviewer's simulation of the proposed remap gives 0.4196
+for an aligned mapping and 0.3294 (≈ chance) for a per-rule randomised one. I verified the premise
+myself; I have **not** independently reproduced those two simulated figures.
+
+**Consequence:** A1's `[0.25, 0.45]` band no longer describes an intermediate comparator. Its lower
+half sits below chance — a comparator at 0.30 would be indistinguishable from guessing.
+
+### Ruling A — re-express, do not re-number
+
+A1–A6 failed because raw accuracy bands are **floor-dependent**. Replacing one set of magic numbers
+with another leaves the same defect. All comparator criteria are therefore restated in
+**chance-normalised** form:
+
+```
+normalised = (observed - chance) / (ceiling - chance)
+chance   = the rule-label-permuted empirical null (A9b), per stratum and partition
+ceiling  = oracle-retrieval on the same stratum and partition
+```
+
+A criterion expressed this way survives any future floor or ceiling change, which is the third time
+a floor assumption has broken a threshold in this document.
+
+### Ruling B — the metric must distinguish abstention from error
+
+Reviewer's strongest point: once abstention is no longer the default failure mode, the far stratum
+stops separating "found the rule" from "guessed". No threshold can repair that — the **metric** has
+to.
+
+**Required:** the primary metric scores abstention strictly above a wrong answer. A policy that
+guesses must do worse than one that declines. This restores discriminative power at far independently
+of where the floor sits, and it is the correct expression of ELL's own principles — a system that
+claims to represent uncertainty should not be rewarded for confident error.
+
+### Ruling C — sequencing, to protect preregistration
+
+New bands are preregistered **from the permuted null alone, before any real comparator numbers on
+the repaired generator are examined**:
+
+1. Land the leak repair (PR #7: round-robin interleaving + seed-committed randomised balanced action
+   mapping).
+2. Build A9 / A9b, including the permutation harness.
+3. Compute the permuted null. **Look at nothing else.**
+4. Preregister normalised bands for A1–A6 from that null.
+5. Only then measure real comparators.
+
+Inverting steps 4 and 5 would be fitting the target to the observation.
+
+### Status of each criterion
+
+| criterion | status |
+|---|---|
+| A1–A6 | **superseded**, pending normalised re-derivation at step 4 |
+| A7 (chronology), A8 (determinism) | **unchanged and in force** — floor-independent |
+| A9, A9b (leak battery) | **in force** |
+
+### Guard against amendment drift
+
+This is the third amendment, and I am the single point of failure for all three. Any further change
+to A1–A6 requires: an a-priori derivation that does not consult policy results; independent review by
+someone who did not author the change; and Danny's explicit sign-off. Recording this because
+"it turned out to be a specification error" is an excuse that gets easier to reach for each time.
+
 ## Ruling 1 — the benchmark must measure a decision, not a lookup
 
 `_predict` (`src/ell/benchmark.py:656`) computes the answer as a weighted vote over
