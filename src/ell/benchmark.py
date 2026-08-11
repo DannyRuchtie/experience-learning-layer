@@ -768,32 +768,36 @@ def _predict(
 ) -> str:
     """Apply the frozen decision rule without requiring a completed outcome.
 
-    An experience log legitimately records what action the agent took. A completed
-    outcome raises that episode's evidential weight, but an outcome still pending at
-    decision time must not make the episode unusable. Otherwise chronology turns
-    outcome latency into an artificial ceiling on every retrieval condition.
+    An experience log legitimately records what action the agent took. Completed
+    outcomes determine directional support. Pending outcomes carry no success sign;
+    they only break ties between actions with equal observed-outcome support. This
+    lets a task act when all relevant outcomes are pending without treating an
+    untested action as successful.
     """
-    weighted: Dict[str, float] = {}
     allowed_actions = set(task.allowed_actions) - {"abstain"}
+    observed_weight = dict.fromkeys(allowed_actions, 0.0)
+    pending_weight = dict.fromkeys(allowed_actions, 0.0)
     for rank, selection in enumerate(selections):
         record = records_by_id[selection.record_id]
         if record.observed_action not in allowed_actions:
             continue
         retrieval_weight = selection.score / (rank + 1)
         if record.observed_outcome is None:
-            outcome_direction = 1.0
-            evidence_quality = 0.5
+            pending_weight[record.observed_action] += retrieval_weight
         else:
             outcome_direction = 1.0 if record.observed_outcome > 0 else -1.0
-            evidence_quality = 1.0
-        weighted[record.observed_action] = (
-            weighted.get(record.observed_action, 0.0)
-            + retrieval_weight * evidence_quality * outcome_direction
-        )
-    if not weighted:
+            observed_weight[record.observed_action] += retrieval_weight * outcome_direction
+    if not allowed_actions:
         return "abstain"
-    action, score = sorted(weighted.items(), key=lambda item: (-item[1], item[0]))[0]
-    return action if score > 0 else "abstain"
+    action = sorted(
+        allowed_actions,
+        key=lambda item: (-observed_weight[item], -pending_weight[item], item),
+    )[0]
+    if observed_weight[action] < 0:
+        return "abstain"
+    if observed_weight[action] == 0 and pending_weight[action] == 0:
+        return "abstain"
+    return action
 
 
 def _no_memory(
@@ -989,10 +993,13 @@ ELIGIBLE_COMPARATORS: Tuple[str, ...] = (
     "bm25",
     "exact-vector",
     "fused-retrieval",
-    "rolling-summary",
     "direct-insight",
 )
-"""Conditions from which the confirmatory comparator may be selected on development data."""
+"""Conditions from which the confirmatory comparator may be selected on development data.
+
+``rolling-summary`` is suspended until the positional-leak null test passes. It remains
+executable as a diagnostic condition but cannot be selected as a comparator.
+"""
 
 ORACLE_CONDITIONS: Tuple[str, ...] = ("oracle-retrieval", "oracle-concept")
 """Ceiling conditions. Excluded from comparator selection by contract."""

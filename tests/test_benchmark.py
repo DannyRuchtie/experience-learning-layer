@@ -9,6 +9,7 @@ import pytest
 from ell.benchmark import (
     BASELINES,
     DEVELOPMENT_TIER,
+    ELIGIBLE_COMPARATORS,
     SEALED_TIER,
     TRAIN_TIER,
     ExperienceRecord,
@@ -126,6 +127,11 @@ def test_maximum_context_exposes_distractor_cost() -> None:
     assert maximum.manifest.cost.total_tokens > focused.manifest.cost.total_tokens
 
 
+def test_position_leaking_rolling_summary_is_suspended_from_eligibility() -> None:
+    assert "rolling-summary" in BASELINES
+    assert "rolling-summary" not in ELIGIBLE_COMPARATORS
+
+
 def test_development_difficulty_ladder_is_monotonic_without_opening_sealed_data() -> None:
     dataset = generate_development_dataset(1729, "sha256:" + "a" * 64)
     partition = dataset.partitions[-1]
@@ -218,7 +224,7 @@ def test_runner_rejects_policy_selection_outside_issued_context() -> None:
         )
 
 
-def test_score_aware_decision_uses_pending_outcomes_at_lower_weight() -> None:
+def test_score_aware_decision_uses_pending_outcomes_only_as_tiebreaks() -> None:
     observed_time = datetime(2026, 1, 1, tzinfo=timezone.utc)
     records = {
         "strong": PolicyRecord(
@@ -235,7 +241,7 @@ def test_score_aware_decision_uses_pending_outcomes_at_lower_weight() -> None:
             workspace_id="workspace-alpha",
             sequence=2,
             observed_time=observed_time,
-            text="weak evidence",
+            text="observed exception evidence",
             observed_action="other",
             observed_outcome=1.0,
         ),
@@ -268,7 +274,7 @@ def test_score_aware_decision_uses_pending_outcomes_at_lower_weight() -> None:
     assert _predict(task, pending_only, records) == "other"
 
     exception_first = [
-        PolicySelection(record_id="weak-b", score=10.0),
+        PolicySelection(record_id="weak-a", score=10.0),
         PolicySelection(record_id="strong", score=1.0),
     ]
     assert _predict(task, exception_first, records) == "other"
