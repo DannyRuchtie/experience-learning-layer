@@ -93,6 +93,20 @@
     },
     "null_battery_reading": "1 breach in 120 tests, non-reproducible across seeds (1 of 8). Below the ~6 a p95 threshold produces by construction, which indicates the floor is slightly conservative. A conservative floor narrows the corridor and biases against ELL, which is the acceptable direction."
   },
+  "eligible_development_measurement_2026_08_11": {
+    "source_commit": "3da8b23eba3e42894da7ec3486b416c77da22317",
+    "artifact": "research/FROZEN_ELIGIBLE_DEVELOPMENT_2026_08_11.json",
+    "artifact_sha256": "01c2999c76f85d820308fed53ff81c8b40602d4e4f494c62e42cd9827b1efe2d",
+    "sealed_generated": false,
+    "far_seed_passes": {
+      "bm25": "0/8",
+      "direct-insight": "1/8",
+      "exact-vector": "1/8",
+      "fused-retrieval": "1/8"
+    },
+    "interpretation": "No current eligible comparator exceeds the per-seed far q99.9 mark robustly. All three isolated passes occur on seed 31337. Comparator selection and paired ELL-minus-comparator sizing remain blocked.",
+    "report": "research/FROZEN_ELIGIBLE_DEVELOPMENT_REPORT_2026_08_11.md"
+  },
   "conditions": {
     "eligible_comparators": [
       "bm25",
@@ -232,7 +246,7 @@
     "DONE 2026-08-11: floor_ceiling_and_q999_pass_marks_recomputed_once_on_the_frozen_scorer",
     "claim_scope_wording_landed_in_paper_and_readme",
     "sizing_derived_from_development_between_rule_sd",
-    "committed_eligible_table_de1d0be9_revealed_after_bands_are_fixed",
+    "DONE 2026-08-11: committed_eligible_table_de1d0be9_revealed_after_bands_were_fixed_and_labelled_invalidated_historical_evidence",
     "immutable_tag_or_release"
   ],
   "frozen_scorer": {

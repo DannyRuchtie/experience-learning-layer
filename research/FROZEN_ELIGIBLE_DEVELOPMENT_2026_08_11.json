@@ -1,0 +1,928 @@
+{
+  "band_artifact_sha256": "5bba9aea9f6cd5948072db58ad632942deb982355edb817d907987c5503e0637",
+  "eligible_conditions_executed": [
+    "bm25",
+    "exact-vector",
+    "fused-retrieval",
+    "direct-insight"
+  ],
+  "measurement": "ell.frozen-eligible-development.v1",
+  "partition": "development",
+  "rows": [
+    {
+      "accuracy": 0.6279761904761905,
+      "comparator": "bm25",
+      "margin_above_mark": 0.05059523809523814,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5773809523809523,
+      "seed": 1729,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5238095238095238,
+      "comparator": "bm25",
+      "margin_above_mark": -0.038690476190476164,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5625,
+      "seed": 1729,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.45535714285714285,
+      "comparator": "bm25",
+      "margin_above_mark": -0.11904761904761901,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 1729,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6279761904761905,
+      "comparator": "exact-vector",
+      "margin_above_mark": 0.05059523809523814,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5773809523809523,
+      "seed": 1729,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5208333333333334,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.04166666666666663,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5625,
+      "seed": 1729,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.49702380952380953,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.07738095238095233,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 1729,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6309523809523809,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": 0.0535714285714286,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5773809523809523,
+      "seed": 1729,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5297619047619048,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.03273809523809523,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5625,
+      "seed": 1729,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.46726190476190477,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.1071428571428571,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 1729,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6101190476190477,
+      "comparator": "direct-insight",
+      "margin_above_mark": 0.032738095238095344,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5773809523809523,
+      "seed": 1729,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5476190476190477,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.014880952380952328,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5625,
+      "seed": 1729,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.48214285714285715,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.09226190476190471,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 1729,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6398809523809523,
+      "comparator": "bm25",
+      "margin_above_mark": 0.06547619047619047,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 11,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5297619047619048,
+      "comparator": "bm25",
+      "margin_above_mark": -0.059523809523809534,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 11,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.44345238095238093,
+      "comparator": "bm25",
+      "margin_above_mark": -0.13095238095238093,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 11,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6398809523809523,
+      "comparator": "exact-vector",
+      "margin_above_mark": 0.06547619047619047,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 11,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5714285714285714,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.017857142857142905,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 11,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.47619047619047616,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.0982142857142857,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 11,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6369047619047619,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": 0.0625,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 11,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5684523809523809,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.02083333333333337,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 11,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.42857142857142855,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.14583333333333331,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 11,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.625,
+      "comparator": "direct-insight",
+      "margin_above_mark": 0.05059523809523814,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 11,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5803571428571429,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.008928571428571397,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 11,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.46130952380952384,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.11309523809523803,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 11,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6696428571428571,
+      "comparator": "bm25",
+      "margin_above_mark": 0.07738095238095233,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5922619047619048,
+      "seed": 42,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5922619047619048,
+      "comparator": "bm25",
+      "margin_above_mark": 0.011904761904761862,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5803571428571429,
+      "seed": 42,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.4642857142857143,
+      "comparator": "bm25",
+      "margin_above_mark": -0.10416666666666663,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 42,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6636904761904762,
+      "comparator": "exact-vector",
+      "margin_above_mark": 0.0714285714285714,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5922619047619048,
+      "seed": 42,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.6041666666666666,
+      "comparator": "exact-vector",
+      "margin_above_mark": 0.023809523809523725,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5803571428571429,
+      "seed": 42,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.4642857142857143,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.10416666666666663,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 42,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6577380952380952,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": 0.06547619047619047,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5922619047619048,
+      "seed": 42,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.6369047619047619,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": 0.05654761904761896,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5803571428571429,
+      "seed": 42,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.49702380952380953,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.0714285714285714,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 42,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6458333333333334,
+      "comparator": "direct-insight",
+      "margin_above_mark": 0.0535714285714286,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5922619047619048,
+      "seed": 42,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.6398809523809523,
+      "comparator": "direct-insight",
+      "margin_above_mark": 0.05952380952380942,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5803571428571429,
+      "seed": 42,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.5,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.06845238095238093,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 42,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.4880952380952381,
+      "comparator": "bm25",
+      "margin_above_mark": -0.07142857142857145,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 101,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.6398809523809523,
+      "comparator": "bm25",
+      "margin_above_mark": 0.0803571428571428,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 101,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.47619047619047616,
+      "comparator": "bm25",
+      "margin_above_mark": -0.11011904761904767,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5863095238095238,
+      "seed": 101,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.48214285714285715,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.07738095238095238,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 101,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5595238095238095,
+      "comparator": "exact-vector",
+      "margin_above_mark": 0.0,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 101,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.4255952380952381,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.16071428571428575,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5863095238095238,
+      "seed": 101,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.48214285714285715,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.07738095238095238,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 101,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.6101190476190477,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": 0.05059523809523814,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 101,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.44345238095238093,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.1428571428571429,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5863095238095238,
+      "seed": 101,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.4583333333333333,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.10119047619047622,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 101,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5833333333333334,
+      "comparator": "direct-insight",
+      "margin_above_mark": 0.023809523809523836,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 101,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.4255952380952381,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.16071428571428575,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5863095238095238,
+      "seed": 101,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.4642857142857143,
+      "comparator": "bm25",
+      "margin_above_mark": -0.12202380952380953,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5863095238095238,
+      "seed": 777,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.6190476190476191,
+      "comparator": "bm25",
+      "margin_above_mark": 0.029761904761904767,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 777,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.5119047619047619,
+      "comparator": "bm25",
+      "margin_above_mark": -0.044642857142857206,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5565476190476191,
+      "seed": 777,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.46726190476190477,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.11904761904761907,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5863095238095238,
+      "seed": 777,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5446428571428571,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.044642857142857206,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 777,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.4494047619047619,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.10714285714285715,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5565476190476191,
+      "seed": 777,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.46726190476190477,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.11904761904761907,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5863095238095238,
+      "seed": 777,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5625,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.0267857142857143,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 777,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.4642857142857143,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.09226190476190477,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5565476190476191,
+      "seed": 777,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.4494047619047619,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.13690476190476192,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5863095238095238,
+      "seed": 777,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5684523809523809,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.02083333333333337,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 777,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.5059523809523809,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.05059523809523814,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5565476190476191,
+      "seed": 777,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.44047619047619047,
+      "comparator": "bm25",
+      "margin_above_mark": -0.1428571428571429,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5833333333333334,
+      "seed": 2026,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5654761904761905,
+      "comparator": "bm25",
+      "margin_above_mark": -0.011904761904761862,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5773809523809523,
+      "seed": 2026,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.5029761904761905,
+      "comparator": "bm25",
+      "margin_above_mark": -0.06547619047619047,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 2026,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.43154761904761907,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.1517857142857143,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5833333333333334,
+      "seed": 2026,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5595238095238095,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.017857142857142794,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5773809523809523,
+      "seed": 2026,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.4583333333333333,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.11011904761904762,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 2026,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.43452380952380953,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.14880952380952384,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5833333333333334,
+      "seed": 2026,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5803571428571429,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": 0.0029761904761905766,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5773809523809523,
+      "seed": 2026,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.4642857142857143,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.10416666666666663,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 2026,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.4226190476190476,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.16071428571428575,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5833333333333334,
+      "seed": 2026,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5625,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.014880952380952328,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5773809523809523,
+      "seed": 2026,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.47619047619047616,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.09226190476190477,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 2026,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6428571428571429,
+      "comparator": "bm25",
+      "margin_above_mark": 0.059523809523809534,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5833333333333334,
+      "seed": 31337,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.49107142857142855,
+      "comparator": "bm25",
+      "margin_above_mark": -0.08333333333333331,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 31337,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.5089285714285714,
+      "comparator": "bm25",
+      "margin_above_mark": -0.0625,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5714285714285714,
+      "seed": 31337,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6428571428571429,
+      "comparator": "exact-vector",
+      "margin_above_mark": 0.059523809523809534,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5833333333333334,
+      "seed": 31337,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5595238095238095,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.014880952380952328,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 31337,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.6041666666666666,
+      "comparator": "exact-vector",
+      "margin_above_mark": 0.03273809523809523,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5714285714285714,
+      "seed": 31337,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6428571428571429,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": 0.059523809523809534,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5833333333333334,
+      "seed": 31337,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5505952380952381,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.023809523809523725,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 31337,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.5892857142857143,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": 0.017857142857142905,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5714285714285714,
+      "seed": 31337,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6071428571428571,
+      "comparator": "direct-insight",
+      "margin_above_mark": 0.023809523809523725,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5833333333333334,
+      "seed": 31337,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5892857142857143,
+      "comparator": "direct-insight",
+      "margin_above_mark": 0.014880952380952439,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5744047619047619,
+      "seed": 31337,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.6339285714285714,
+      "comparator": "direct-insight",
+      "margin_above_mark": 0.0625,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5714285714285714,
+      "seed": 31337,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6607142857142857,
+      "comparator": "bm25",
+      "margin_above_mark": 0.10119047619047616,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 8080,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5684523809523809,
+      "comparator": "bm25",
+      "margin_above_mark": -0.02083333333333337,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 8080,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.4583333333333333,
+      "comparator": "bm25",
+      "margin_above_mark": -0.11011904761904762,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 8080,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6577380952380952,
+      "comparator": "exact-vector",
+      "margin_above_mark": 0.0982142857142857,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 8080,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.5892857142857143,
+      "comparator": "exact-vector",
+      "margin_above_mark": 0.0,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 8080,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.5654761904761905,
+      "comparator": "exact-vector",
+      "margin_above_mark": -0.0029761904761904656,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 8080,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6577380952380952,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": 0.0982142857142857,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 8080,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.625,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": 0.0357142857142857,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 8080,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.5208333333333334,
+      "comparator": "fused-retrieval",
+      "margin_above_mark": -0.04761904761904756,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 8080,
+      "stratum": "far"
+    },
+    {
+      "accuracy": 0.6160714285714286,
+      "comparator": "direct-insight",
+      "margin_above_mark": 0.05654761904761907,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5595238095238095,
+      "seed": 8080,
+      "stratum": "near"
+    },
+    {
+      "accuracy": 0.6190476190476191,
+      "comparator": "direct-insight",
+      "margin_above_mark": 0.029761904761904767,
+      "passes": true,
+      "q999_pass_mark_exclusive": 0.5892857142857143,
+      "seed": 8080,
+      "stratum": "intermediate"
+    },
+    {
+      "accuracy": 0.5267857142857143,
+      "comparator": "direct-insight",
+      "margin_above_mark": -0.04166666666666663,
+      "passes": false,
+      "q999_pass_mark_exclusive": 0.5684523809523809,
+      "seed": 8080,
+      "stratum": "far"
+    }
+  ],
+  "sealed_generated": false,
+  "seeds": [
+    1729,
+    11,
+    42,
+    101,
+    777,
+    2026,
+    31337,
+    8080
+  ],
+  "sizing_warning": "The far-rule SDs are comparator-only descriptive statistics, not the per-rule paired ELL-minus-comparator SD required by clusters_for_power.",
+  "source_commit": "3da8b23eba3e42894da7ec3486b416c77da22317",
+  "summary": {
+    "bm25": {
+      "far_accuracy_mean": 0.4776785714285714,
+      "far_accuracy_population_sd_across_seeds": 0.025033636668542733,
+      "far_rule_accuracy_population_sd": 0.21962894361661364,
+      "far_seed_passes": 0,
+      "far_seed_tests": 8,
+      "seed_stratum_passes": 8,
+      "seed_stratum_tests": 24
+    },
+    "direct-insight": {
+      "far_accuracy_mean": 0.5014880952380952,
+      "far_accuracy_population_sd_across_seeds": 0.05765288877324558,
+      "far_rule_accuracy_population_sd": 0.27893351899967483,
+      "far_seed_passes": 1,
+      "far_seed_tests": 8,
+      "seed_stratum_passes": 10,
+      "seed_stratum_tests": 24
+    },
+    "exact-vector": {
+      "far_accuracy_mean": 0.4925595238095238,
+      "far_accuracy_population_sd_across_seeds": 0.057421968397543856,
+      "far_rule_accuracy_population_sd": 0.27940944743164814,
+      "far_seed_passes": 1,
+      "far_seed_tests": 8,
+      "seed_stratum_passes": 7,
+      "seed_stratum_tests": 24
+    },
+    "fused-retrieval": {
+      "far_accuracy_mean": 0.484375,
+      "far_accuracy_population_sd_across_seeds": 0.047937689487632794,
+      "far_rule_accuracy_population_sd": 0.23023555415141286,
+      "far_seed_passes": 1,
+      "far_seed_tests": 8,
+      "seed_stratum_passes": 10,
+      "seed_stratum_tests": 24
+    }
+  }
+}
