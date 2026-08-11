@@ -304,7 +304,7 @@ Measured on the **development** partition only. Sealed is not opened for any of 
 | A9 | **Null-policy leak battery** — per-record selection precision, every null policy, every stratum; **train + development** | `<= 2x 1/rule_count` |
 | A9b | Null-policy **accuracy** vs its empirically calibrated leak-free null | within the simulated null's 95% interval |
 | A10 | **Answer-stage order invariance** — shuffle a fixed selected evidence set, every condition | emitted action identical |
-| A11 | **Structural seed sensitivity** — key statistics across >=8 seeds | between-seed sd `> 0`; a constant means the seed is cosmetic |
+| A11 | **Structural seed sensitivity** — key statistics across >=8 seeds | between-seed sd `>= 0.5 x` the binomial SE at that stratum's N |
 
 ## The seed varies surface text, not structure (2026-08-11)
 
@@ -360,6 +360,29 @@ never touches structure.
   explicitly *not* evidence of robustness. Phase 1's reproduction criterion is amended to require
   different-seed runs showing conclusions stable under structural variation.
 - **A11 added** so a zero-variance statistic fails loudly instead of looking like precision.
+
+### A11 sharpened before encoding (2026-08-11)
+
+`sd > 0` was too weak, and Forge's own post-repair data demonstrates why. After A10, the far oracle
+does vary across eight development seeds — but only over `0.8482–0.8542`:
+
+| quantity | value |
+|---|---|
+| spread across 8 seeds | 0.0060 |
+| implied between-seed sd | ≈ 0.0017 |
+| binomial SE at p≈0.851, N=336 | 0.0194 |
+| **ratio observed / genuine-resampling** | **0.09x** |
+
+So the seed now moves the statistic by roughly a tenth of what real structural resampling would
+produce. Under `sd > 0` that passes; the underlying defect is untouched.
+
+**A11 is therefore:** between-seed sd `>= 0.5 x` the binomial SE at that stratum's N. At N=336 that
+is a floor of `0.0097`, which the current 0.0017 **fails**. The criterion now measures whether
+structure is genuinely resampled rather than merely perturbed.
+
+Note also that Forge's post-A10 far oracle of `0.8482` is `285/336`, against Reviewer's recency-order
+`6/7 = 288/336`. The A10 order-invariance change moved three tasks; the two figures are consistent and
+neither is a constant-cadence artifact in the way `4/7` was.
 
 ## A9 — the null-policy leak battery (amendment, 2026-08-11)
 
