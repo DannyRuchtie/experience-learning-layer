@@ -1,0 +1,392 @@
+{
+  "conditions_executed": [
+    "action-filter",
+    "oldest-context",
+    "oracle-retrieval",
+    "record-id-order",
+    "rolling-summary",
+    "uniform-random-visible"
+  ],
+  "eligible_conditions_executed": [],
+  "measurement": "ell.frozen-instrument-bands.v1",
+  "partition": "development",
+  "pass_rule": "score > floor_q999_exclusive per seed and stratum",
+  "permutation_seed": 90009,
+  "permutations_per_seed": 10000,
+  "quantile": 0.999,
+  "quantile_rule": "nearest_rank_ceil_probability_times_n_minus_one",
+  "rows": [
+    {
+      "admissible": true,
+      "corridor": 0.26547619047619053,
+      "dataset_hash": "sha256:b193f9c9029c8d71a3311d9ea40c11b0313656d7782896ff85e3af3ce32109bf",
+      "effect_reserved_upper_inclusive": 0.8428571428571429,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5773809523809523,
+      "oracle_ceiling": 0.8928571428571429,
+      "oracle_result_hash": "sha256:fd873ba4f499a582c72e97d4adae53cc00eea0e1fe3a8cc57a1afa6c88c0228b",
+      "seed": 1729,
+      "stratum": "near"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.19404761904761902,
+      "dataset_hash": "sha256:b193f9c9029c8d71a3311d9ea40c11b0313656d7782896ff85e3af3ce32109bf",
+      "effect_reserved_upper_inclusive": 0.756547619047619,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5625,
+      "oracle_ceiling": 0.8065476190476191,
+      "oracle_result_hash": "sha256:fd873ba4f499a582c72e97d4adae53cc00eea0e1fe3a8cc57a1afa6c88c0228b",
+      "seed": 1729,
+      "stratum": "intermediate"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.18511904761904763,
+      "dataset_hash": "sha256:b193f9c9029c8d71a3311d9ea40c11b0313656d7782896ff85e3af3ce32109bf",
+      "effect_reserved_upper_inclusive": 0.7595238095238095,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5744047619047619,
+      "oracle_ceiling": 0.8095238095238095,
+      "oracle_result_hash": "sha256:fd873ba4f499a582c72e97d4adae53cc00eea0e1fe3a8cc57a1afa6c88c0228b",
+      "seed": 1729,
+      "stratum": "far"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.1791666666666667,
+      "dataset_hash": "sha256:1ca2936d0aac690c4cf327f9755d60a3cffd1fefa02a6b41a93d507cabe40e95",
+      "effect_reserved_upper_inclusive": 0.7535714285714286,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5744047619047619,
+      "oracle_ceiling": 0.8035714285714286,
+      "oracle_result_hash": "sha256:d241d66e147952466b76d4d03c981d65c7a510a61138092d6d451a22dde52e18",
+      "seed": 11,
+      "stratum": "near"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.16428571428571426,
+      "dataset_hash": "sha256:1ca2936d0aac690c4cf327f9755d60a3cffd1fefa02a6b41a93d507cabe40e95",
+      "effect_reserved_upper_inclusive": 0.7535714285714286,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5892857142857143,
+      "oracle_ceiling": 0.8035714285714286,
+      "oracle_result_hash": "sha256:d241d66e147952466b76d4d03c981d65c7a510a61138092d6d451a22dde52e18",
+      "seed": 11,
+      "stratum": "intermediate"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.18214285714285716,
+      "dataset_hash": "sha256:1ca2936d0aac690c4cf327f9755d60a3cffd1fefa02a6b41a93d507cabe40e95",
+      "effect_reserved_upper_inclusive": 0.756547619047619,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5744047619047619,
+      "oracle_ceiling": 0.8065476190476191,
+      "oracle_result_hash": "sha256:d241d66e147952466b76d4d03c981d65c7a510a61138092d6d451a22dde52e18",
+      "seed": 11,
+      "stratum": "far"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.21785714285714286,
+      "dataset_hash": "sha256:45db9cd143e131a3ad5d8d2679cfd17739c794426c60416553971ad28ed8367b",
+      "effect_reserved_upper_inclusive": 0.8101190476190476,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5922619047619048,
+      "oracle_ceiling": 0.8601190476190477,
+      "oracle_result_hash": "sha256:e6510550bfb327e7520e343438c23bf8fe724a3d739eca5c59760b6d7eca0691",
+      "seed": 42,
+      "stratum": "near"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.3220238095238094,
+      "dataset_hash": "sha256:45db9cd143e131a3ad5d8d2679cfd17739c794426c60416553971ad28ed8367b",
+      "effect_reserved_upper_inclusive": 0.9023809523809523,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5803571428571429,
+      "oracle_ceiling": 0.9523809523809523,
+      "oracle_result_hash": "sha256:e6510550bfb327e7520e343438c23bf8fe724a3d739eca5c59760b6d7eca0691",
+      "seed": 42,
+      "stratum": "intermediate"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.15535714285714286,
+      "dataset_hash": "sha256:45db9cd143e131a3ad5d8d2679cfd17739c794426c60416553971ad28ed8367b",
+      "effect_reserved_upper_inclusive": 0.7238095238095238,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5684523809523809,
+      "oracle_ceiling": 0.7738095238095238,
+      "oracle_result_hash": "sha256:e6510550bfb327e7520e343438c23bf8fe724a3d739eca5c59760b6d7eca0691",
+      "seed": 42,
+      "stratum": "far"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.20892857142857135,
+      "dataset_hash": "sha256:bfc490db90f62f6bfc89859ca8a5e39eb0989370edb67e1054d8315f9afad9e0",
+      "effect_reserved_upper_inclusive": 0.7684523809523809,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5595238095238095,
+      "oracle_ceiling": 0.8184523809523809,
+      "oracle_result_hash": "sha256:3ecabe182ec46c29e080abc8071b253e03b14a3e977cf8f07381c6fed5bf537e",
+      "seed": 101,
+      "stratum": "near"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.3041666666666666,
+      "dataset_hash": "sha256:bfc490db90f62f6bfc89859ca8a5e39eb0989370edb67e1054d8315f9afad9e0",
+      "effect_reserved_upper_inclusive": 0.8636904761904761,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5595238095238095,
+      "oracle_ceiling": 0.9136904761904762,
+      "oracle_result_hash": "sha256:3ecabe182ec46c29e080abc8071b253e03b14a3e977cf8f07381c6fed5bf537e",
+      "seed": 101,
+      "stratum": "intermediate"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.22976190476190472,
+      "dataset_hash": "sha256:bfc490db90f62f6bfc89859ca8a5e39eb0989370edb67e1054d8315f9afad9e0",
+      "effect_reserved_upper_inclusive": 0.8160714285714286,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5863095238095238,
+      "oracle_ceiling": 0.8660714285714286,
+      "oracle_result_hash": "sha256:3ecabe182ec46c29e080abc8071b253e03b14a3e977cf8f07381c6fed5bf537e",
+      "seed": 101,
+      "stratum": "far"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.20297619047619042,
+      "dataset_hash": "sha256:18e81659899d2cc5b83a68178ff3815a1a99edf75cb95a7507218fff8182de8b",
+      "effect_reserved_upper_inclusive": 0.7892857142857143,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5863095238095238,
+      "oracle_ceiling": 0.8392857142857143,
+      "oracle_result_hash": "sha256:7471e3f273ee103ba5e21e83d4d119d2e004aeac139610caedf12e20823cf05e",
+      "seed": 777,
+      "stratum": "near"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.22083333333333333,
+      "dataset_hash": "sha256:18e81659899d2cc5b83a68178ff3815a1a99edf75cb95a7507218fff8182de8b",
+      "effect_reserved_upper_inclusive": 0.8101190476190476,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5892857142857143,
+      "oracle_ceiling": 0.8601190476190477,
+      "oracle_result_hash": "sha256:7471e3f273ee103ba5e21e83d4d119d2e004aeac139610caedf12e20823cf05e",
+      "seed": 777,
+      "stratum": "intermediate"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.2744047619047618,
+      "dataset_hash": "sha256:18e81659899d2cc5b83a68178ff3815a1a99edf75cb95a7507218fff8182de8b",
+      "effect_reserved_upper_inclusive": 0.8309523809523809,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5565476190476191,
+      "oracle_ceiling": 0.8809523809523809,
+      "oracle_result_hash": "sha256:7471e3f273ee103ba5e21e83d4d119d2e004aeac139610caedf12e20823cf05e",
+      "seed": 777,
+      "stratum": "far"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.21785714285714275,
+      "dataset_hash": "sha256:537d918d854a848f4b5135a28aa8d78607b3da69caae3788e320d8586f8eca75",
+      "effect_reserved_upper_inclusive": 0.8011904761904761,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5833333333333334,
+      "oracle_ceiling": 0.8511904761904762,
+      "oracle_result_hash": "sha256:d90cd527364f0b834c02c46670b5a5d8a42d70cbb4ecb6da47cbe68a2143f188",
+      "seed": 2026,
+      "stratum": "near"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.27440476190476193,
+      "dataset_hash": "sha256:537d918d854a848f4b5135a28aa8d78607b3da69caae3788e320d8586f8eca75",
+      "effect_reserved_upper_inclusive": 0.8517857142857143,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5773809523809523,
+      "oracle_ceiling": 0.9017857142857143,
+      "oracle_result_hash": "sha256:d90cd527364f0b834c02c46670b5a5d8a42d70cbb4ecb6da47cbe68a2143f188",
+      "seed": 2026,
+      "stratum": "intermediate"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.2833333333333333,
+      "dataset_hash": "sha256:537d918d854a848f4b5135a28aa8d78607b3da69caae3788e320d8586f8eca75",
+      "effect_reserved_upper_inclusive": 0.8517857142857143,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5684523809523809,
+      "oracle_ceiling": 0.9017857142857143,
+      "oracle_result_hash": "sha256:d90cd527364f0b834c02c46670b5a5d8a42d70cbb4ecb6da47cbe68a2143f188",
+      "seed": 2026,
+      "stratum": "far"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.15833333333333321,
+      "dataset_hash": "sha256:0ccdb74e272e05ae06cf4f2d142a0ddde45ffc0f190bf83e89f511016c3a475f",
+      "effect_reserved_upper_inclusive": 0.7416666666666666,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5833333333333334,
+      "oracle_ceiling": 0.7916666666666666,
+      "oracle_result_hash": "sha256:760ccc3558b5d2561607f9bcb9a73dce46a13962f2104c974c1530ed27df548b",
+      "seed": 31337,
+      "stratum": "near"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.19999999999999996,
+      "dataset_hash": "sha256:0ccdb74e272e05ae06cf4f2d142a0ddde45ffc0f190bf83e89f511016c3a475f",
+      "effect_reserved_upper_inclusive": 0.7744047619047618,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5744047619047619,
+      "oracle_ceiling": 0.8244047619047619,
+      "oracle_result_hash": "sha256:760ccc3558b5d2561607f9bcb9a73dce46a13962f2104c974c1530ed27df548b",
+      "seed": 31337,
+      "stratum": "intermediate"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.23869047619047623,
+      "dataset_hash": "sha256:0ccdb74e272e05ae06cf4f2d142a0ddde45ffc0f190bf83e89f511016c3a475f",
+      "effect_reserved_upper_inclusive": 0.8101190476190476,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5714285714285714,
+      "oracle_ceiling": 0.8601190476190477,
+      "oracle_result_hash": "sha256:760ccc3558b5d2561607f9bcb9a73dce46a13962f2104c974c1530ed27df548b",
+      "seed": 31337,
+      "stratum": "far"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.2744047619047618,
+      "dataset_hash": "sha256:f17573e1cd0fa232c6e80e5f860dcd0ed5e495d6c1db00b22081711ba620a6cd",
+      "effect_reserved_upper_inclusive": 0.8339285714285714,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5595238095238095,
+      "oracle_ceiling": 0.8839285714285714,
+      "oracle_result_hash": "sha256:56f549417c0da1da93b5d61c2f3e9dd90979d92e2ea4b059aa6d6eeed64ba45b",
+      "seed": 8080,
+      "stratum": "near"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.2595238095238095,
+      "dataset_hash": "sha256:f17573e1cd0fa232c6e80e5f860dcd0ed5e495d6c1db00b22081711ba620a6cd",
+      "effect_reserved_upper_inclusive": 0.8488095238095238,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5892857142857143,
+      "oracle_ceiling": 0.8988095238095238,
+      "oracle_result_hash": "sha256:56f549417c0da1da93b5d61c2f3e9dd90979d92e2ea4b059aa6d6eeed64ba45b",
+      "seed": 8080,
+      "stratum": "intermediate"
+    },
+    {
+      "admissible": true,
+      "corridor": 0.14047619047619042,
+      "dataset_hash": "sha256:f17573e1cd0fa232c6e80e5f860dcd0ed5e495d6c1db00b22081711ba620a6cd",
+      "effect_reserved_upper_inclusive": 0.7089285714285714,
+      "floor_policies": [
+        "uniform-random-visible"
+      ],
+      "floor_q999_exclusive": 0.5684523809523809,
+      "oracle_ceiling": 0.7589285714285714,
+      "oracle_result_hash": "sha256:56f549417c0da1da93b5d61c2f3e9dd90979d92e2ea4b059aa6d6eeed64ba45b",
+      "seed": 8080,
+      "stratum": "far"
+    }
+  ],
+  "sealed_generated": false,
+  "seeds": [
+    1729,
+    11,
+    42,
+    101,
+    777,
+    2026,
+    31337,
+    8080
+  ],
+  "source_commit": "12772c3a18c8de36473e1cdbcf2c747d73443e67",
+  "summary": {
+    "far": {
+      "ceiling_mean": 0.8322172619047619,
+      "ceiling_population_sd": 0.04885708112508284,
+      "corridor_min": 0.14047619047619042,
+      "floor_mean": 0.5710565476190476,
+      "floor_worst_seed": 0.5863095238095238
+    },
+    "intermediate": {
+      "ceiling_mean": 0.8701636904761905,
+      "ceiling_population_sd": 0.05141875104307147,
+      "corridor_min": 0.16428571428571426,
+      "floor_mean": 0.5777529761904762,
+      "floor_worst_seed": 0.5892857142857143
+    },
+    "near": {
+      "ceiling_mean": 0.8426339285714286,
+      "ceiling_population_sd": 0.03414319323384261,
+      "corridor_min": 0.15833333333333321,
+      "floor_mean": 0.5770089285714286,
+      "floor_worst_seed": 0.5922619047619048
+    }
+  },
+  "target_effect": 0.05
+}

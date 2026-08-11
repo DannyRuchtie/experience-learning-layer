@@ -23,6 +23,7 @@ from ell.contracts import (
     RunManifest,
 )
 from ell.identifiers import canonical_json, sha256_digest, stable_id
+from ell.statistics import empirical_quantile
 
 BENCHMARK_VERSION = "ell-benchmark.v0.1"
 
@@ -176,6 +177,7 @@ class NullPolicyCalibration(BenchmarkModel):
     fixed_output_hash: str
     observed_accuracy: float = Field(ge=0.0, le=1.0)
     null_p95: float = Field(ge=0.0, le=1.0)
+    null_q999: float = Field(ge=0.0, le=1.0)
     exceeds_null: bool
 
 
@@ -1320,8 +1322,8 @@ def calibrate_null_policy_accuracy(
                 for task_id in task_ids
             ) / len(task_ids)
             values = sorted(null_values[policy_id][stratum])
-            percentile_index = max(0, math.ceil(0.95 * len(values)) - 1)
-            null_p95 = values[percentile_index]
+            null_p95 = empirical_quantile(values, 0.95)
+            null_q999 = empirical_quantile(values, 0.999)
             calibrations.append(
                 NullPolicyCalibration(
                     policy_id=policy_id,
@@ -1332,6 +1334,7 @@ def calibrate_null_policy_accuracy(
                     fixed_output_hash=fixed_output_hashes[policy_id],
                     observed_accuracy=observed,
                     null_p95=null_p95,
+                    null_q999=null_q999,
                     exceeds_null=observed > null_p95,
                 )
             )
