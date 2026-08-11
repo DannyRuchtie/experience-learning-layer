@@ -221,10 +221,18 @@ def test_revision_preserves_lineage_and_supersedes_prior_version(core: ELLCore) 
         idempotency_key="concept-v2",
         actor_id="validator",
     )
-    stored_first = core.store.concepts[(artifact.workspace_id, first.version_id)]
-    assert stored_first.lifecycle_state is LifecycleState.SUPERSEDED
-    assert stored_first.valid_to == second.valid_from
+    current_first = core.concept_version(artifact.workspace_id, first.version_id)
+    assert current_first is not None
+    assert current_first.lifecycle_state is LifecycleState.SUPERSEDED
+    assert current_first.valid_to == second.valid_from
     assert first.version_id in second.parent_versions
+
+    # The canonical record is never rewritten. Supersession is an appended fact, so the
+    # stored version still says what was believed when it was committed.
+    stored_first = core.store.concepts[(artifact.workspace_id, first.version_id)]
+    assert stored_first == first
+    assert stored_first.lifecycle_state is not LifecycleState.SUPERSEDED
+    assert stored_first.valid_to is None
 
 
 def test_deletion_cascades_and_invalidates_projections(core: ELLCore) -> None:
@@ -279,3 +287,37 @@ def test_application_and_independent_outcome_are_traced(core: ELLCore) -> None:
     core.record_outcome(outcome, idempotency_key="outcome", actor_id="observer")
     assert core.store.outcomes[(artifact.workspace_id, outcome.outcome_id)] == outcome
     assert core.store.concepts[(artifact.workspace_id, committed.version_id)] == committed
+
+
+def test_belief_transitions_never_rewrite_canonical_records(core: ELLCore) -> None:
+    """Canonical records are write-once; a change of belief is an appended fact.
+
+    This is the property the durable substrate enforces and the in-memory store used to
+    hide, because a dict lets you overwrite anything. Without this test the two halves of
+    the system can silently disagree about whether canonical state is mutable.
+    """
+    artifact = source()
+    first = commit_fixture(core, artifact)
+    stored_reflection = dict(core.store.reflections)
+    stored_concepts = dict(core.store.concepts)
+
+    core.commit_concept(
+        concept(artifact, version=2),
+        validated_reflection_ids=[reflection(artifact).reflection_id],
+        idempotency_key="concept-v2",
+        actor_id="validator",
+    )
+    core.invalidate_source(
+        artifact.workspace_id, artifact.source_id, actor_id="operator"
+    )
+
+    # Supersession and the deletion cascade both changed present state...
+    current = core.concept_version(artifact.workspace_id, first.version_id)
+    assert current is not None
+    assert current.lifecycle_state is LifecycleState.DELETED
+
+    # ...without rewriting a single canonical record that already existed.
+    for key, value in stored_reflection.items():
+        assert core.store.reflections[key] == value
+    for key, value in stored_concepts.items():
+        assert core.store.concepts[key] == value

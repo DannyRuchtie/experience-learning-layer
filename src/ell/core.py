@@ -55,6 +55,13 @@ class InMemoryStore:
     episodes: Dict[Tuple[str, str], Episode] = field(default_factory=dict)
     reflections: Dict[Tuple[str, str], Reflection] = field(default_factory=dict)
     concepts: Dict[Tuple[str, str], ConceptVersion] = field(default_factory=dict)
+    # Append-only belief transitions. Canonical records above are written once; a
+    # change of belief about them is recorded here as a new fact and derived on read,
+    # never by rewriting the record of what was believed at the time.
+    reflection_reviews: Dict[Tuple[str, str], ReviewState] = field(default_factory=dict)
+    concept_transitions: Dict[Tuple[str, str], Tuple[LifecycleState, Optional[datetime]]] = field(
+        default_factory=dict
+    )
     evidence_links: Dict[Tuple[str, str], EvidenceLink] = field(default_factory=dict)
     applications: Dict[Tuple[str, str], ApplicationReceipt] = field(default_factory=dict)
     outcomes: Dict[Tuple[str, str], Outcome] = field(default_factory=dict)
@@ -179,14 +186,14 @@ class ELLCore:
     ) -> Reflection:
         """Apply a deterministic or human review decision without rewriting content."""
         key = (workspace_id, reflection_id)
-        current = self.store.reflections.get(key)
+        current = self._reflection(workspace_id, reflection_id)
         if current is None:
             raise KeyError(reflection_id)
         if current.review_state is not ReviewState.QUARANTINED:
             raise CoreError("only quarantined reflections may be reviewed")
         state = ReviewState.VALIDATED if accept else ReviewState.REJECTED
+        self.store.reflection_reviews[key] = state
         reviewed = current.model_copy(update={"review_state": state})
-        self.store.reflections[key] = reviewed
         self._audit(workspace_id, actor_id, "review_reflection", reflection_id, state.value)
         return reviewed
 
@@ -206,7 +213,7 @@ class ELLCore:
             return self._typed(prior, ConceptVersion)
         self._validate_refs(concept.workspace_id, [*concept.support, *concept.counterevidence])
         for reflection_id in validated_reflection_ids:
-            reflection = self.store.reflections.get((concept.workspace_id, reflection_id))
+            reflection = self._reflection(concept.workspace_id, reflection_id)
             if reflection is None or reflection.review_state is not ReviewState.VALIDATED:
                 raise CoreError("concept requires validated reflections")
         prior_versions = self._concept_versions(concept.workspace_id, concept.concept_id)
@@ -222,13 +229,10 @@ class ELLCore:
             old = prior_versions[-1]
             if old.lifecycle_state in {LifecycleState.DELETED, LifecycleState.RETIRED}:
                 raise CoreError("deleted or retired concepts cannot be revised")
-            superseded = old.model_copy(
-                update={
-                    "lifecycle_state": LifecycleState.SUPERSEDED,
-                    "valid_to": concept.valid_from,
-                }
+            self.store.concept_transitions[(concept.workspace_id, old.version_id)] = (
+                LifecycleState.SUPERSEDED,
+                concept.valid_from,
             )
-            self.store.concepts[(concept.workspace_id, old.version_id)] = superseded
         self._put_once(self.store.concepts, concept.workspace_id, concept.version_id, concept)
         for ref in [*concept.support, *concept.counterevidence]:
             relation = (
@@ -401,15 +405,14 @@ class ELLCore:
         for object_key, reflection in list(self.store.reflections.items()):
             refs = [*reflection.support, *reflection.counterevidence]
             if object_key[0] == workspace_id and any(ref.source_id == source_id for ref in refs):
-                self.store.reflections[object_key] = reflection.model_copy(
-                    update={"review_state": ReviewState.REJECTED}
-                )
+                self.store.reflection_reviews[object_key] = ReviewState.REJECTED
                 invalidated.append(reflection.reflection_id)
         for object_key, concept in list(self.store.concepts.items()):
             refs = [*concept.support, *concept.counterevidence]
             if object_key[0] == workspace_id and any(ref.source_id == source_id for ref in refs):
-                self.store.concepts[object_key] = concept.model_copy(
-                    update={"lifecycle_state": LifecycleState.DELETED, "valid_to": self._clock()}
+                self.store.concept_transitions[object_key] = (
+                    LifecycleState.DELETED,
+                    self._clock(),
                 )
                 invalidated.append(concept.version_id)
         unreachable = sorted(self.store.projection_ids.pop(source_id, set()))
@@ -459,12 +462,45 @@ class ELLCore:
             for grant in source.grants
         )
 
+    def concept_version(self, workspace_id: str, version_id: str) -> Optional[ConceptVersion]:
+        """Current view of a concept version, with lifecycle derived from the transition log.
+
+        The stored record is never rewritten, so reading it directly returns what was
+        believed when it was written. Callers wanting present state use this.
+        """
+        return self._concept(workspace_id, version_id)
+
+    def reflection(self, workspace_id: str, reflection_id: str) -> Optional[Reflection]:
+        """Current view of a reflection, with review state derived from the review log."""
+        return self._reflection(workspace_id, reflection_id)
+
+    def _reflection(self, workspace_id: str, reflection_id: str) -> Optional[Reflection]:
+        """Return a reflection with its review state derived from the append-only log."""
+        stored = self.store.reflections.get((workspace_id, reflection_id))
+        if stored is None:
+            return None
+        state = self.store.reflection_reviews.get((workspace_id, reflection_id))
+        if state is None:
+            return stored
+        return stored.model_copy(update={"review_state": state})
+
+    def _concept(self, workspace_id: str, version_id: str) -> Optional[ConceptVersion]:
+        """Return a concept version with lifecycle derived from the append-only log."""
+        stored = self.store.concepts.get((workspace_id, version_id))
+        if stored is None:
+            return None
+        transition = self.store.concept_transitions.get((workspace_id, version_id))
+        if transition is None:
+            return stored
+        lifecycle, valid_to = transition
+        return stored.model_copy(update={"lifecycle_state": lifecycle, "valid_to": valid_to})
+
     def _concept_versions(
         self, workspace_id: str, concept_id: Optional[str] = None
     ) -> List[ConceptVersion]:
         concepts = [
-            concept
-            for (workspace, _), concept in self.store.concepts.items()
+            self._concept(workspace, version) or concept
+            for (workspace, version), concept in self.store.concepts.items()
             if workspace == workspace_id
             and (concept_id is None or concept.concept_id == concept_id)
         ]

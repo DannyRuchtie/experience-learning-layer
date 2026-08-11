@@ -41,7 +41,28 @@ record of what was believed at the time is altered rather than closed.
 This is the same shape as the leaks found earlier today — a property everyone assumed held, which no
 test asserted, and which only became visible when something independent refused to go along with it.
 
-## Options
+## Resolved 2026-08-11: option 2 implemented
+
+Belief transitions are now append-only. `InMemoryStore` gained `reflection_reviews` and
+`concept_transitions`; `review_reflection`, `commit_concept` and the deletion cascade append to
+them instead of rewriting canonical records; and `ELLCore.concept_version` / `ELLCore.reflection`
+expose the derived present state so callers no longer reach into the store.
+
+**The scope line is principled, not a shortcut.** Transitions that *record a belief* are append-only —
+review outcome, supersession, deletion of a derived concept. Transitions that *enact erasure* remain
+destructive, because destroying the content is the point: `invalidate_source` still clears source
+content and tombstones dependent episodes. Right-to-erasure and append-only evidence are different
+requirements and the code now distinguishes them.
+
+Guarded by `test_belief_transitions_never_rewrite_canonical_records`, which supersedes a concept and
+runs a deletion cascade, then asserts every pre-existing canonical record is byte-identical. Full
+suite 49 passed, Ruff clean.
+
+**Still to do:** the actual SQLite wiring. It is now unblocked — the mutation semantics no longer
+conflict — but it remains a mapping layer over the `Substrate` protocol plus a decision about where
+the append-only transition logs live durably.
+
+## Options considered
 
 1. **Give the substrate an explicit `replace`.** Cheapest, and it weakens write-once, which is the
    one property making the storage layer trustworthy.
