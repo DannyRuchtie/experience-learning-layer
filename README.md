@@ -329,9 +329,12 @@ publish `.qmd` sources as downloads instead of the rendered book.
 | [`chapters/14-research-artifact-status.qmd`](chapters/14-research-artifact-status.qmd) | Current implementation boundary |
 | [`chapters/assets/diagrams/`](chapters/assets/diagrams/) | Shared web and print diagrams |
 | [`examples/`](examples/) | Synthetic lifecycle examples |
-| [`research/research-contract-v0.6.json`](research/research-contract-v0.6.json) | Frozen estimand, gates, power assumptions, baseline selection, and analysis rules |
+| [`research/research-contract-v0.6.json`](research/research-contract-v0.6.json) | **Superseded — not a frozen contract.** Retained for history |
+| [`research/research-contract-v0.7.json`](research/research-contract-v0.7.json) | Accepted design direction; internally inconsistent on sizing, so not frozen either |
+| [`research/GENERATOR_REVISION_LOG.md`](research/GENERATOR_REVISION_LOG.md) | Every revision that invalidated prior measurements, and who found it |
+| [`research/INSTRUMENT_ACCEPTANCE_PRECOMMIT.md`](research/INSTRUMENT_ACCEPTANCE_PRECOMMIT.md) | Pass conditions fixed before repair, with all amendments and one retraction |
 | [`schemas/v0.6/`](schemas/v0.6/) | Generated canonical and benchmark JSON Schemas plus digest manifest |
-| [`src/ell/benchmark.py`](src/ell/benchmark.py) | Deterministic 50/200/1,000-event streams, sealed split handling, baselines, receipts, and manifests |
+| [`src/ell/benchmark.py`](src/ell/benchmark.py) | Deterministic event streams, sealed split handling, baselines, receipts, and manifests |
 | [`src/ell/core.py`](src/ell/core.py) | In-memory deterministic ELL-Core lifecycle and governance authority |
 | [`tests/`](tests/) | Reproducibility, contract, lifecycle, and adversarial evidence |
 | [`src/ell/study.py`](src/ell/study.py) | Frozen Phase 4 gates, comparator selection, and verdict logic |
