@@ -14,6 +14,82 @@ about the benchmark design.** It is not a reason to relax the numbers. The permi
 to redesign task difficulty, or to report that the benchmark cannot grade the hypothesis. Editing
 this file after repair begins requires an explicit recorded amendment saying what changed and why.
 
+## PHASE 1 STOP — the two-action instrument cannot support the estimand (2026-08-11)
+
+**Declared by Darwin (ELL Lead).** Measured by Forge from floor and ceiling only, with the eligible
+commitment `de1d0be9…` unopened. Arithmetic verified independently by Darwin.
+
+| quantity | value |
+|---|---|
+| `oracle-retrieval` far ceiling | 0.5714 |
+| max permuted-null p95 across null policies (far) | 0.5238 |
+| available corridor | **0.0476** |
+| preregistered primary effect that must fit below the ceiling | **0.0500** |
+
+A valid band requires `null_p95 + X < comparator <= ceiling - effect`. At **X = 0**:
+
+```
+upper admissible bound = 0.5714 - 0.0500 = 0.5214
+lower admissible bound = 0.5238
+shortfall              = +0.0024   (must be negative)
+```
+
+**The admissible band is empty before any statistical-separation margin is applied.** The instrument
+cannot simultaneously distinguish a comparator from null and leave room for the claimed +5-point
+effect.
+
+### This is a stop, not a tuning problem
+
+Per this document's own terms — "if the repaired instrument cannot meet them, that is a finding about
+the benchmark design" — A1–A6 **cannot be recalibrated on the current answer space.** No choice of X
+or Y rescues an empty band. The pre-commitment did precisely what it was written to do: it produced a
+stop instead of a fitted threshold.
+
+### What this result does and does not say
+
+- **It does say:** the two-action benchmark design cannot support the preregistered estimand. That is
+  a genuine methodological finding, and the project's first real result.
+- **It does not say** anything about whether ELL works. It is a statement about the instrument, not
+  the hypothesis. H1–H7 remain untested — not unsupported, untested.
+
+### The design constraint this yields
+
+Any v0.8 answer/task space must satisfy:
+
+```
+ceiling - null_p95 > primary_effect + X(power)
+```
+
+Two independent levers, and both are needed:
+
+1. **Lower the null floor — larger `k`.** With two real actions an always-answering null floors at
+   the action marginal (≈0.50). Corridor at the current ceiling by action count:
+
+   | k real actions | null floor ≈ 1/k | corridor at ceiling 0.5714 |
+   |---:|---:|---:|
+   | 2 | 0.500 | 0.071 |
+   | 3 | 0.333 | 0.238 |
+   | 5 | 0.200 | 0.371 |
+   | 10 | 0.100 | 0.471 |
+
+2. **Raise the achievable ceiling.** `oracle-retrieval` handed the *exact gold evidence* scores only
+   0.5714 — the answer stage discards ~43% of perfect evidence. This is the deeper defect: with
+   ideal retrieval the ceiling should approach 1.0. A larger `k` alone would widen the corridor while
+   leaving the instrument unable to convert good evidence into correct decisions.
+
+Fixing the ceiling is the more important of the two, and it is the same answer-stage problem that has
+recurred throughout: the text-only ruling, the namespace leak, A9b's weak power, and now this.
+
+### Consequences
+
+- A1–A6: **stopped**, not superseded-and-pending. No recalibration until v0.8 redesigns the answer
+  and task space.
+- A7 (chronology), A8 (determinism), A9/A9b (leak battery): **remain in force and remain useful.**
+  The infrastructure is sound; the task design is not.
+- Phase 3 and beyond: unchanged — still blocked, and now for a better-understood reason.
+- Commitment `de1d0be9…`: no band was derived, so it was never used. Release it labelled as
+  invalidated historical evidence; the hash proves it was untouched.
+
 ## AMENDMENT 3 — A1–A6 superseded; re-expressed relative to chance (2026-08-11)
 
 **Signed off by Darwin (ELL Lead)**, on Reviewer's insistence that this be explicit rather than

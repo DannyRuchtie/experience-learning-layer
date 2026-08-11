@@ -15,6 +15,17 @@ eventually look right for reasons nobody can reconstruct. This is the reconstruc
 | 4 | pending | PR #7 | leak repair | **Positional leakage.** Records laid out rule-block by rule-block, so 98.6% (4968/5037) of each task's five most recent visible records belonged to its own rule against a 4.17% chance baseline — a recency window was a covert rule oracle reading no text. Fix: round-robin interleaving across rules. | A1/A2/A5/A6 as measured at `6724949`; `rolling-summary` entirely (suspended from the eligible set) | Reviewer; reproduced independently by Darwin |
 | 5 | pending | PR #7 | leak repair | **Action-namespace join.** The action vocabulary *was* the rule namespace — 49 actions over 24 rules, 24 `allowed_actions` signatures with 0 ambiguous, and 0 of 382,536 off-rule visible records carrying an action in the task's allowed set. `allowed_actions x observed_action` was an exact rule oracle inside the certified boundary. Fix: shared opaque vocabulary, seed-committed randomised balanced assignment. | Every measurement taken with rule-specific actions. Moves the measurement floor from ≈0 to ≈1/3, which superseded A1–A6. | Reviewer; reproduced independently by Darwin |
 
+## Outcome: Phase 1 stop (2026-08-11)
+
+The revision sequence terminated in a stop rather than a green instrument. Measuring floor and
+ceiling only — eligible commitment `de1d0be9…` unopened — gave a far corridor of **0.0476**
+(`oracle-retrieval` 0.5714 minus max permuted-null p95 0.5238) against a preregistered primary effect
+of **0.0500**. The admissible band is empty before any separation margin, so A1–A6 cannot be
+recalibrated on the current answer space. See the stop record in
+`INSTRUMENT_ACCEPTANCE_PRECOMMIT.md`.
+
+This is a finding about the instrument, not about ELL. H1–H7 remain untested.
+
 ## Pattern
 
 Revisions 1, 2, 4 and 5 are the four leaks. **None was an illegitimate field** — each was a join or
