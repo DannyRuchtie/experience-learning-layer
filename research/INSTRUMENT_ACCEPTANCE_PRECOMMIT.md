@@ -72,7 +72,10 @@ A **null policy** carries no legitimate signal by construction. Required set:
 - 5 uniformly random visible records;
 - recency only (the 5 highest-sequence visible records);
 - `record_id` sort order;
-- the 5 lowest-sequence visible records.
+- the 5 lowest-sequence visible records;
+- **`action-filter`** — select visible records whose `observed_action` is in `task.allowed_actions`
+  (added 2026-08-11; this policy reads no text, uses no position, touches no gold field, and scored
+  1.0000 same-rule precision with 0.7143 far accuracy).
 
 **No null policy may exceed chance on any stratum.** Any null policy that beats chance is a leak
 somewhere, by definition.
@@ -129,6 +132,42 @@ Corrected split:
   **empirically calibrated leak-free null** — simulate the null by randomising rule assignment
   under leak-free mixing and require the observed value inside that interval. The **method** is
   pre-committed; the number is not, because the answer stage is still changing.
+
+### The principle behind all four leaks: fields are not information
+
+Four distinct leaks have now been found — the gold-`scope` shortcut, future-peek, positional
+layout, and the action-namespace join. **Not one of them was an illegitimate field.** Each was a
+join or correlation between fields that are individually defensible:
+
+| leak | the join |
+|---|---|
+| gold-`scope` | `scope` was literally the rule label |
+| future-peek | legitimate fields, read at an illegitimate time |
+| positional | `sequence` correlated with `rule_id` via block layout |
+| action-namespace | `allowed_actions` x `observed_action` fingerprints the rule exactly |
+
+The boundary certified in PR #5 was a **field-level** boundary: no gold or generator field reaches
+an eligible policy. That certification was correct and still is. It simply does not imply what we
+were treating it as implying — that no *rule information* reaches a policy.
+
+**Requirement:** the boundary is specified in terms of information about `rule_id`, not a field
+allowlist. Any field reachable by a policy must be shown to carry no rule information *in
+combination with every other permitted field*. Since that cannot be proven by inspection — all four
+leaks survived code review and were caught by measurement — the null-policy battery is the
+operational proxy, and it must run continuously rather than per-review.
+
+### Known construct limitation, to be resolved in v0.8
+
+Collapsing the action namespace to an opaque shared pair removes the exact rule join. It also makes
+explicit that the current deterministic answer stage grades **evidence selection** far more than
+semantic action inference. That is a real narrowing of what the benchmark measures, and it bounds
+what a "supported" verdict could claim: support for better evidence selection, not for better
+decisions in the fuller sense.
+
+This is recorded rather than resolved. It is the same tension as the earlier text-only ruling, which
+failed because the generator provides no lexical bridge between record text and action labels. The
+honest position is that Phase 1-2 measure governed retrieval quality under a frozen decision rule;
+claims about decision quality require the v0.8 answer-stage design question to be settled first.
 
 ### Is this a relaxation? No — and here is the test
 
