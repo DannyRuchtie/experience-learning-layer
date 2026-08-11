@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -141,6 +142,31 @@ def test_development_difficulty_ladder_is_monotonic_without_opening_sealed_data(
     }
     rates = {name: sum(values) / len(values) for name, values in grouped.items()}
     assert rates["near"] > rates["intermediate"] > rates["far"]
+
+
+def test_recent_tail_rule_concentration_is_at_chance_for_every_tier() -> None:
+    dataset = generate_dataset(1729, 481516)
+    for partition in dataset.partitions:
+        source_by_id = {item.record_id: item for item in partition.records}
+        event_sequences = [item.sequence for item in partition.records] + [
+            item.sequence for item in partition.tasks
+        ]
+        assert len(event_sequences) == len(set(event_sequences))
+        matches = 0
+        issued = 0
+        for task in partition.tasks:
+            evidence = task.gold_evidence_ids + task.gold_counterevidence_ids
+            assert all(source_by_id[item_id].sequence < task.sequence for item_id in evidence)
+            visible = project_policy_records(task, partition.records)
+            recent = sorted(visible, key=lambda item: item.sequence, reverse=True)[:5]
+            matches += sum(
+                source_by_id[item.record_id].rule_id == task.rule_id for item in recent
+            )
+            issued += len(recent)
+        rule_count = len({task.rule_id for task in partition.tasks})
+        chance = 1 / rule_count
+        standard_error = math.sqrt(chance * (1 - chance) / issued)
+        assert matches / issued <= chance + 3 * standard_error
 
 
 def test_policy_projection_removes_gold_and_enforces_runner_boundaries() -> None:

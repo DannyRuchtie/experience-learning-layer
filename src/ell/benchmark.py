@@ -573,9 +573,81 @@ def _generate_partition(
         )
         records.append(distractor)
         sequence += 1
-    records.sort(key=lambda item: item.sequence)
-    tasks.sort(key=lambda item: item.sequence)
+    records, tasks = _interleave_rule_streams(
+        records,
+        tasks,
+        [rule.rule_id for rule in rules],
+        seed,
+        sequence_offset,
+        base,
+    )
     return BenchmarkPartition(name=name, records=records, tasks=tasks)
+
+
+def _interleave_rule_streams(
+    records: Sequence[ExperienceRecord],
+    tasks: Sequence[TaskCase],
+    rule_ids: Sequence[str],
+    seed: int,
+    sequence_offset: int,
+    base: datetime,
+) -> Tuple[List[ExperienceRecord], List[TaskCase]]:
+    """Shuffle rule order per round while preserving every within-rule event order."""
+    record_by_id = {item.record_id: item for item in records}
+    task_by_id = {item.task_id: item for item in tasks}
+    streams: Dict[str, List[Tuple[int, str, str]]] = {
+        rule_id: [] for rule_id in rule_ids
+    }
+    for record in records:
+        streams[record.rule_id].append((record.sequence, "record", record.record_id))
+    for task in tasks:
+        streams[task.rule_id].append((task.sequence, "task", task.task_id))
+    for stream in streams.values():
+        stream.sort(key=lambda item: item[0])
+
+    schedule_rng = random.Random(seed ^ 0xE11A9E)
+    positions = dict.fromkeys(rule_ids, 0)
+    active = list(rule_ids)
+    ordered: List[Tuple[str, str]] = []
+    while active:
+        schedule_rng.shuffle(active)
+        remaining: List[str] = []
+        for rule_id in active:
+            position = positions[rule_id]
+            _, kind, identifier = streams[rule_id][position]
+            ordered.append((kind, identifier))
+            positions[rule_id] += 1
+            if positions[rule_id] < len(streams[rule_id]):
+                remaining.append(rule_id)
+        active = remaining
+
+    interleaved_records: List[ExperienceRecord] = []
+    interleaved_tasks: List[TaskCase] = []
+    for offset, (kind, identifier) in enumerate(ordered):
+        sequence = sequence_offset + offset
+        observed_time = base + timedelta(hours=offset)
+        if kind == "record":
+            record = record_by_id[identifier]
+            outcome_delay = record.outcome_observed_time - record.observed_time
+            interleaved_records.append(
+                record.model_copy(
+                    update={
+                        "sequence": sequence,
+                        "observed_time": observed_time,
+                        "outcome_observed_time": observed_time + outcome_delay,
+                    }
+                )
+            )
+        elif kind == "task":
+            task = task_by_id[identifier]
+            interleaved_tasks.append(
+                task.model_copy(
+                    update={"sequence": sequence, "observed_time": observed_time}
+                )
+            )
+        else:
+            raise ValueError(f"unknown stream event kind: {kind}")
+    return interleaved_records, interleaved_tasks
 
 
 def _paraphrase(text: str, rng: random.Random) -> str:
