@@ -776,11 +776,7 @@ def run_baseline(dataset: BenchmarkDataset, partition_name: str, baseline_id: st
             assert selector is not None
             selections = selector(policy_task, policy_records)
         _validate_selections(selections, records_by_id)
-        prediction = (
-            task.gold_action
-            if baseline_id == "oracle-concept"
-            else _predict(selections, records_by_id)
-        )
+        prediction = _predict(policy_task, selections, records_by_id)
         correct = prediction == task.gold_action
         selected_ids = [item.record_id for item in selections]
         selected = [records_by_id[item_id] for item_id in selected_ids]
@@ -929,24 +925,44 @@ def _validate_selections(
 
 
 def _predict(
-    selections: Sequence[PolicySelection], records_by_id: Dict[str, PolicyRecord]
+    task: PolicyTask,
+    selections: Sequence[PolicySelection],
+    records_by_id: Dict[str, PolicyRecord],
 ) -> str:
-    """Apply a frozen score-aware decision rule to observed outcomes only."""
-    weighted: Dict[str, float] = {}
-    for rank, selection in enumerate(selections):
+    """Apply the frozen decision rule without requiring a completed outcome.
+
+    An experience log legitimately records what action the agent took. Completed
+    outcomes determine directional support. Pending outcomes carry no success sign;
+    they only break ties between actions with equal observed-outcome support. This
+    lets a task act when all relevant outcomes are pending without treating an
+    untested action as successful. Recency is an explicit sequence-distance feature;
+    list position never changes the prediction for a fixed evidence set.
+    """
+    allowed_actions = set(task.allowed_actions) - {"abstain"}
+    observed_weight = dict.fromkeys(allowed_actions, 0.0)
+    pending_weight = dict.fromkeys(allowed_actions, 0.0)
+    for selection in selections:
         record = records_by_id[selection.record_id]
-        if record.observed_outcome is None:
+        if record.observed_action not in allowed_actions:
             continue
-        retrieval_weight = selection.score / (rank + 1)
-        outcome_direction = 1.0 if record.observed_outcome > 0 else -1.0
-        weighted[record.observed_action] = (
-            weighted.get(record.observed_action, 0.0)
-            + retrieval_weight * outcome_direction
-        )
-    if not weighted:
+        age = max(task.sequence - record.sequence, 1)
+        retrieval_weight = selection.score / age
+        if record.observed_outcome is None:
+            pending_weight[record.observed_action] += retrieval_weight
+        else:
+            outcome_direction = 1.0 if record.observed_outcome > 0 else -1.0
+            observed_weight[record.observed_action] += retrieval_weight * outcome_direction
+    if not allowed_actions:
         return "abstain"
-    action, score = sorted(weighted.items(), key=lambda item: (-item[1], item[0]))[0]
-    return action if score > 0 else "abstain"
+    action = sorted(
+        allowed_actions,
+        key=lambda item: (-observed_weight[item], -pending_weight[item], item),
+    )[0]
+    if observed_weight[action] < 0:
+        return "abstain"
+    if observed_weight[action] == 0 and pending_weight[action] == 0:
+        return "abstain"
+    return action
 
 
 def _no_memory(
@@ -1190,10 +1206,13 @@ ELIGIBLE_COMPARATORS: Tuple[str, ...] = (
     "bm25",
     "exact-vector",
     "fused-retrieval",
-    "rolling-summary",
     "direct-insight",
 )
-"""Conditions from which the confirmatory comparator may be selected on development data."""
+"""Conditions from which the confirmatory comparator may be selected on development data.
+
+``rolling-summary`` is suspended until the positional-leak null test passes. It remains
+executable as a diagnostic condition but cannot be selected as a comparator.
+"""
 
 ORACLE_CONDITIONS: Tuple[str, ...] = ("oracle-retrieval", "oracle-concept")
 """Ceiling conditions. Excluded from comparator selection by contract."""
