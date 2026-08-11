@@ -446,6 +446,7 @@ def _generate_partition(
     target_tasks: int,
 ) -> BenchmarkPartition:
     rng = random.Random(seed)
+    structure_rng = random.Random(seed ^ 0x57A7C7)
     base = datetime(2026, 1, 1, tzinfo=timezone.utc) + timedelta(days=sequence_offset)
     records: List[ExperienceRecord] = []
     tasks: List[TaskCase] = []
@@ -457,6 +458,43 @@ def _generate_partition(
     tasks_per_rule = [target_tasks // len(rules)] * len(rules)
     for index in range(target_tasks % len(rules)):
         tasks_per_rule[index] += 1
+
+    # Pair opposite action mappings onto the same sampled structural profile. This
+    # varies change points and outcome events across rules and seeds while preserving
+    # exact record-weighted A/B balance: every profile has a mirrored action twin.
+    preferred_a = [
+        index for index, rule in enumerate(rules) if rule.preferred_action == "option_a"
+    ]
+    preferred_b = [
+        index for index, rule in enumerate(rules) if rule.preferred_action == "option_b"
+    ]
+    structure_profiles: Dict[int, Tuple[int, List[bool], List[bool]]] = {}
+    for left, right in zip(preferred_a, preferred_b):
+        rule_records = per_rule[left] - 1
+        change_index = max(3, int(rule_records * structure_rng.uniform(0.5, 0.7)))
+        exception_probability = structure_rng.uniform(0.06, 0.12)
+        contradiction_probability = structure_rng.uniform(0.10, 0.18)
+        exception_pattern = [
+            structure_rng.random() < exception_probability
+            for _ in range(rule_records)
+        ]
+        contradiction_pattern = [
+            not exception and structure_rng.random() < contradiction_probability
+            for exception in exception_pattern
+        ]
+        profile = (change_index, exception_pattern, contradiction_pattern)
+        structure_profiles[left] = profile
+        structure_profiles[right] = profile
+
+    # Cluster permutations require trajectories to align by ordinal and stratum.
+    # Sample their shared order per partition so position/stratum structure changes
+    # across seeds without destroying that alignment.
+    max_task_count = max(tasks_per_rule)
+    shared_task_strata = [
+        ("near", "intermediate", "far")[index % 3]
+        for index in range(max_task_count)
+    ]
+    structure_rng.shuffle(shared_task_strata)
     for rule_index, rule in enumerate(rules):
         rule_id = rule.rule_id
         preferred = rule.preferred_action
@@ -464,7 +502,9 @@ def _generate_partition(
         support_phrases = rule.support_phrases
         exceptions = rule.exception_phrases
         rule_records = per_rule[rule_index] - 1
-        change_index = max(3, int(rule_records * 0.6))
+        change_index, exception_flags, contradiction_flags = structure_profiles[
+            rule_index
+        ]
 
         # Tasks are interleaved into the stream rather than appended after it.
         #
@@ -486,6 +526,7 @@ def _generate_partition(
             first_slot + (round(index * span / max(task_count - 1, 1)) if span else 0)
             for index in range(task_count)
         ]
+        task_strata = shared_task_strata[:task_count]
         pending: Dict[int, List[int]] = {}
         for task_index, position in enumerate(task_positions[:task_count]):
             pending.setdefault(position, []).append(task_index)
@@ -499,8 +540,8 @@ def _generate_partition(
                 active_action = rejected
                 counter_ids.extend(evidence_ids)
                 evidence_ids = []
-            is_exception = index % 11 == 10
-            is_contradiction = not is_exception and index % 7 == 6
+            is_exception = exception_flags[index]
+            is_contradiction = contradiction_flags[index]
             alternative = preferred if active_action == rejected else rejected
             if is_exception:
                 text = exceptions[index % len(exceptions)]
@@ -550,7 +591,7 @@ def _generate_partition(
             # Emit any task scheduled at this point in the stream. Gold state is
             # whatever the stream has established so far, never what comes later.
             for task_index in pending.get(index, []):
-                stratum = ("near", "intermediate", "far")[task_index % 3]
+                stratum = task_strata[task_index]
                 templates = {
                     "near": rule.near_query_templates,
                     "intermediate": rule.intermediate_query_templates,

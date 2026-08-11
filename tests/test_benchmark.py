@@ -5,6 +5,7 @@ import math
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from statistics import pstdev
 
 import pytest
 
@@ -14,6 +15,7 @@ from ell.benchmark import (
     NULL_POLICY_CONDITIONS,
     SEALED_TIER,
     TRAIN_TIER,
+    BenchmarkDataset,
     ExperienceRecord,
     PolicyRecord,
     PolicySelection,
@@ -69,6 +71,49 @@ def test_sealed_seed_changes_sealed_data_and_commitment_only() -> None:
     assert first.partitions[:2] == second.partitions[:2]
     assert first.partitions[2] != second.partitions[2]
     assert first.seed_commitment != second.seed_commitment
+
+
+def _structural_statistics(
+    dataset: BenchmarkDataset, partition_name: str
+) -> tuple[float, ...]:
+    partition = next(
+        item for item in dataset.partitions if item.name == partition_name
+    )
+    benchmark_records = [
+        item for item in partition.records if item.workspace_id == "workspace-alpha"
+    ]
+    total = len(benchmark_records)
+    exceptions = sum(item.relation == "exception" for item in benchmark_records) / total
+    contradictions = (
+        sum(item.relation == "contradicts" for item in benchmark_records) / total
+    )
+    change_fraction = sum(item.regime == 0 for item in benchmark_records) / total
+    far_sequence_mean = sum(
+        item.sequence for item in partition.tasks if item.transfer == "far"
+    ) / sum(item.transfer == "far" for item in partition.tasks)
+    return exceptions, contradictions, change_fraction, far_sequence_mean
+
+
+def test_open_generator_seeds_vary_key_structural_statistics() -> None:
+    summaries = [
+        _structural_statistics(
+            generate_development_dataset(seed, "sha256:" + "a" * 64),
+            "development",
+        )
+        for seed in (11, 42, 101, 777)
+    ]
+    assert all(pstdev(values) > 0 for values in zip(*summaries))
+
+
+def test_sealed_seed_commits_independent_structural_draw() -> None:
+    first = generate_dataset(1729, 481516)
+    second = generate_dataset(1729, 481517)
+    assert _structural_statistics(first, "sealed") != _structural_statistics(
+        second, "sealed"
+    )
+    assert _structural_statistics(first, "development") == _structural_statistics(
+        second, "development"
+    )
 
 
 def test_development_artifact_does_not_contain_sealed_partition(tmp_path: Path) -> None:

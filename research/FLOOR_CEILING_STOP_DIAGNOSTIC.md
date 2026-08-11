@@ -70,7 +70,18 @@ the emitted action. On that combined state the oracle becomes 0.848214 far, 0.84
 0.830357 near, and 0.840278 overall. Thus the repaired ceiling remains far above the withdrawn
 0.571429 value after eliminating ordering as an input.
 
-The far oracle across eight open development generator seeds ranges only from 0.848214 to
-0.854167. It is no longer exactly constant, but the narrow range confirms that surface-text seed
-variation contributes little to this structural ceiling. This is evidence about the open
-development generator only; no sealed partition was generated or measured.
+Before structural sampling, the far oracle across eight open development generator seeds ranged
+only from 0.848214 to 0.854167. It was no longer exactly constant, but the narrow range confirmed
+that surface-text seed variation contributed little to this structural ceiling.
+
+## Structural-sampling follow-up
+
+The generator now samples change points, contradiction/exception events, and aligned stratum order
+from each partition seed. Opposite action mappings share paired profiles, preserving exact
+record-weighted A/B balance while allowing between-rule structural variation. Across the same
+eight open development seeds, the A10 far oracle ranges from 0.758929 to 0.901786 with population
+SD 0.048857. The former near-zero seed variance is therefore removed.
+
+Synthetic sealed-protocol fixtures confirm that different committed sealed seeds produce different
+structural summaries while development remains byte-identical. This checks seed isolation and
+commitment wiring only; the actual committed sealed seed and sealed outcomes were not opened.
