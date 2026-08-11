@@ -165,6 +165,20 @@ class BaselineRun(BenchmarkModel):
         return sha256_digest(self)
 
 
+class NullPolicyCalibration(BenchmarkModel):
+    """Per-policy A9b accuracy bound from fixed outputs and permuted gold trajectories."""
+
+    policy_id: str
+    partition: str = Field(pattern=r"^(train|development)$")
+    stratum: str = Field(pattern=r"^(near|intermediate|far)$")
+    permutations: int = Field(gt=0)
+    permutation_seed: int
+    fixed_output_hash: str
+    observed_accuracy: float = Field(ge=0.0, le=1.0)
+    null_p95: float = Field(ge=0.0, le=1.0)
+    exceeds_null: bool
+
+
 # ---------------------------------------------------------------------------
 # Latent rule construction
 # ---------------------------------------------------------------------------
@@ -212,70 +226,52 @@ class LatentRule(BenchmarkModel):
 # system can only connect a query to its supporting episodes through the latent
 # structure, which is precisely the capability the primary transfer gate tests.
 #
-# (domain token, evidence subject, query subject, preferred action, rejected action)
-_DOMAINS: Tuple[Tuple[str, str, str, str, str], ...] = (
+# (domain token, evidence subject, query subject)
+_DOMAINS: Tuple[Tuple[str, str, str], ...] = (
     (
         "launch",
         "interdependent delivery",
         "programme spanning several groups",
-        "start_review_early",
-        "wait_until_locked",
     ),
     (
         "export",
         "protected material",
         "records carrying a confidentiality label",
-        "keep_local",
-        "send_remote",
     ),
     (
         "handoff",
         "transferred obligation",
         "duty passing from one person to another",
-        "confirm_owner",
-        "assume_owner",
     ),
     (
         "estimate",
         "sizing commitment",
         "figure quoted to a customer",
-        "widen_range",
-        "quote_single_point",
     ),
     (
         "vendor",
         "third-party engagement",
         "agreement with an outside supplier",
-        "require_exit_clause",
-        "accept_default_terms",
     ),
     (
         "migration",
         "schema change",
         "alteration to a live data structure",
-        "stage_behind_flag",
-        "cut_over_directly",
     ),
     (
         "hiring",
         "panel decision",
         "group verdict on a candidate",
-        "collect_written_scores",
-        "decide_in_room",
     ),
     (
         "incident",
         "degraded service",
         "customer-visible malfunction",
-        "declare_early",
-        "wait_for_certainty",
     ),
     (
         "pricing",
         "contract exception",
         "discount outside the published rate",
-        "escalate_to_finance",
-        "approve_locally",
     ),
 )
 
@@ -329,28 +325,33 @@ _MECHANISMS: Tuple[Tuple[str, str, str, str, str], ...] = (
 )
 
 
-def build_latent_rules(count: int) -> Tuple[LatentRule, ...]:
+def build_latent_rules(count: int, action_seed: int) -> Tuple[LatentRule, ...]:
     """Compose ``count`` deterministic latent rules from orthogonal vocabularies."""
     if count < 1:
         raise ValueError("count must be positive")
     available = len(_DOMAINS) * len(_MECHANISMS)
     if count > available:
         raise ValueError(f"cannot compose {count} distinct rules from {available} combinations")
+    preferred_labels = ["option_a"] * (count // 2) + ["option_b"] * (count - count // 2)
+    action_rng = random.Random(action_seed ^ 0xAC710)
+    action_rng.shuffle(preferred_labels)
     rules: List[LatentRule] = []
     for index in range(count):
-        domain_token, evidence_subject, query_subject, preferred, rejected = _DOMAINS[
+        domain_token, evidence_subject, query_subject = _DOMAINS[
             index % len(_DOMAINS)
         ]
         mechanism, support, exception, near_question, far_question = _MECHANISMS[
             index // len(_DOMAINS)
         ]
         rule_id = f"{domain_token}-{mechanism}"
+        preferred = preferred_labels[index]
+        rejected = "option_b" if preferred == "option_a" else "option_a"
         rules.append(
             LatentRule(
                 rule_id=rule_id,
                 scope=rule_id,
-                preferred_action=f"{preferred}__{mechanism}",
-                rejected_action=f"{rejected}__{mechanism}",
+                preferred_action=preferred,
+                rejected_action=rejected,
                 support_phrases=[
                     support.format(subject=f"A {evidence_subject}").rstrip(".") + ".",
                     support.format(subject=f"A second {evidence_subject}").rstrip(".") + ".",
@@ -449,7 +450,7 @@ def _generate_partition(
     records: List[ExperienceRecord] = []
     tasks: List[TaskCase] = []
     sequence = sequence_offset
-    rules = build_latent_rules(rule_count)
+    rules = build_latent_rules(rule_count, seed)
     per_rule = [target_records // len(rules)] * len(rules)
     for index in range(target_records % len(rules)):
         per_rule[index] += 1
@@ -1015,6 +1016,15 @@ def _oldest_context(
     return [PolicySelection(record_id=item.record_id, score=1.0) for item in selected]
 
 
+def _action_filter(
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    """Select by the allowed/observed-action join and read no text or position."""
+    allowed = set(task.allowed_actions) - {"abstain"}
+    selected = [item for item in records if item.observed_action in allowed][:5]
+    return [PolicySelection(record_id=item.record_id, score=1.0) for item in selected]
+
+
 def _direct_insight(
     task: PolicyTask, records: Sequence[PolicyRecord]
 ) -> List[PolicySelection]:
@@ -1121,6 +1131,7 @@ BASELINES: Dict[str, Optional[PolicySelector]] = {
     "uniform-random-visible": _uniform_random_visible,
     "record-id-order": _record_id_order,
     "oldest-context": _oldest_context,
+    "action-filter": _action_filter,
     "direct-insight": _direct_insight,
     # Oracle ceilings. Not eligible as the confirmatory comparator: they consume
     # gold generator labels. Reported to bound and interpret the primary result.
@@ -1145,8 +1156,120 @@ NULL_POLICY_CONDITIONS: Tuple[str, ...] = (
     "rolling-summary",
     "record-id-order",
     "oldest-context",
+    "action-filter",
 )
 """Signal-free policies used by the A9 leakage battery."""
+
+
+def calibrate_null_policy_accuracy(
+    dataset: BenchmarkDataset,
+    partition_name: str,
+    *,
+    permutations: int = 1_000,
+    permutation_seed: int = 90_009,
+) -> List[NullPolicyCalibration]:
+    """Calibrate A9b per policy while holding every policy output fixed.
+
+    Complete gold-action trajectories are permuted between latent-rule clusters.
+    Queries, records, chronology, selections, and predictions never change.
+    """
+    if partition_name == "sealed":
+        raise ValueError("sealed null accuracy is calibrated only after confirmatory opening")
+    if permutations < 1:
+        raise ValueError("permutations must be positive")
+    partition = next(item for item in dataset.partitions if item.name == partition_name)
+    tasks_by_rule: Dict[str, List[TaskCase]] = {}
+    for task in partition.tasks:
+        tasks_by_rule.setdefault(task.rule_id, []).append(task)
+    for tasks in tasks_by_rule.values():
+        tasks.sort(key=lambda item: item.sequence)
+    rule_ids = sorted(tasks_by_rule)
+    reference_strata = [item.transfer for item in tasks_by_rule[rule_ids[0]]]
+    if any(
+        [item.transfer for item in tasks_by_rule[rule_id]] != reference_strata
+        for rule_id in rule_ids[1:]
+    ):
+        raise ValueError("rule trajectories must align by task ordinal and stratum")
+
+    runs = {
+        policy_id: run_baseline(dataset, partition_name, policy_id)
+        for policy_id in NULL_POLICY_CONDITIONS
+    }
+    fixed_output_hashes = {
+        policy_id: sha256_digest(
+            [
+                {"task_id": item.task_id, "prediction": item.prediction}
+                for item in run.task_results
+            ]
+        )
+        for policy_id, run in runs.items()
+    }
+    predictions = {
+        policy_id: {item.task_id: item.prediction for item in run.task_results}
+        for policy_id, run in runs.items()
+    }
+    task_by_id = {task.task_id: task for task in partition.tasks}
+    strata = ("near", "intermediate", "far")
+    task_ids_by_stratum = {
+        stratum: [task.task_id for task in partition.tasks if task.transfer == stratum]
+        for stratum in strata
+    }
+    null_values: Dict[str, Dict[str, List[float]]] = {
+        policy_id: {stratum: [] for stratum in strata}
+        for policy_id in NULL_POLICY_CONDITIONS
+    }
+    permutation_rng = random.Random(permutation_seed)
+    for _ in range(permutations):
+        donor_rules = list(rule_ids)
+        permutation_rng.shuffle(donor_rules)
+        permuted_gold: Dict[str, str] = {}
+        for target_rule, donor_rule in zip(rule_ids, donor_rules):
+            for target_task, donor_task in zip(
+                tasks_by_rule[target_rule], tasks_by_rule[donor_rule]
+            ):
+                permuted_gold[target_task.task_id] = donor_task.gold_action
+        for policy_id, policy_predictions in predictions.items():
+            for stratum in strata:
+                task_ids = task_ids_by_stratum[stratum]
+                accuracy = sum(
+                    policy_predictions[task_id] == permuted_gold[task_id]
+                    for task_id in task_ids
+                ) / len(task_ids)
+                null_values[policy_id][stratum].append(accuracy)
+
+    calibrations: List[NullPolicyCalibration] = []
+    for policy_id, run in runs.items():
+        current_hash = sha256_digest(
+            [
+                {"task_id": item.task_id, "prediction": item.prediction}
+                for item in run.task_results
+            ]
+        )
+        if current_hash != fixed_output_hashes[policy_id]:
+            raise AssertionError("policy outputs changed during null calibration")
+        for stratum in strata:
+            task_ids = task_ids_by_stratum[stratum]
+            observed = sum(
+                predictions[policy_id][task_id] == task_by_id[task_id].gold_action
+                for task_id in task_ids
+            ) / len(task_ids)
+            values = sorted(null_values[policy_id][stratum])
+            percentile_index = max(0, math.ceil(0.95 * len(values)) - 1)
+            null_p95 = values[percentile_index]
+            calibrations.append(
+                NullPolicyCalibration(
+                    policy_id=policy_id,
+                    partition=partition_name,
+                    stratum=stratum,
+                    permutations=permutations,
+                    permutation_seed=permutation_seed,
+                    fixed_output_hash=fixed_output_hashes[policy_id],
+                    observed_accuracy=observed,
+                    null_p95=null_p95,
+                    exceeds_null=observed > null_p95,
+                )
+            )
+    return calibrations
 
 
 def write_artifacts(output: Path, dataset: BenchmarkDataset, partition: str) -> None:

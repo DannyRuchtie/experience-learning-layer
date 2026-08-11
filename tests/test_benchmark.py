@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -19,6 +20,8 @@ from ell.benchmark import (
     TaskCase,
     _predict,
     _validate_selections,
+    build_latent_rules,
+    calibrate_null_policy_accuracy,
     generate_dataset,
     generate_development_dataset,
     project_policy_records,
@@ -33,6 +36,30 @@ def test_generation_is_byte_stable_for_same_seeds() -> None:
     second = generate_dataset(1729, 481516)
     assert first == second
     assert first.dataset_hash == second.dataset_hash
+
+
+def test_action_namespace_is_shared_balanced_and_seed_committed() -> None:
+    first = build_latent_rules(24, 1729)
+    repeated = build_latent_rules(24, 1729)
+    different_seed = build_latent_rules(24, 1730)
+    assert first == repeated
+    assert [item.preferred_action for item in first] != [
+        item.preferred_action for item in different_seed
+    ]
+    assert {item.preferred_action for item in first} == {"option_a", "option_b"}
+    assert sum(item.preferred_action == "option_a" for item in first) == 12
+    assert all(
+        {item.preferred_action, item.rejected_action} == {"option_a", "option_b"}
+        for item in first
+    )
+    dataset = generate_dataset(1729, 481516)
+    for partition in dataset.partitions:
+        actions = Counter(
+            item.action
+            for item in partition.records
+            if item.workspace_id == "workspace-alpha"
+        )
+        assert actions["option_a"] == actions["option_b"]
 
 
 def test_sealed_seed_changes_sealed_data_and_commitment_only() -> None:
@@ -177,21 +204,43 @@ def test_recent_tail_rule_concentration_is_at_chance_for_every_tier() -> None:
         assert assertion.passed
 
 
-def test_null_policy_leak_battery_passes_on_open_partitions() -> None:
+def test_null_policy_selection_precision_is_at_chance_on_open_partitions() -> None:
     dataset = generate_development_dataset(1729, "sha256:" + "a" * 64)
     for partition in dataset.partitions:
-        transfer_by_task = {task.task_id: task.transfer for task in partition.tasks}
+        task_by_id = {task.task_id: task for task in partition.tasks}
+        record_by_id = {record.record_id: record for record in partition.records}
         rule_count = len({task.rule_id for task in partition.tasks})
         bound = 2 / rule_count
         for baseline_id in NULL_POLICY_CONDITIONS:
             run = run_baseline(dataset, partition.name, baseline_id)
             for stratum in ("near", "intermediate", "far"):
-                values = [
-                    result.correct
-                    for result in run.task_results
-                    if transfer_by_task[result.task_id] == stratum
-                ]
-                assert sum(values) / len(values) <= bound
+                matches = 0
+                selected = 0
+                for result in run.task_results:
+                    task = task_by_id[result.task_id]
+                    if task.transfer != stratum:
+                        continue
+                    matches += sum(
+                        record_by_id[item_id].rule_id == task.rule_id
+                        for item_id in result.selected_record_ids
+                    )
+                    selected += len(result.selected_record_ids)
+                assert matches / selected <= bound
+
+
+def test_null_policy_accuracy_uses_fixed_output_cluster_permutations() -> None:
+    dataset = generate_development_dataset(1729, "sha256:" + "a" * 64)
+    first = calibrate_null_policy_accuracy(
+        dataset, "development", permutations=200, permutation_seed=90_009
+    )
+    repeated = calibrate_null_policy_accuracy(
+        dataset, "development", permutations=200, permutation_seed=90_009
+    )
+    assert first == repeated
+    assert len(first) == len(NULL_POLICY_CONDITIONS) * 3
+    assert not any(item.exceeds_null for item in first)
+    with pytest.raises(ValueError, match="confirmatory opening"):
+        calibrate_null_policy_accuracy(dataset, "sealed", permutations=1)
 
 
 def test_policy_projection_removes_gold_and_enforces_runner_boundaries() -> None:

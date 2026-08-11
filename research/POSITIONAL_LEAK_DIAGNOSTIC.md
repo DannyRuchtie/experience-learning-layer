@@ -39,14 +39,31 @@ CI reads that assertion without computing a sealed accuracy or quality metric.
 
 ## A9 null-policy battery
 
-Four executable null policies select uniformly sampled, most-recent, record-id-sorted, or oldest
-visible records. On open train and development, every near/intermediate/far accuracy stays below
-the precommitted `2 / rule_count` bound. The largest train value is 9.72% against 16.67%; the
-largest development value is 2.98% against 8.33%. Sealed null-policy accuracy remains behind the
-seal and runs exactly once inside the confirmatory study after opening.
+Five executable null policies select uniformly sampled, most-recent, record-id-sorted, oldest, or
+allowed-action-matching visible records. The primary leak estimand is per-selected-record same-rule
+precision: unlike task accuracy, its null chance is exactly `1 / rule_count` and does not change
+with a five-record retrieval budget. On every open stratum, train precision is at most 8.33%
+against the 16.67% bound, and development precision is at most 4.40% against the 8.33% bound.
+
+A9b holds each policy's task predictions fixed, permutes complete gold-action trajectories between
+latent-rule clusters, and recomputes correctness only. Each policy/stratum is compared with its
+own seeded permuted 95th percentile because abstention changes the null floor. Tests assert the
+prediction hash remains unchanged throughout calibration. Sealed null-policy accuracy remains
+behind the seal and runs exactly once inside the confirmatory study after opening.
+
+## Shared action namespace
+
+The original action pair uniquely identified each rule: joining policy-visible `allowed_actions`
+to `observed_action` yielded same-rule precision 1.0. The repair uses the same opaque
+`option_a`/`option_b` pair for every rule. Initial preference is assigned by a seed-committed,
+randomly shuffled balanced mapping; realized record-weighted A/B counts are asserted equal in all
+tiers. This removes both the exact action join and a global fixed-label shortcut.
+
+Opaque binary actions mean the deterministic stage currently measures governed evidence selection,
+not semantic action inference. That limitation is recorded for the v0.8 answer-stage redesign.
 
 ## Verification
 
 `make verify` completed after the repair: schema export 36, Ruff clean, strict mypy clean across
-12 source files, and 39 tests passed in 227.99 seconds. Performance acceptance criteria remain
+12 source files, and 41 tests passed in 251.97 seconds. Performance acceptance criteria remain
 uninterpretable until this branch and the pending-outcome tie-break branch are combined.

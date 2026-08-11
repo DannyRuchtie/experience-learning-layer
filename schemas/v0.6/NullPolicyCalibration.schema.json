@@ -1,0 +1,64 @@
+{
+  "$id": "https://ell.dev/schemas/v0.6/NullPolicyCalibration.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Per-policy A9b accuracy bound from fixed outputs and permuted gold trajectories.",
+  "properties": {
+    "exceeds_null": {
+      "title": "Exceeds Null",
+      "type": "boolean"
+    },
+    "fixed_output_hash": {
+      "title": "Fixed Output Hash",
+      "type": "string"
+    },
+    "null_p95": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Null P95",
+      "type": "number"
+    },
+    "observed_accuracy": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Observed Accuracy",
+      "type": "number"
+    },
+    "partition": {
+      "pattern": "^(train|development)$",
+      "title": "Partition",
+      "type": "string"
+    },
+    "permutation_seed": {
+      "title": "Permutation Seed",
+      "type": "integer"
+    },
+    "permutations": {
+      "exclusiveMinimum": 0,
+      "title": "Permutations",
+      "type": "integer"
+    },
+    "policy_id": {
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "stratum": {
+      "pattern": "^(near|intermediate|far)$",
+      "title": "Stratum",
+      "type": "string"
+    }
+  },
+  "required": [
+    "policy_id",
+    "partition",
+    "stratum",
+    "permutations",
+    "permutation_seed",
+    "fixed_output_hash",
+    "observed_accuracy",
+    "null_p95",
+    "exceeds_null"
+  ],
+  "title": "NullPolicyCalibration",
+  "type": "object"
+}
