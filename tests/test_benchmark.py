@@ -10,6 +10,7 @@ import pytest
 from ell.benchmark import (
     BASELINES,
     DEVELOPMENT_TIER,
+    NULL_POLICY_CONDITIONS,
     SEALED_TIER,
     TRAIN_TIER,
     ExperienceRecord,
@@ -146,7 +147,10 @@ def test_development_difficulty_ladder_is_monotonic_without_opening_sealed_data(
 
 def test_recent_tail_rule_concentration_is_at_chance_for_every_tier() -> None:
     dataset = generate_dataset(1729, 481516)
-    for partition in dataset.partitions:
+    assertions = {item.partition: item for item in dataset.positional_leak_assertions}
+    assert assertions["sealed"].passed
+    assert assertions["sealed"].observed_rate == assertions["sealed"].chance_rate
+    for partition in (item for item in dataset.partitions if item.name != "sealed"):
         source_by_id = {item.record_id: item for item in partition.records}
         event_sequences = [item.sequence for item in partition.records] + [
             item.sequence for item in partition.tasks
@@ -167,6 +171,27 @@ def test_recent_tail_rule_concentration_is_at_chance_for_every_tier() -> None:
         chance = 1 / rule_count
         standard_error = math.sqrt(chance * (1 - chance) / issued)
         assert matches / issued <= chance + 3 * standard_error
+        assertion = assertions[partition.name]
+        assert assertion.same_rule_recent_records == matches
+        assert assertion.issued_recent_records == issued
+        assert assertion.passed
+
+
+def test_null_policy_leak_battery_passes_on_open_partitions() -> None:
+    dataset = generate_development_dataset(1729, "sha256:" + "a" * 64)
+    for partition in dataset.partitions:
+        transfer_by_task = {task.task_id: task.transfer for task in partition.tasks}
+        rule_count = len({task.rule_id for task in partition.tasks})
+        bound = 2 / rule_count
+        for baseline_id in NULL_POLICY_CONDITIONS:
+            run = run_baseline(dataset, partition.name, baseline_id)
+            for stratum in ("near", "intermediate", "far"):
+                values = [
+                    result.correct
+                    for result in run.task_results
+                    if transfer_by_task[result.task_id] == stratum
+                ]
+                assert sum(values) / len(values) <= bound
 
 
 def test_policy_projection_removes_gold_and_enforces_runner_boundaries() -> None:

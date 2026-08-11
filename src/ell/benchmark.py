@@ -116,11 +116,24 @@ class BenchmarkPartition(BenchmarkModel):
     tasks: List[TaskCase]
 
 
+class PositionalLeakAssertion(BenchmarkModel):
+    """Generator-time structural assertion that does not inspect task outcomes."""
+
+    partition: str = Field(pattern=r"^(train|development|sealed)$")
+    rule_count: int = Field(gt=0)
+    same_rule_recent_records: int = Field(ge=0)
+    issued_recent_records: int = Field(gt=0)
+    observed_rate: float = Field(ge=0.0, le=1.0)
+    chance_rate: float = Field(gt=0.0, le=1.0)
+    passed: bool
+
+
 class BenchmarkDataset(BenchmarkModel):
     benchmark_version: str = BENCHMARK_VERSION
     generator_id: str
     seed_commitment: str
     partitions: List[BenchmarkPartition]
+    positional_leak_assertions: List[PositionalLeakAssertion]
 
     @property
     def dataset_hash(self) -> str:
@@ -401,17 +414,24 @@ def generate_dataset(seed: int, sealed_seed: int) -> BenchmarkDataset:
         generator_id="ell.deterministic-latent-stream.v1",
         seed_commitment=sha256_digest({"sealed_seed": sealed_seed}),
         partitions=partitions,
+        positional_leak_assertions=[
+            _positional_leak_assertion(partition) for partition in partitions
+        ],
     )
 
 
 def generate_development_dataset(seed: int, sealed_seed_commitment: str) -> BenchmarkDataset:
     """Generate only open partitions so development cannot inspect sealed cases."""
+    partitions = [
+        _generate_partition("train", seed, 0, *TRAIN_TIER),
+        _generate_partition("development", seed + 1, 400, *DEVELOPMENT_TIER),
+    ]
     return BenchmarkDataset(
         generator_id="ell.deterministic-latent-stream.v1",
         seed_commitment=sealed_seed_commitment,
-        partitions=[
-            _generate_partition("train", seed, 0, *TRAIN_TIER),
-            _generate_partition("development", seed + 1, 400, *DEVELOPMENT_TIER),
+        partitions=partitions,
+        positional_leak_assertions=[
+            _positional_leak_assertion(partition) for partition in partitions
         ],
     )
 
@@ -648,6 +668,35 @@ def _interleave_rule_streams(
         else:
             raise ValueError(f"unknown stream event kind: {kind}")
     return interleaved_records, interleaved_tasks
+
+
+def _positional_leak_assertion(
+    partition: BenchmarkPartition,
+) -> PositionalLeakAssertion:
+    """Measure rule identity in the recent visible tail without reading task gold."""
+    source_by_id = {item.record_id: item for item in partition.records}
+    matches = 0
+    issued = 0
+    for task in partition.tasks:
+        visible = project_policy_records(task, partition.records)
+        recent = sorted(visible, key=lambda item: item.sequence, reverse=True)[:5]
+        matches += sum(
+            source_by_id[item.record_id].rule_id == task.rule_id for item in recent
+        )
+        issued += len(recent)
+    rule_count = len({task.rule_id for task in partition.tasks})
+    chance = 1 / rule_count
+    observed = matches / issued
+    standard_error = math.sqrt(chance * (1 - chance) / issued)
+    return PositionalLeakAssertion(
+        partition=partition.name,
+        rule_count=rule_count,
+        same_rule_recent_records=matches,
+        issued_recent_records=issued,
+        observed_rate=observed,
+        chance_rate=chance,
+        passed=observed <= chance + 3 * standard_error,
+    )
 
 
 def _paraphrase(text: str, rng: random.Random) -> str:
@@ -937,6 +986,35 @@ def _rolling_summary(
     ]
 
 
+def _uniform_random_visible(
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    """Deterministic uniform-like sample carrying no task or record-content signal."""
+    selected = sorted(
+        records,
+        key=lambda item: sha256_digest(
+            {"null_policy": "uniform-random", "task": task.task_id, "record": item.record_id}
+        ),
+    )[:5]
+    return [PolicySelection(record_id=item.record_id, score=1.0) for item in selected]
+
+
+def _record_id_order(
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    """Select the five lexicographically lowest opaque identifiers."""
+    selected = sorted(records, key=lambda item: item.record_id)[:5]
+    return [PolicySelection(record_id=item.record_id, score=1.0) for item in selected]
+
+
+def _oldest_context(
+    task: PolicyTask, records: Sequence[PolicyRecord]
+) -> List[PolicySelection]:
+    """Select the five lowest-sequence visible records."""
+    selected = sorted(records, key=lambda item: item.sequence)[:5]
+    return [PolicySelection(record_id=item.record_id, score=1.0) for item in selected]
+
+
 def _direct_insight(
     task: PolicyTask, records: Sequence[PolicyRecord]
 ) -> List[PolicySelection]:
@@ -1040,6 +1118,9 @@ BASELINES: Dict[str, Optional[PolicySelector]] = {
     "exact-vector": _exact_vector,
     "fused-retrieval": _fused,
     "rolling-summary": _rolling_summary,
+    "uniform-random-visible": _uniform_random_visible,
+    "record-id-order": _record_id_order,
+    "oldest-context": _oldest_context,
     "direct-insight": _direct_insight,
     # Oracle ceilings. Not eligible as the confirmatory comparator: they consume
     # gold generator labels. Reported to bound and interpret the primary result.
@@ -1059,13 +1140,30 @@ ELIGIBLE_COMPARATORS: Tuple[str, ...] = (
 ORACLE_CONDITIONS: Tuple[str, ...] = ("oracle-retrieval", "oracle-concept")
 """Ceiling conditions. Excluded from comparator selection by contract."""
 
+NULL_POLICY_CONDITIONS: Tuple[str, ...] = (
+    "uniform-random-visible",
+    "rolling-summary",
+    "record-id-order",
+    "oldest-context",
+)
+"""Signal-free policies used by the A9 leakage battery."""
+
 
 def write_artifacts(output: Path, dataset: BenchmarkDataset, partition: str) -> None:
     """Write canonical dataset and all deterministic baseline traces."""
     output.mkdir(parents=True, exist_ok=True)
     if partition != "sealed" and any(item.name == "sealed" for item in dataset.partitions):
         dataset = dataset.model_copy(
-            update={"partitions": [item for item in dataset.partitions if item.name != "sealed"]}
+            update={
+                "partitions": [
+                    item for item in dataset.partitions if item.name != "sealed"
+                ],
+                "positional_leak_assertions": [
+                    item
+                    for item in dataset.positional_leak_assertions
+                    if item.partition != "sealed"
+                ],
+            }
         )
     (output / "dataset.json").write_text(canonical_json(dataset) + "\n", encoding="utf-8")
     for baseline_id in BASELINES:

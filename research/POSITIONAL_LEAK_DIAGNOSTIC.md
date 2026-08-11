@@ -33,11 +33,20 @@ same-rule rate with the tier-specific chance rate `1 / rule_count`.
 | sealed structure | 54 | 280 | 15,120 | 1.85% | 1.85% |
 
 The test uses a three-standard-error upper bound derived from each partition's own rule count,
-not a constant threshold. It covers all three tiers on every full-suite run. No accuracy or
-quality metric is computed from sealed tasks.
+not a constant threshold. Train and development are recomputed in CI. Sealed structure is checked
+once during deterministic generation and recorded in `BenchmarkDataset.positional_leak_assertions`;
+CI reads that assertion without computing a sealed accuracy or quality metric.
+
+## A9 null-policy battery
+
+Four executable null policies select uniformly sampled, most-recent, record-id-sorted, or oldest
+visible records. On open train and development, every near/intermediate/far accuracy stays below
+the precommitted `2 / rule_count` bound. The largest train value is 9.72% against 16.67%; the
+largest development value is 2.98% against 8.33%. Sealed null-policy accuracy remains behind the
+seal and runs exactly once inside the confirmatory study after opening.
 
 ## Verification
 
 `make verify` completed after the repair: schema export 36, Ruff clean, strict mypy clean across
-12 source files, and 38 tests passed in 152.28 seconds. Performance acceptance criteria remain
+12 source files, and 39 tests passed in 227.99 seconds. Performance acceptance criteria remain
 uninterpretable until this branch and the pending-outcome tie-break branch are combined.
