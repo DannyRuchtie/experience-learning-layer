@@ -772,16 +772,18 @@ def _predict(
     outcomes determine directional support. Pending outcomes carry no success sign;
     they only break ties between actions with equal observed-outcome support. This
     lets a task act when all relevant outcomes are pending without treating an
-    untested action as successful.
+    untested action as successful. Recency is an explicit sequence-distance feature;
+    list position never changes the prediction for a fixed evidence set.
     """
     allowed_actions = set(task.allowed_actions) - {"abstain"}
     observed_weight = dict.fromkeys(allowed_actions, 0.0)
     pending_weight = dict.fromkeys(allowed_actions, 0.0)
-    for rank, selection in enumerate(selections):
+    for selection in selections:
         record = records_by_id[selection.record_id]
         if record.observed_action not in allowed_actions:
             continue
-        retrieval_weight = selection.score / (rank + 1)
+        age = max(task.sequence - record.sequence, 1)
+        retrieval_weight = selection.score / age
         if record.observed_outcome is None:
             pending_weight[record.observed_action] += retrieval_weight
         else:

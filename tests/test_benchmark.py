@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timedelta, timezone
+from itertools import permutations
 from pathlib import Path
 
 import pytest
@@ -268,7 +269,10 @@ def test_score_aware_decision_uses_pending_outcomes_only_as_tiebreaks() -> None:
         query="What should happen?",
         allowed_actions=["preferred", "other", "abstain"],
     )
-    assert _predict(task, selections, records) == "preferred"
+    assert {
+        _predict(task, list(ordering), records)
+        for ordering in permutations(selections)
+    } == {"preferred"}
 
     pending_only = [PolicySelection(record_id="weak-b", score=1.0)]
     assert _predict(task, pending_only, records) == "other"
