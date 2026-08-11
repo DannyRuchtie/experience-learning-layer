@@ -18,6 +18,65 @@ concept when later outcomes disagree.
 > AI can learn from the past without losing evidence, uncertainty, or user
 > control.
 
+## Why you should care
+
+Six things ELL is built to buy you. Each is a **design goal the evaluation is
+built to test** — see the status note directly below before reading them as
+results.
+
+**1. Fewer tokens per decision.** Today's default is to replay more history into
+the context window: longer transcripts, bigger summaries, more retrieved chunks.
+ELL's bet is that a handful of compact, scoped concepts beats a wall of raw
+episodes. Cost is not an afterthought here — utility per 1,000 total tokens is a
+formal gate in the research contract, and a version of ELL that wins on accuracy
+while costing far more is recorded as a failure, not a success.
+
+**2. It should work when the wording changes.** Retrieval finds text that looks
+like your query. That breaks precisely when you need it most — a new situation
+that shares *structure* with something you learned months ago but shares no
+vocabulary. The primary measurement in this project is deliberately the hardest
+one: cases with zero content-word overlap with the supporting evidence.
+
+**3. You can ask why.** Every durable concept stays linked to the episodes that
+support it *and* the ones that contradict it. "The assistant thinks this because
+of these five specific things, and these two argue against it" — instead of a
+confident sentence with no traceable origin.
+
+**4. Being wrong is recoverable, and deleting works.** Concepts are versioned and
+revisable rather than overwritten, so a correction leaves a history instead of
+erasing one. Deletion is a closure property: remove a source and the reflections,
+concepts, summaries, embeddings, caches and indexes derived from it go too. That
+matters for privacy law, and it matters the first time the system learns
+something about you that is wrong.
+
+**5. It should know the edges of what it knows.** Every concept carries an
+explicit scope and a confidence, so the intended behaviour outside that scope is
+to abstain rather than guess. An assistant that confidently generalises one bad
+week into a permanent belief about you is worse than one that says "I am not sure
+this applies here."
+
+**6. No vendor lock-in.** Provider-neutral by design: the storage substrate, the
+retrieval method, and the model are replaceable adapters, and changing
+infrastructure must not change the meaning of what was learned.
+
+> ### Status: none of the six is measured yet
+>
+> These are hypotheses with an evaluation built to falsify them — not benchmark
+> results. **This repository reports no empirical results, and none of the
+> hypotheses H1–H7 has been tested.** The evaluation contract is under active
+> revision and nothing is frozen or tagged.
+>
+> That is deliberate. The project is designed to be able to return **"not
+> supported"** or **"unsafe"**, and to say so plainly. If a simpler method matches
+> ELL at lower cost, the research plan adopts the simpler method and records the
+> concept layer as unsupported for the tested conditions.
+>
+> An instrument review on 11 August 2026 found four leakage paths, a scoring stage
+> that discarded most of the evidence it was issued, and a generator whose random
+> seed varied surface text but not structure. All are recorded, with what each one
+> invalidated and who found it, in
+> [`research/GENERATOR_REVISION_LOG.md`](research/GENERATOR_REVISION_LOG.md).
+
 This repository is currently the **research publication and specification** for
 ELL. It is not yet a production application or a validated learning engine.
 
