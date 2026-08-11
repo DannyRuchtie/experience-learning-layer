@@ -613,11 +613,7 @@ def run_baseline(dataset: BenchmarkDataset, partition_name: str, baseline_id: st
             assert selector is not None
             selections = selector(policy_task, policy_records)
         _validate_selections(selections, records_by_id)
-        prediction = (
-            task.gold_action
-            if baseline_id == "oracle-concept"
-            else _predict(selections, records_by_id)
-        )
+        prediction = _predict(policy_task, selections, records_by_id)
         correct = prediction == task.gold_action
         selected_ids = [item.record_id for item in selections]
         selected = [records_by_id[item_id] for item_id in selected_ids]
@@ -766,19 +762,33 @@ def _validate_selections(
 
 
 def _predict(
-    selections: Sequence[PolicySelection], records_by_id: Dict[str, PolicyRecord]
+    task: PolicyTask,
+    selections: Sequence[PolicySelection],
+    records_by_id: Dict[str, PolicyRecord],
 ) -> str:
-    """Apply a frozen score-aware decision rule to observed outcomes only."""
+    """Apply the frozen decision rule without requiring a completed outcome.
+
+    An experience log legitimately records what action the agent took. A completed
+    outcome raises that episode's evidential weight, but an outcome still pending at
+    decision time must not make the episode unusable. Otherwise chronology turns
+    outcome latency into an artificial ceiling on every retrieval condition.
+    """
     weighted: Dict[str, float] = {}
+    allowed_actions = set(task.allowed_actions) - {"abstain"}
     for rank, selection in enumerate(selections):
         record = records_by_id[selection.record_id]
-        if record.observed_outcome is None:
+        if record.observed_action not in allowed_actions:
             continue
         retrieval_weight = selection.score / (rank + 1)
-        outcome_direction = 1.0 if record.observed_outcome > 0 else -1.0
+        if record.observed_outcome is None:
+            outcome_direction = 1.0
+            evidence_quality = 0.5
+        else:
+            outcome_direction = 1.0 if record.observed_outcome > 0 else -1.0
+            evidence_quality = 1.0
         weighted[record.observed_action] = (
             weighted.get(record.observed_action, 0.0)
-            + retrieval_weight * outcome_direction
+            + retrieval_weight * evidence_quality * outcome_direction
         )
     if not weighted:
         return "abstain"
