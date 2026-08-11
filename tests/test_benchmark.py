@@ -18,6 +18,7 @@ from ell.benchmark import (
     PolicyRecord,
     PolicySelection,
     TaskCase,
+    _oracle_select,
     _predict,
     _validate_selections,
     build_latent_rules,
@@ -146,6 +147,20 @@ def test_oracle_concept_is_an_explicit_evaluation_ceiling() -> None:
     assert broken.accuracy == 0.0
     assert ceiling.accuracy == 1.0
     assert ceiling.accuracy > broken.accuracy
+
+
+def test_oracle_ranks_gold_evidence_by_policy_visible_recency() -> None:
+    dataset = generate_development_dataset(1729, "sha256:" + "a" * 64)
+    partition = dataset.partitions[-1]
+    task = partition.tasks[0]
+    visible = project_policy_records(task, partition.records)
+    records_by_id = {item.record_id: item for item in visible}
+    selected = _oracle_select(task, visible, "oracle-retrieval")
+
+    assert selected
+    assert [records_by_id[item.record_id].sequence for item in selected] == sorted(
+        (records_by_id[item.record_id].sequence for item in selected), reverse=True
+    )
 
 
 def test_maximum_context_exposes_distractor_cost() -> None:

@@ -1065,10 +1065,16 @@ def _oracle_select(
         gold = set(task.gold_evidence_ids)
     else:
         raise ValueError(f"unknown oracle condition: {baseline_id}")
+    # The oracle must rank perfect evidence using a policy-visible field. Generator
+    # emission order is not a retrieval ranking and materially changes the
+    # rank-aware answer stage. Recency is explicit in the issued record sequence.
+    selected = sorted(
+        (item for item in records if item.record_id in gold),
+        key=lambda item: (-item.sequence, item.record_id),
+    )
     return [
         PolicySelection(record_id=item.record_id, score=1.0)
-        for item in records
-        if item.record_id in gold
+        for item in selected
     ]
 
 
