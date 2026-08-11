@@ -1,9 +1,34 @@
 # Abstract {.unnumbered}
 
-::: {.callout-note title="Living working draft v0.6 - 9 August 2026"}
-Version 0.6 sharpens the contribution boundary after a review of current agent-memory, experience-learning, provenance, belief-revision, self-scaffolding, and evaluation research. It defines one confirmatory outcome, explicit success and failure gates, a benchmark-first implementation plan, a narrower ELL-Core, and a separately gated programme for learning how ELL itself learns. Earlier drafts remain available through Git history.
+::: {.callout-important title="The evaluation contract is under revision - 11 August 2026"}
+**The v0.6 contract described in these chapters is superseded and must not be cited as frozen.** The
+project's own machine-readable contract records that v0.6 "declared itself frozen while powering only
+the primary gate, sizing the study from an unjustified discordance default, and analysing clustered
+tasks as independent. It was not in fact a usable preregistration."
 
-**Research status.** This document is a working architecture paper and preregistered evaluation plan. It defines the proposed system, hypotheses, data model, implementation contract, and experiments. It does not report empirical results. Results will be added only after the open implementation and evaluation harness can reproduce them.
+Instrument review on 11 August 2026 found four separate leakage paths by which a policy could score
+without learning, a scoring stage that discarded most of the evidence it was issued, and a generator
+whose random seed varied surface text but not structure — making the sealed partition structurally
+identical to the development partition. All are recorded in `research/GENERATOR_REVISION_LOG.md`.
+Repairs are landed or in progress.
+
+Consequently: **the sample sizes, power calculations, gate thresholds and baseline set stated in the
+following chapters no longer describe the implementation.** A v0.8 contract is being written; nothing
+is frozen or tagged until it exists. These chapters are retained unedited so the revision history
+stays auditable.
+:::
+
+::: {.callout-note title="Living working draft - architecture and positioning"}
+This draft sharpens the contribution boundary after a review of current agent-memory,
+experience-learning, provenance, belief-revision, self-scaffolding, and evaluation research. It defines
+one confirmatory outcome, explicit success and failure gates, a benchmark-first implementation plan, a
+narrower ELL-Core, and a separately gated programme for learning how ELL itself learns. Earlier drafts
+remain available through Git history.
+
+**Research status.** This document is a working architecture paper and evaluation plan. It defines the
+proposed system, hypotheses, data model, implementation contract, and experiments. **It reports no
+empirical results, and none of the hypotheses H1–H7 has been tested.** Results will be added only
+after the open implementation and evaluation harness can reproduce them.
 :::
 
 Large language model agents can store and retrieve previous interactions, yet retrieval alone does not establish that an agent has learned from experience. Learning requires a system to identify patterns across episodes, distinguish observations from hypotheses, form reusable concepts, apply those concepts in new situations, and revise them when later evidence disagrees. Recent agent-memory research has introduced reflection, experience-derived insights, workflow induction, dynamic memory graphs, semantic and procedural memory, schema induction, and temporally grounded updates. The remaining challenge is therefore not simply to add another memory store, but to make the transition from experience to general knowledge explicit, inspectable, revisable, and directly measurable.
