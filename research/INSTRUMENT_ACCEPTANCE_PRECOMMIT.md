@@ -58,7 +58,8 @@ Measured on the **development** partition only. Sealed is not opened for any of 
 | A6 | Near stratum is not saturated: `oracle-retrieval` minus best eligible on near | `>= 0.10` |
 | A7 | Chronology violations across all conditions | exactly `0`, test-asserted |
 | A8 | Two full runs from the same seed | byte-identical artifacts |
-| A9 | **Null-policy leak battery** — every null policy, every stratum; **train + development** | at chance, `<= 2x 1/rule_count` |
+| A9 | **Null-policy leak battery** — per-record selection precision, every null policy, every stratum; **train + development** | `<= 2x 1/rule_count` |
+| A9b | Null-policy **accuracy** vs its empirically calibrated leak-free null | within the simulated null's 95% interval |
 
 ## A9 — the null-policy leak battery (amendment, 2026-08-11)
 
@@ -99,6 +100,50 @@ signal that someone would act on — that is what must not be readable before op
 Because generation is deterministic from the seed, structural soundness demonstrated on train and
 development is evidence about the layout *algorithm*, which is the same algorithm that produces
 sealed. The one-time sealed assertion at generation closes the remaining gap without a repeated read.
+
+### Chance model — corrected 2026-08-11
+
+My first A9 draft applied `2x 1/rule_count` to null-policy **accuracy**. That chance model is wrong
+for its own retrieval budget. Each null policy selects **5** records, so under leak-free independent
+mixing the probability that at least one selected record shares the task's rule is
+`1 - (1 - 1/r)^5`, not `1/r`:
+
+| partition | rules | per-record chance | P(>=1 same-rule in 5) | my original bound |
+|---|---:|---:|---:|---:|
+| train | 12 | 8.33% | **35.3%** | 16.7% |
+| development | 24 | 4.17% | **19.2%** | 8.3% |
+| sealed | 54 | 1.85% | **8.9%** | 3.7% |
+
+The original bound sat *below* the legitimate five-draw exposure at every tier. A9 would therefore
+have reported leak-free behaviour as a leak — false positives blocking real work, which is the
+mirror image of the failure it was written to prevent. Measured combined development null accuracy
+is 7.7%–16.4%: above my bound, below the 19.2% exposure, and **not** evidence of a leak.
+
+Corrected split:
+
+- **A9 (the leak test)** compares **per-record selection precision** to `1/r`. This is the clean
+  test: it is invariant to retrieval budget and to the answer stage. The structural invariant
+  already passes exactly here — 8.33% / 4.17% / 1.85%.
+- **A9b** covers null-policy *accuracy*, which is jointly determined by five draws, the answer
+  stage and the action state, so it has no clean analytic bound. It is compared to an
+  **empirically calibrated leak-free null** — simulate the null by randomising rule assignment
+  under leak-free mixing and require the observed value inside that interval. The **method** is
+  pre-committed; the number is not, because the answer stage is still changing.
+
+### Is this a relaxation? No — and here is the test
+
+Changing a pre-committed threshold is exactly what this document exists to prevent, so the
+distinction has to be stated rather than assumed.
+
+**Legitimate:** the specification was mathematically wrong under a leak-free null, and the error is
+derivable *a priori* from the retrieval budget and rule count without consulting any policy's
+results. That is the case here — the five-draw exposure is arithmetic, not an observation.
+
+**Illegitimate:** a threshold is unmet, the results disappoint, and the number moves.
+
+A1–A6 remain untouched, including the ones currently failing. That is the difference: A1 stayed at
+`[0.25, 0.45]` when it was inconvenient, and A9's chance model changed when it was wrong. Any future
+amendment must state which of the two cases it is, with the derivation.
 
 Threshold is **parameterised by the tier's own rule count**, not a constant — chance differs per
 tier and a constant would pass falsely on sealed while failing spuriously on train:
