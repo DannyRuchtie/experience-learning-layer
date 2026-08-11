@@ -499,3 +499,44 @@ def test_action_namespace_carries_no_rule_information() -> None:
             f"base rate of {base_rate:.4f}; the action namespace has regained "
             "rule-correlated semantics and the recorded ceiling is invalid"
         )
+
+
+FROZEN_SCORER_DIGEST = (
+    "sha256:6fbd052bb3372a87ace54b1439e78217e8de0c73c69aca36150a87967ccafee3"
+)
+FROZEN_SCORER_FUNCTIONS = (
+    "project_policy_task",
+    "project_policy_records",
+    "_predict",
+    "_oracle_select",
+    "_validate_selections",
+)
+
+
+def test_frozen_scorer_has_not_drifted() -> None:
+    """The answer stage and its policy projection are frozen.
+
+    Instrument-acceptance floors, ceilings and bands are measured through this exact
+    decision rule. Changing it silently revalues every one of them, so the freeze is
+    enforced rather than declared: edit any of these functions and this test fails.
+
+    Re-freezing is a deliberate act. Update the digest, record the change and what it
+    invalidated in ``research/GENERATOR_REVISION_LOG.md``, and recompute floor, ceiling
+    and the bands before any confirmatory run. See
+    ``research/research-contract-v0.8.json`` -> ``freeze_prerequisites``.
+    """
+    import hashlib
+    import inspect
+
+    import ell.benchmark as benchmark_module
+
+    blob = "".join(
+        name + "\n" + inspect.getsource(getattr(benchmark_module, name))
+        for name in FROZEN_SCORER_FUNCTIONS
+    ).encode()
+    digest = "sha256:" + hashlib.sha256(blob).hexdigest()
+    assert digest == FROZEN_SCORER_DIGEST, (
+        "the frozen scorer changed; every measured floor, ceiling and band derived "
+        "through it is now invalid. Re-freeze deliberately: update the digest, log the "
+        "change and what it invalidated, and recompute before any confirmatory run."
+    )
