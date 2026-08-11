@@ -304,6 +304,62 @@ Measured on the **development** partition only. Sealed is not opened for any of 
 | A9 | **Null-policy leak battery** — per-record selection precision, every null policy, every stratum; **train + development** | `<= 2x 1/rule_count` |
 | A9b | Null-policy **accuracy** vs its empirically calibrated leak-free null | within the simulated null's 95% interval |
 | A10 | **Answer-stage order invariance** — shuffle a fixed selected evidence set, every condition | emitted action identical |
+| A11 | **Structural seed sensitivity** — key statistics across >=8 seeds | between-seed sd `> 0`; a constant means the seed is cosmetic |
+
+## The seed varies surface text, not structure (2026-08-11)
+
+Found by Reviewer while checking Scholar's uncertainty model. **This is the most consequential finding
+in the instrument review, and it is not a leak — nothing in A9 catches it.**
+
+`oracle-retrieval` far accuracy on development, measured across seeds:
+
+| seeds tested | value | sd |
+|---|---|---|
+| 1729, 11, 42, 101, 777 (Darwin) | `192/336` = **4/7** every time | **0.0000** |
+| 8 seeds, source order (Reviewer) | 4/7 | 0.0000 |
+| 8 seeds, recency order (Reviewer) | 6/7 | 0.0000 |
+
+Cause, confirmed in `benchmark.py`:
+
+```
+481:  is_exception     = index % 11 == 10
+482:  is_contradiction = not is_exception and index % 7 == 6
+532:  stratum          = ("near", "intermediate", "far")[task_index % 3]
+```
+
+The oracle's score is fixed by the template's **modular cadence**. The seed permutes surface text and
+never touches structure.
+
+### Consequences, which outrank the band question
+
+1. **`oracle-retrieval` is a constant, not a sample statistic.** So neither a confidence interval nor
+   `0.0024 ≈ 0.09 SE` is the right frame for it. Scholar's sampling-robust instinct was the right
+   move — and it is what led Reviewer to check across seeds — but the uncertainty model does not apply
+   to a quantity with zero variance.
+2. **Same-seed reproduction verifies determinism, which was never in doubt.** Phase 1's
+   "two independent clean-machine reproductions" exit criterion was always going to be satisfied
+   trivially. It is **not** evidence of generalisation, and I had accepted it as though it were.
+3. **Development and sealed are structurally the same dataset at different scale.** The seal protects
+   surface text, not structure. Anything tuned against development *structure* is tuned against sealed
+   structure, and **no sealed-run discipline detects it.** This is a deeper problem than any of the
+   four leaks: the seal is the project's core protection, and it is substantially weaker than assumed.
+4. **Between-rule SD estimated on development understates the truth**, because seeds do not vary
+   structure — and that estimate is exactly what v0.8 sizing depends on.
+5. **The ceiling question is settled.** `0.5714` is not a `k=3` structural cap; it is what source
+   ordering plus rank discounting yields from this cadence. Recency ordering gives `6/7 = 0.8571` from
+   the same evidence. Any construct-impossibility argument must be tested against **6/7**, where
+   headroom is ~0.27 and X is not squeezed at all.
+
+### Rulings
+
+- **Structure must be sampled, not fixed.** The generator varies cadence periods, stratum assignment
+  and contradiction/exception rates per seed. A seed that only permutes surface text is cosmetic.
+- **The sealed partition is drawn with structural parameters independent of development**, not the
+  same cadence at larger scale. Without this, sealing is theatre.
+- **A8 is retained but demoted in meaning:** same-seed byte-identity is a determinism check and is
+  explicitly *not* evidence of robustness. Phase 1's reproduction criterion is amended to require
+  different-seed runs showing conclusions stable under structural variation.
+- **A11 added** so a zero-variance statistic fails loudly instead of looking like precision.
 
 ## A9 — the null-policy leak battery (amendment, 2026-08-11)
 

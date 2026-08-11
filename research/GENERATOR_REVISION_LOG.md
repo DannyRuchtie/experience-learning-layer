@@ -15,6 +15,30 @@ eventually look right for reasons nobody can reconstruct. This is the reconstruc
 | 4 | pending | PR #7 | leak repair | **Positional leakage.** Records laid out rule-block by rule-block, so 98.6% (4968/5037) of each task's five most recent visible records belonged to its own rule against a 4.17% chance baseline — a recency window was a covert rule oracle reading no text. Fix: round-robin interleaving across rules. | A1/A2/A5/A6 as measured at `6724949`; `rolling-summary` entirely (suspended from the eligible set) | Reviewer; reproduced independently by Darwin |
 | 5 | pending | PR #7 | leak repair | **Action-namespace join.** The action vocabulary *was* the rule namespace — 49 actions over 24 rules, 24 `allowed_actions` signatures with 0 ambiguous, and 0 of 382,536 off-rule visible records carrying an action in the task's allowed set. `allowed_actions x observed_action` was an exact rule oracle inside the certified boundary. Fix: shared opaque vocabulary, seed-committed randomised balanced assignment. | Every measurement taken with rule-specific actions. Moves the measurement floor from ≈0 to ≈1/3, which superseded A1–A6. | Reviewer; reproduced independently by Darwin |
 
+## Finding: the seed varies surface text, not structure — the seal is weaker than assumed
+
+Not a leak, so nothing in the A9 battery catches it. Found by Reviewer while checking Scholar's
+uncertainty model; reproduced independently by Darwin at `192/336` = **4/7** across seeds
+1729, 11, 42, 101 and 777, sd **0.0000**. Reviewer measured 8 seeds in both orderings: 4/7 source,
+6/7 recency, zero variance throughout.
+
+Cause is the template's modular cadence — `is_exception = index % 11 == 10`,
+`is_contradiction = index % 7 == 6`, `stratum = task_index % 3` — all independent of the seed.
+
+Consequences: `oracle-retrieval` is a **constant**, so no confidence-interval reasoning applies to it;
+same-seed reproduction verifies determinism only, which means Phase 1's clean-machine exit criterion
+was always trivially satisfiable and is not evidence of generalisation; development and sealed are
+**structurally the same dataset at different scale**, so anything tuned against development structure
+is tuned against sealed structure with no sealed-run discipline able to detect it; and between-rule SD
+estimated on development understates the truth, which is what v0.8 sizing depends on.
+
+This is a deeper problem than any of the four leaks — the seal is the project's core protection.
+
+**Rulings:** structure is sampled per seed rather than fixed; the sealed partition is drawn with
+structural parameters independent of development; A8 same-seed byte-identity is retained as a
+determinism check but explicitly demoted from evidence of robustness; new criterion **A11** requires
+non-zero between-seed variance so a constant fails loudly instead of reading as precision.
+
 ## Finding: the answer stage is order-sensitive — a construct threat to the primary estimand
 
 Recorded as a finding in its own right, separately from the withdrawn stop below, because it outlives
