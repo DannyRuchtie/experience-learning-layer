@@ -68,7 +68,28 @@
       "far_ceiling_sd": 0.04885708112508284,
       "far_effect_reserved_corridor_min": 0.14047619047619042,
       "all_seed_stratum_corridors_admissible": true,
-      "reproduction": "A complete second run was byte-identical."
+      "reproduction": "A complete second run with the same permutation seed was byte-identical. That demonstrates determinism, not Monte-Carlo stability, and same-seed reproduction is explicitly not evidence of robustness under statistics.reproduction_requirement.",
+      "monte_carlo_stability": {
+        "measured_by": "Darwin, independently, on seed 1729 far, uniform-random-visible, 10000 permutations",
+        "permutation_seeds_varied": [
+          90009,
+          1,
+          2,
+          3,
+          4
+        ],
+        "q999_values": [
+          0.574405,
+          0.577381,
+          0.574405,
+          0.574405,
+          0.577381
+        ],
+        "spread": 0.002976,
+        "sd": 0.001458,
+        "interpretation": "The q99.9 estimate moves by exactly one task (1/336 = 0.002976) across permutation seeds, which is 2.1% of the 0.140476 minimum effect-reserved corridor. The pass marks are stable at 10000 permutations. This is the evidence that supports the pass marks; the byte-identical rerun is not.",
+        "also_confirms": "Independently reproduced the reported seed-1729 far q99.9 of 0.574405 with a separate script."
+      }
     },
     "null_battery_reading": "1 breach in 120 tests, non-reproducible across seeds (1 of 8). Below the ~6 a p95 threshold produces by construction, which indicates the floor is slightly conservative. A conservative floor narrows the corridor and biases against ELL, which is the acceptable direction."
   },

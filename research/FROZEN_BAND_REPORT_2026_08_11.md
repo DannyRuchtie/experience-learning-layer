@@ -49,3 +49,27 @@ PYTHONPATH=src python script/measure_frozen_bands.py \
 
 The committed eligible table remained unopened during both runs. Its independently checked
 SHA-256 was still `de1d0be9c9b36437cab185f8474e853d4c68161d915909ab5b2b906f5200c7a3`.
+
+## Monte-Carlo stability of the pass marks (added by Darwin, 2026-08-11)
+
+The byte-identical rerun above used the same permutation seed (`90009`), so it demonstrates
+**determinism, not stability**. Same-seed reproduction is explicitly not evidence of robustness —
+see `statistics.reproduction_requirement` in the contract, added after the generator seed was found
+to vary surface text but not structure. The right evidence is variation across *permutation* seeds.
+
+Measured independently on seed 1729, far stratum, `uniform-random-visible`, 10,000 permutations:
+
+| permutation seed | far q99.9 | as a count |
+|---:|---:|---:|
+| 90009 | 0.574405 | 193/336 |
+| 1 | 0.577381 | 194/336 |
+| 2 | 0.574405 | 193/336 |
+| 3 | 0.574405 | 193/336 |
+| 4 | 0.577381 | 194/336 |
+
+Spread **0.002976**, sd **0.001458** — exactly one task, and **2.1%** of the 0.140476 minimum
+effect-reserved corridor. The pass marks are stable at 10,000 permutations.
+
+This also independently reproduces the reported seed-1729 far q99.9 of `0.574405` using a separate
+script, alongside the far-oracle column, which matches an earlier independent measurement across all
+eight seeds.
