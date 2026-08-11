@@ -265,5 +265,27 @@
     "decision_rule": "Completed outcomes give directional support weighted by retrieval score over sequence distance. Pending outcomes carry no success sign and only break ties, so an untested action is never treated as successful. Abstain when support is negative or absent. Recency is an explicit sequence-distance feature; list position never changes the prediction for a fixed evidence set.",
     "why_enforced": "A freeze that is only declared is a comment. Instrument floors, ceilings and bands are measured through this exact rule, so any edit silently revalues them. Re-freezing requires updating the digest, logging what it invalidated, and recomputing before any confirmatory run.",
     "verified_can_detect_drift": "A one-character change to the outcome-sign comparison moves the digest from 6fbd052b to c5416c0c."
+  },
+  "phase_3": {
+    "status": "protocol_written_no_implementation",
+    "protocol": "research/PHASE3_PROTOCOL.md",
+    "governance_boundary": "The model proposes Reflection objects only. It never writes a ConceptVersion, never sets confidence, never decides promotion, and never reviews its own proposal. quarantine_reflection is its only entry point.",
+    "validation": "Deterministic, code-only, and executed before any review so a fluent proposal cannot anchor a reviewer. Hard reject codes: span-unresolvable, foreign-workspace, deleted-evidence, future-evidence, single-episode-generalisation, unbounded-scope, counterevidence-not-searched, sensitive-inference-unflagged.",
+    "preregistered_thresholds": {
+      "K_distinct_episodes": null,
+      "M_distinct_days": null,
+      "note": "Set on development and frozen before any sealed run. These are the primary knob separating a learned pattern from over-reading one conversation."
+    },
+    "promotion": "Requires Stage 1 pass, Stage 2 accept, the frozen K/M support threshold, and scope narrowing where counterevidence exists. Promoting over unresolved counterevidence is prohibited. Confidence is computed by a frozen deterministic rule, never by the model.",
+    "model_conditions": "Two open model families with frozen identifiers, revisions, serving software and sampling parameters; prompts are hashed artifacts developed only on development; stochastic conditions repeated n times with the interval reported.",
+    "rejected_reflections": "Retained with stable failure codes and reported per model family. A near-zero rejection rate is treated as suspicious and investigated before the sealed run.",
+    "falsification": [
+      "governance_too_strict_too_few_concepts_form",
+      "governance_porous_unsupported_generalisations_pass -> unsafe verdict, outranks utility",
+      "concepts_form_but_do_not_transfer -> concept layer unsupported for tested conditions",
+      "model_family_dependence -> claim bounded to the family tested"
+    ],
+    "dependencies": "Development work (proposer, validator, prompts) does not depend on the instrument. The confirmatory arm does: far currently has no robust non-oracle comparator.",
+    "also_unblocks": "The personal-archive dry run is this proposer plus Stage 1 validation with retention disabled."
   }
 }
