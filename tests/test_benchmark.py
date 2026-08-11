@@ -453,7 +453,6 @@ def _same_rule_rate_among_actionable(dataset: BenchmarkDataset, partition_name: 
     which is what the action-namespace leak was.
     """
     partition = next(item for item in dataset.partitions if item.name == partition_name)
-    rule_count = len({item.rule_id for item in partition.records})
     actionable = 0
     same_rule = 0
     for task in partition.tasks:
