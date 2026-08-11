@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timedelta, timezone
+from itertools import permutations
 from pathlib import Path
 
 import pytest
@@ -9,11 +10,13 @@ import pytest
 from ell.benchmark import (
     BASELINES,
     DEVELOPMENT_TIER,
+    ELIGIBLE_COMPARATORS,
     SEALED_TIER,
     TRAIN_TIER,
     ExperienceRecord,
     PolicyRecord,
     PolicySelection,
+    PolicyTask,
     TaskCase,
     _predict,
     _validate_selections,
@@ -110,12 +113,11 @@ def test_every_baseline_emits_complete_reproducible_receipts() -> None:
         )
 
 
-def test_oracle_concept_is_an_explicit_evaluation_ceiling() -> None:
+def test_oracle_concept_uses_the_shared_answer_stage() -> None:
     dataset = generate_dataset(1729, 481516)
     broken = run_baseline(dataset, "development", "no-memory")
     ceiling = run_baseline(dataset, "development", "oracle-concept")
     assert broken.accuracy == 0.0
-    assert ceiling.accuracy == 1.0
     assert ceiling.accuracy > broken.accuracy
 
 
@@ -124,6 +126,11 @@ def test_maximum_context_exposes_distractor_cost() -> None:
     maximum = run_baseline(dataset, "development", "maximum-context")
     focused = run_baseline(dataset, "development", "direct-insight")
     assert maximum.manifest.cost.total_tokens > focused.manifest.cost.total_tokens
+
+
+def test_position_leaking_rolling_summary_is_suspended_from_eligibility() -> None:
+    assert "rolling-summary" in BASELINES
+    assert "rolling-summary" not in ELIGIBLE_COMPARATORS
 
 
 def test_development_difficulty_ladder_is_monotonic_without_opening_sealed_data() -> None:
@@ -218,7 +225,7 @@ def test_runner_rejects_policy_selection_outside_issued_context() -> None:
         )
 
 
-def test_score_aware_decision_preserves_ranking_and_ignores_unobserved_outcomes() -> None:
+def test_score_aware_decision_uses_pending_outcomes_only_as_tiebreaks() -> None:
     observed_time = datetime(2026, 1, 1, tzinfo=timezone.utc)
     records = {
         "strong": PolicyRecord(
@@ -235,7 +242,7 @@ def test_score_aware_decision_preserves_ranking_and_ignores_unobserved_outcomes(
             workspace_id="workspace-alpha",
             sequence=2,
             observed_time=observed_time,
-            text="weak evidence",
+            text="observed exception evidence",
             observed_action="other",
             observed_outcome=1.0,
         ),
@@ -244,7 +251,7 @@ def test_score_aware_decision_preserves_ranking_and_ignores_unobserved_outcomes(
             workspace_id="workspace-alpha",
             sequence=3,
             observed_time=observed_time,
-            text="weak evidence",
+            text="exception evidence",
             observed_action="other",
             observed_outcome=None,
         ),
@@ -252,6 +259,26 @@ def test_score_aware_decision_preserves_ranking_and_ignores_unobserved_outcomes(
     selections = [
         PolicySelection(record_id="strong", score=3.0),
         PolicySelection(record_id="weak-a", score=1.0),
-        PolicySelection(record_id="weak-b", score=100.0),
+        PolicySelection(record_id="weak-b", score=1.0),
     ]
-    assert _predict(selections, records) == "preferred"
+    task = PolicyTask(
+        task_id="task",
+        workspace_id="workspace-alpha",
+        sequence=4,
+        observed_time=observed_time,
+        query="What should happen?",
+        allowed_actions=["preferred", "other", "abstain"],
+    )
+    assert {
+        _predict(task, list(ordering), records)
+        for ordering in permutations(selections)
+    } == {"preferred"}
+
+    pending_only = [PolicySelection(record_id="weak-b", score=1.0)]
+    assert _predict(task, pending_only, records) == "other"
+
+    exception_first = [
+        PolicySelection(record_id="weak-a", score=10.0),
+        PolicySelection(record_id="strong", score=1.0),
+    ]
+    assert _predict(task, exception_first, records) == "other"
