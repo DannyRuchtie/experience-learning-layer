@@ -34,20 +34,52 @@ myself; I have **not** independently reproduced those two simulated figures.
 **Consequence:** A1's `[0.25, 0.45]` band no longer describes an intermediate comparator. Its lower
 half sits below chance — a comparator at 0.30 would be indistinguishable from guessing.
 
-### Ruling A — re-express, do not re-number
+### Ruling A — re-express as distances, and *derive* the bounds rather than choose them
 
 A1–A6 failed because raw accuracy bands are **floor-dependent**. Replacing one set of magic numbers
-with another leaves the same defect. All comparator criteria are therefore restated in
-**chance-normalised** form:
+with another leaves the same defect. Criteria are restated as **distances** from the two measurable
+reference points, per Reviewer:
 
 ```
-normalised = (observed - chance) / (ceiling - chance)
-chance   = the rule-label-permuted empirical null (A9b), per stratum and partition
-ceiling  = oracle-retrieval on the same stratum and partition
+lower bound: observed >= permuted-null 95th percentile + X
+upper bound: observed <= oracle-retrieval - Y
 ```
 
-A criterion expressed this way survives any future floor or ceiling change, which is the third time
-a floor assumption has broken a threshold in this document.
+Distances, not a normalised ratio — the ratio form `(observed - chance)/(ceiling - chance)` is
+unstable exactly where we already have trouble, since `ceiling - chance` approaches zero on a
+saturated stratum (near sat at 0.5714 for both retrieval and its own oracle).
+
+**X and Y are derived, not chosen:**
+
+- **X** = the minimum difference from the permuted-null 95th percentile that is statistically
+  distinguishable at the far-task N, α = 0.05, and the target power — a power calculation, using the
+  existing `ell.statistics` cluster machinery.
+- **Y** = enough headroom below `oracle-retrieval` to express the preregistered primary effect
+  (currently 5 percentage points, pending v0.8) plus its interval half-width, without hitting the
+  ceiling — arithmetic.
+
+The band then follows from floor, ceiling, N and α. All four are properties of the design; **none is
+an eligible-comparator measurement.** Anyone can recompute it and verify that no eligible number
+could have influenced it.
+
+### Contamination — disclosed, not claimed away
+
+Every technical participant has measured eligible conditions: Forge (an unpublished combined
+eligible table, voluntarily disclosed), Reviewer (repeatedly, across three branch states), and me
+(I reproduced the suite including `direct-insight` at 0.285). **Nobody on this project is blind, and
+claiming otherwise would be worse than admitting it.**
+
+So the protection is the removal of discretion above, not asserted blindness. Three further
+safeguards:
+
+1. **Forge commits the unpublished eligible table now** — hash published immediately, contents
+   revealed at step 5. Same mechanism the project already uses for the sealed seed. It converts a
+   disclosure into a verifiable one and protects Forge by proving the figures were not altered after
+   the bands were fixed.
+2. **Scholar ratifies the procedure**, being the one participant who has not run the instrument. Not
+   to author X and Y — a band nobody can verify is no better — but to confirm the derivation
+   references only floor, ceiling, N and α, and no eligible measurement.
+3. The derivation is written down before use, so an external reader can audit it independently.
 
 ### Ruling B — the metric must distinguish abstention from error
 
@@ -204,9 +236,44 @@ Corrected split:
   already passes exactly here — 8.33% / 4.17% / 1.85%.
 - **A9b** covers null-policy *accuracy*, which is jointly determined by five draws, the answer
   stage and the action state, so it has no clean analytic bound. It is compared to an
-  **empirically calibrated leak-free null** — simulate the null by randomising rule assignment
-  under leak-free mixing and require the observed value inside that interval. The **method** is
-  pre-committed; the number is not, because the answer stage is still changing.
+  **empirically calibrated leak-free null**. The **method** is pre-committed; the number is not,
+  because the answer stage is still changing.
+
+#### A9b permutation estimand — corrected 2026-08-11
+
+I first approved permuting `ExperienceRecord.rule_id`. **That is a no-op for accuracy.** Forge
+caught it: `rule_id` is evaluator-only, and nothing in the selection or scoring path reads it —
+correctness is `prediction == task.gold_action` (`benchmark.py:617`), and `rule_id` appears only in
+construction. Permuting it leaves null-policy accuracy bit-identical.
+
+The two criteria need **different** permutations, so this is an addition rather than a replacement:
+
+| criterion | permutation | why |
+|---|---|---|
+| A9 (selection precision) | permute `record.rule_id` | precision is *defined* against rule labels, so this is the correct null |
+| A9b (accuracy) | permute complete **task gold-action trajectories between latent rules**, at matched task ordinal and stratum, leaving queries, visible records, chronology and policy outputs fixed | breaks the evidence→answer link while preserving task clustering and the action marginal |
+
+A9b's permutation must be cluster-level (whole rules, not individual tasks) to preserve within-rule
+correlation, must hold stratum composition fixed, and must run over a pre-committed number of seeded
+permutations. Calibrate on the permuted copy only — never against the real generator, which would
+bake in whatever leak is live.
+
+Two further requirements:
+
+- **Per-policy bound, not one shared constant.** The permuted-null accuracy depends on a policy's
+  abstention rate: a policy that always answers floors near the gold action marginal (≈0.5), one that
+  always abstains floors near 0. A single shared 95th percentile would be too lax for abstainers and
+  too strict for answerers, both for reasons unrelated to leakage. Each null policy is therefore
+  tested against **its own** permuted distribution.
+- **Policy outputs are held fixed, and this is asserted in code.** Recompute correctness against
+  permuted gold; never re-run selectors on permuted data. If selections move, the test is circular.
+  An assertion, not a comment — it is the one mistake that would silently invalidate the battery.
+
+**Known power limitation.** With two real actions plus abstain, the permuted null essentially
+estimates the gold action marginal, so the null distribution is tight around chance and A9b has
+limited power against a *small* leak. It reliably catches large ones — all four found so far were
+enormous (1.0000 precision, 98.6% concentration) — but it would not reliably catch a 3-point edge.
+A9b is a backstop against gross leakage, not a proof of its absence.
 
 ### The principle behind all four leaks: fields are not information
 
@@ -230,6 +297,35 @@ allowlist. Any field reachable by a policy must be shown to carry no rule inform
 combination with every other permitted field*. Since that cannot be proven by inspection — all four
 leaks survived code review and were caught by measurement — the null-policy battery is the
 operational proxy, and it must run continuously rather than per-review.
+
+### THE primary v0.8 question: the action space is the root constraint
+
+Promoted to the top of the v0.8 agenda, not left alongside it. The leak repairs are converging; this
+is what remains underneath them.
+
+The two-action space has now caused **three** distinct failures:
+
+1. the text-only answer-stage ruling was unimplementable — no lexical bridge from record text to
+   action labels (0/840 verbatim, 8.8% any word overlap);
+2. the action namespace *was* the rule namespace, giving an exact rule oracle inside the certified
+   boundary;
+3. A9b has weak power against small leaks, because with two actions plus abstain the permuted null
+   is just the action marginal.
+
+With `k = 3`, chance is 1/3 and the benchmark is close to a coin flip with retrieval as the
+tiebreaker. That bounds what *any* positive result could mean, independently of every leak fix.
+
+**The opaque A/B namespace is a leak repair, not the destination.** Nobody should treat it as the
+final design. The end state needs both properties at once:
+
+- **large `k`**, shared across rules — so chance is low and retrieval quality dominates the metric
+  rather than a coin flip, while no `allowed_actions` set fingerprints its rule;
+- **a semantic bridge from record text to action** — so the answer stage *infers* rather than looks
+  up, which is the only configuration in which the benchmark measures a decision.
+
+Those two together are the design question. Getting one without the other reproduces either the
+namespace leak or the lookup problem. This is the same "option 2" deferred earlier as a nicety; it is
+now the central item.
 
 ### Known construct limitation, to be resolved in v0.8
 
