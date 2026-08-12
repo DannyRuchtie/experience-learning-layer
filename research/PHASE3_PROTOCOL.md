@@ -149,3 +149,78 @@ proposer plus Stage 1 validation, with retention disabled.
 A design for the proposer's prompts, or a claim that any of it works. Nothing here has been
 implemented. It fixes the rules before the code exists, which is the only order that makes the result
 mean anything.
+
+---
+
+# Promotion rule specification
+
+**Added 2026-08-12 by Darwin.** This is the piece Forge needs before B2 and B4 can be implemented, and
+it is deliberately mine rather than the implementer's: it decides what counts as having learned
+something.
+
+Values below are **starting specifications, tunable on development only, frozen before any sealed
+run.** They are argued from principle rather than fitted, because no Phase 3 development data exists
+yet — which is the correct order, not a limitation.
+
+## Support thresholds
+
+**`K = 3` distinct episodes.** Two points define a line; the third is the first evidence that the line
+was not a coincidence. Two co-occurrences are the cheapest way to manufacture a false pattern, and the
+proposer has every incentive to find them.
+
+**`M = 2` distinct days.** Prevents one long session from manufacturing a pattern. A single evening of
+frustrated messages should not become a durable belief about someone. Days rather than episodes because
+the failure mode is temporal concentration, not count.
+
+Both counted on **distinct** episodes and distinct calendar days in the workspace's timezone.
+Paraphrases of one event are one episode; the deterministic validator already resolves spans, so
+duplicates collapse before counting.
+
+## Confidence — a frozen function, never a model output
+
+```
+confidence = support_ratio x breadth x recency
+
+support_ratio = s / (s + c + 1)
+breadth       = min(1, days_spanned / (2 x M))
+recency       = 1 / (1 + episodes_since_last_support / H)
+```
+
+where `s` = distinct supporting episodes, `c` = distinct contradicting episodes, `days_spanned` = days
+between first and last supporting evidence, `H = 20` episodes as the half-life constant.
+
+Three deliberate properties:
+
+**The `+1` prevents certainty.** Three supporting episodes and zero counterevidence gives `0.75`, not
+`1.0`. Nothing in this system reaches certainty from a finite sample, and a concept that reports 1.0 is
+lying about what evidence can support.
+
+**Counterevidence bites immediately.** One contradiction against three supports drops the ratio from
+`0.75` to `0.60`. Contradictions are rarer than confirmations in ordinary experience, so each one
+carries more information.
+
+**Confidence decays without reinforcement.** A concept last supported 40 episodes ago is at `recency =
+0.33` regardless of how well-evidenced it once was. This is what makes stale guidance decay on its own
+rather than requiring an explicit sweep, and it is what the change-adaptation gate measures.
+
+## Abstention threshold
+
+**Concepts below `confidence = 0.35` are not applied.** The system abstains rather than acting on weak
+belief.
+
+This is the numeric expression of the principle that abstention must beat confident error. It is also
+the parameter most likely to move on development, because it trades coverage against precision — and
+that trade is exactly what the development sweep exists to explore.
+
+## What is prohibited
+
+- the model setting or influencing `confidence`, `K`, `M`, `H` or the abstention threshold
+- promoting over unresolved counterevidence without narrowing `scope`
+- tuning any of these against sealed data, at any point, for any reason
+
+## Falsifiable prediction attached to these numbers
+
+If `K = 3` / `M = 2` admits unsupported generalisations, the unsupported-generalisation gate fails and
+the verdict is **unsafe** — thresholds too permissive. If it admits so few concepts that no task is
+affected, the verdict is **governance too strict at this threshold**, reported with the rejection
+profile. Both are results. Neither is a reason to quietly move `K`.
